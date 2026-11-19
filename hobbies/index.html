@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hobbies, Travel &amp; Photos — Amit Kumar Singh Yadav</title>
+  <meta name="description" content="Hobbies, travel, and photography gallery of Amit Kumar Singh Yadav across Japan, Canada, South Korea, India, and the United States.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Sans+3:ital,wght@0,300..700;1,300..700&display=swap">
+  <style>
+    :root {
+      --text: #1f2421;
+      --muted: #525d57;
+      --green: #118659;
+      --accent: #2e996a;
+      --accent-bg: #f3f9f5;
+      --border: #dfe7e2;
+      --font-sans: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      color: var(--text);
+      background: #ffffff;
+      line-height: 1.6;
+      font-size: 17px;
+    }
+    a { color: var(--green); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
+    .top-nav-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .nav-brand { font-weight: 700; font-size: 18px; color: var(--text); }
+    .nav-brand:hover { text-decoration: none; color: var(--green); }
+    .nav-links { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .nav-links a {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #333;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      background: var(--accent-bg);
+      color: var(--green);
+      text-decoration: none;
+    }
+
+    .container { max-width: 960px; margin: 0 auto; padding: 36px 24px 80px; }
+    .header-box {
+      padding: 26px 28px;
+      background: var(--accent-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 32px;
+    }
+    .header-box h1 { margin: 0 0 8px; font-size: 30px; }
+    .header-box p { margin: 0; color: var(--muted); }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 22px;
+    }
+    .photo-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #ffffff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+    }
+    .photo-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+    }
+    .photo-caption {
+      padding: 14px 16px;
+      font-size: 15px;
+      color: #333;
+      flex: 1;
+    }
+    .photo-caption strong {
+      display: block;
+      font-size: 16px;
+      color: #111;
+      margin-bottom: 4px;
+    }
+    .location-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--green);
+      background: var(--accent-bg);
+      padding: 1px 7px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="top-nav" aria-label="Primary Navigation">
+    <div class="top-nav-inner">
+      <a class="nav-brand" href="../">← Amit Kumar Singh Yadav</a>
+      <div class="nav-links">
+        <a href="../#about">About</a>
+        <a href="../#blog">Blog</a>
+        <a href="../#publications">Publications</a>
+        <a class="active" href="./">Hobbies &amp; Photos</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="header-box">
+      <h1>Hobbies, Travel &amp; Life Moments</h1>
+      <p>
+        Outside of building audio and world models, I enjoy exploring new places, hiking mountain trails (from the Tateyama Alpine Route in Japan to North America), photography, and meeting people across different cultures.
+      </p>
+    </div>
+
+    <div class="gallery-grid">
+      <div class="photo-card">
+        <img src="photos/03_jaist_ishikawa_japan.jpg" alt="Ishikawa, Japan — JAIST">
+        <div class="photo-caption">
+          <span class="location-tag">Ishikawa, Japan</span>
+          <strong>Exploring Ishikawa &amp; Tateyama, Japan</strong>
+          Summer research &amp; mountain trails around the Japan Advanced Institute of Science and Technology (JAIST).
+        </div>
+      </div>
+
+      <div class="photo-card">
+        <img src="photos/04_ottawa_canada_cil.jpg" alt="Ottawa, Canada — Creative Interactions Lab">
+        <div class="photo-caption">
+          <span class="location-tag">Ottawa, Canada</span>
+          <strong>Summer in Ottawa with the CIL Team</strong>
+          With friends and colleagues at Carleton University during my MITACS Globalink summer in Canada.
+        </div>
+      </div>
+
+      <div class="photo-card">
+        <img src="photos/01_kaist_iss_2019_talk.jpg" alt="Daejeon, South Korea — KAIST ACM ISS">
+        <div class="photo-caption">
+          <span class="location-tag">Daejeon, South Korea</span>
+          <strong>Stage Talk at KAIST (ACM ISS)</strong>
+          Presenting JoyHolder on stage at the Korea Advanced Institute of Science and Technology (KAIST).
+        </div>
+      </div>
+
+      <div class="photo-card">
+        <img src="photos/02_daejeon_korea_2019.jpg" alt="Daejeon, South Korea">
+        <div class="photo-caption">
+          <span class="location-tag">Daejeon, South Korea</span>
+          <strong>Visiting South Korea</strong>
+          At the ACM Interactive Surfaces and Spaces conference hall in Daejeon.
+        </div>
+      </div>
+
+      <div class="photo-card">
+        <img src="photos/05_jaist_supercomputing_japan.jpg" alt="JAIST HPC Lab, Japan">
+        <div class="photo-caption">
+          <span class="location-tag">Nomi, Japan</span>
+          <strong>Supercomputing Lab at JAIST</strong>
+          Working on Cray XC40 quantum Monte Carlo simulations with the Maezono Group in Japan.
+        </div>
+      </div>
+
+      <div class="photo-card">
+        <img src="photos/06_cods_comad_hyderabad.jpg" alt="Hyderabad, India — CoDS-COMAD">
+        <div class="photo-caption">
+          <span class="location-tag">Hyderabad, India</span>
+          <strong>With Co-authors at CoDS-COMAD</strong>
+          Presenting our conversational AI work with IIT Gandhinagar teammates in Hyderabad.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
