@@ -1,40 +1,18 @@
-# <a href="https://vinodjangid07.github.io/" target="_blank">My Portfolio</a>
-<p align="justify">This website displays my Projects, Web presence, Story, Work experience, and contact information.</p>
+# AudioWSP: Unified Weight-Space Programming & One-Forward-Pass Optimization Harness for Audio Models
 
-[![Repository Status](https://img.shields.io/badge/Repository%20Status-Maintained-dark%20green.svg)](https://github.com/vinodjangid07/vinodjangid07.github.io)
-[![Website Status](https://img.shields.io/badge/Website%20Status-Online-green)](https://vinodjangid07.github.io/)
-[![Author](https://img.shields.io/badge/Author-Vinod%20Jangid-purple.svg)](https://www.instagram.com/its_.me._vinod?igshid=YmMyMTA2MsY%3D)
-[![Latest Release](https://img.shields.io/badge/Latest%20Release-11%20Jan%202024-yellow.svg)](https://github.com/vinodjangid07/vinodjangid07.github.io)
-<a href="https://github.com/vinodjangid07/vinodjangid07.github.io/blob/master/LICENSE"><img alt="License" src="http://img.shields.io/:license-mit-blue.svg?style=flat-square?style=flat-square" /></a>
+`audiowsp` (`harness/audiowsp.py`) is the open-source Python harness accompanying **"Weight-Space Programming for Audio Models: LLMs Can Directly Edit Audio Model Weights and Compress Them"** by **Amit Kumar Singh Yadav** and **Ishiki Labs Research**.
 
-<img width="100%" alt="Portfolio Screenshot" src="https://github.com/vinodjangid07/vinodjangid07.github.io/assets/86096184/fd0d70b2-1505-4adf-8b0c-427df58607e3">
+It provides the 5 common first-principles building blocks (guarded by `firewall.py`'s `EvalFirewallViolation` anti-leakage checks) used across both **Audio Deepfake Detection (`ishiki-labs/ishiki-deepfake-0.5`, `318M -> 86.8M`)** and **Automatic Speech Recognition (`ishiki-labs/ishiki-asr-0.5`, `32.4B -> 26.2B`)**:
 
+1. **Block 1 — Acoustic Nuisance Profiler (`AcousticNuisanceProfiler`)**: Generates frame-aligned paired clean vs. corrupted probes (`.WAV` vs. `.MP3`, `Encodec`, `8kHz` PSTN $\mu$-law, RIR reverberation, AWGN) and extracts the task-orthogonal nuisance drift subspace $U_{\text{nuis}}$.
+2. **Block 2 — Task-Orthogonal Weight Surgery & Signal-to-Noise Eigen-Filtering (`SubspaceNullingSurgery` & `GEVDProjectionSurgery`)**: Applies $90^\circ$ Gram-Schmidt / QR task-orthogonal null-space projection ($0.0\%$ task signal loss) and solves the Generalized Eigenvalue Problem ($\Sigma_{\text{clean}} v_k = \lambda_k \Sigma_{\text{nuis}} v_k$) to filter residuals onto high-SNR channels ($r = 96$).
+3. **Block 3 — Multi-Tap Temporal Derivatives & One-Sided Squared Anomaly Scoring (`MultiTapTemporalLifter` & `lift_rectified_quadratic_rkhs`)**: Wires $K$-tap temporal windows $[h_{t-1}, h_t, h_{t+1}]$ (velocity $\Delta_1$ and glitch curvature $\Delta_2$) and one-sided rectified quadratic features $\log(1 + \max(0, z \cdot \text{sign}(\Delta\mu))^2)$.
+4. **Block 4 — One-Forward-Pass Optimizer (`OneForwardPassOptimizer` & `solve_ofp_ctc_readout`)**: Solves for optimal readout/bridge weights in `torch.inference_mode()` (`1` forward pass, `0` backward passes) using Boltzmann boundary precision re-weighting, Dual-Space Woodbury inversion, and Capon-LCMV nuisance nulling ($C_{\text{codec}}^T W = 0$).
+5. **Block 5 — Velocity-Preserving Compression (`OTVelocityCompressor` & `MoEReLU2Compactor`)**: Compresses linear and Transformer layers in the joint static + velocity metric $\Sigma_{\text{joint}} = \text{Cov}(Z_t) + 2\,\text{Cov}(Z_t - Z_{t-1})$ with Optimal-Transport marginal variance restoration.
 
-:star: Star me on GitHub — it helps!
+## Quickstart CLI
 
-# Sections 📚
-
-✔️ Mini intro\
-✔️ About me \
-✔️ Skills\
-✔️ Projects\
-✔️ Contact me
-
-## Installation & Deployment 📦
-- Clone the repository and modify the content of <b>index.html</b> according to your requirement.
-- ⚠️ Remove my Bitmoji <img src="https://github.com/vinodjangid07/vinodjangid07.github.io/assets/86096184/05e5b2d6-8b38-4cf9-a5a3-eb63e81aab1d" width="20px"> from the navbar and use yours instead.⚠️
-- Add or remove images from `https://www.vinodjangid.me/src/` directory as per your requirement.
-- Push the generated code to the `master` branch of this repository.
-- ⚠️<b>NOTE:</b> Make sure to remove `analyticsId` & `google search console Id` from `<head>` tag, and set yours, if you want to use your own Google Analytics & search console account.⚠️
-
-
-## License 📄
-This project is licensed under the MIT License - see the [LICENSE.md](./LICENSE) file for details.
-
-## Tools Used 🛠️
-* [<b>GitHub</b>](https://github.com/) - To host my static website (HTML, CSS, JS).
-* [<b>Animate on scroll library</b>](https://github.com/michalsnik/aos) - To animate my website while scrolling.
-* [<b>Animista</b>](https://animista.net/) - To use Interactive animations
-
-
-Please contact me at infovinodjangid@gmail.com if you have any feedback for the website. :star: Star it, if you like it!
+```bash
+# Run the unified 6-block AudioWSP + OFP pipeline on both Deepfake Detection and ASR
+python -m harness run-wsp --task both
+```
