@@ -479,7 +479,7 @@
       <text x="706" y="154" fill="#444" font-size="11.5">Noisy ASR: <tspan id="b3-stat-asr" fill="#1f77b4" font-weight="bold" font-family="monospace">6.87% WER</tspan></text>
     </svg>
     <p style="margin:10px 0 0; font-size:13.5px; color:#444; line-height:1.45;">
-      <strong>Figure 5:</strong> Interactive multi-tap ablation circuit showing how connecting (1) earlier transformer layers, (2) adjacent time frames \([h_{t-1}, h_{t+1}]\) for frame-to-frame speed, and (3) one-sided squared anomaly scoring \(\log(1+\max(0,z)^2)\) into the output layer \(W\) reduces error across complete public test sets: <code>ASVspoof 2021 DF</code> (533,928 trials), <code>In-The-Wild</code> (31,779 trials), and the 4-dataset noisy ASR suite (10,797 utterances).
+      <strong>Figure 5:</strong> Interactive multi-tap ablation circuit showing how connecting (1) earlier transformer layers, (2) adjacent time frames \([h_{t-1}, h_{t+1}]\) for frame-to-frame speed, and (3) one-sided squared anomaly scoring \(\log(1+\max(0,z)^2)\) into the output layer \(W\) reduces error across complete public test sets: <code>ASVspoof 2021 DF</code> (533,928 trials), <code>In-The-Wild</code> (31,779 trials), and the 4-dataset noisy ASR suite (10,797 utterances). [<a href="https://github.com/ishikilabsinc/audiowsp/blob/main/scripts/reproduce_all_figures.py">Reproduce Figure 5: <code>python scripts/reproduce_all_figures.py --figure 5</code></a>]
     </p>
   </div>
 
@@ -505,7 +505,7 @@
       Blue Circles = Clean Real Voice | Red X = Fake Voice. Click Step 2 to see how 25-epoch SGD tilts the boundary.
     </p>
     <p style="margin:6px 0 0; font-size:13.5px; color:#444; line-height:1.45;">
-      <strong>Figure 6:</strong> 2D feature-space visualization of shortcut learning versus One-Forward-Pass Optimization (<code>OFP</code>), evaluated across 4 unseen test datasets (<code>ASVspoof 2021 LA</code>, <code>ASVspoof 2021 DF</code>, <code>In-The-Wild</code>, and <code>DECRO</code>; 751,197 total trials).
+      <strong>Figure 6:</strong> 2D feature-space visualization of shortcut learning versus One-Forward-Pass Optimization (<code>OFP</code>), evaluated across 4 unseen test datasets (<code>ASVspoof 2021 LA</code>, <code>ASVspoof 2021 DF</code>, <code>In-The-Wild</code>, and <code>DECRO</code>; 751,197 total trials). [<a href="https://github.com/ishikilabsinc/audiowsp/blob/main/scripts/reproduce_all_figures.py">Reproduce Figure 6: <code>python scripts/reproduce_all_figures.py --figure 6</code></a>]
     </p>
   </div>
 
@@ -535,7 +535,7 @@
     </div>
     <canvas id="b5-canvas" width="900" height="228" style="width:100%; height:auto; display:block;"></canvas>
     <p style="margin:10px 0 0; font-size:13.5px; color:#444; line-height:1.45;">
-      <strong>Figure 7:</strong> Frame-to-frame transition velocity \(|Y_t - Y_{t-1}|\) across three stop-consonant bursts (<code>"p"</code>, <code>"t"</code>, <code>"k"</code>) for the full <code>315M</code> <code>Wav2Vec2-Large</code> teacher (black dashed curve) versus 2.23× compressed <code>142M</code> models using Standard SVD/ASVD (0%, red) and Transition-Preserving SVD (100%, green), evaluated across 10,797 locked-test utterances (<a href="https://huggingface.co/datasets/ishiki-labs/audiowsp-asr-calibration-data/blob/main/results/w2v2_locked_test_full_and_compression.json">saved verification JSON</a>).
+      <strong>Figure 7:</strong> Frame-to-frame transition velocity \(|Y_t - Y_{t-1}|\) across three stop-consonant bursts (<code>"p"</code>, <code>"t"</code>, <code>"k"</code>) for the full <code>315M</code> <code>Wav2Vec2-Large</code> teacher (black dashed curve) versus 2.23× compressed <code>142M</code> models using Standard SVD/ASVD (0%, red) and Transition-Preserving SVD (100%, green), evaluated across 10,797 locked-test utterances (<a href="https://huggingface.co/datasets/ishiki-labs/audiowsp-asr-calibration-data/blob/main/results/w2v2_locked_test_full_and_compression.json">saved verification JSON</a>). [<a href="https://github.com/ishikilabsinc/audiowsp/blob/main/scripts/reproduce_all_figures.py">Reproduce Figure 7: <code>python scripts/reproduce_all_figures.py --figure 7</code></a>]
     </p>
   </div>
 
