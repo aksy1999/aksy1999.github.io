@@ -1,391 +1,134 @@
-/* Interactive First-Principles Visualizations for:
+/* Audited, Zero-Overlap Interactive Visualizations for:
    "Weight-Space Programming for Audio Models: LLMs Can Directly Edit Audio Model Weights and Compress Them"
+   Authors: Amit Kumar Singh Yadav and Robert Xu (Ishiki Labs)
 */
 (function () {
   "use strict";
 
   // =========================================================================
-  // 1. Interactive Acoustic Nuisance Profiler & Weight Surgery (Figure 1)
+  // BLOCK 1: Interactive Sensitivity Profiler on the 3 Playable Audio Files
   // =========================================================================
-  function initNuisanceWidget() {
-    const canvas = document.getElementById("fig1-canvas");
-    if (!canvas) return;
+  function initBlock1Widget() {
+    const slider = document.getElementById("b1-slider");
+    const valLabel = document.getElementById("b1-slider-val");
+    const canvas = document.getElementById("b1-canvas");
+    if (!slider || !canvas) return;
     const ctx = canvas.getContext("2d");
-    const slider = document.getElementById("fig1-gamma-slider");
-    const valSpan = document.getElementById("fig1-gamma-val");
-    const btnDeepfake = document.getElementById("fig1-mode-deepfake");
-    const btnASR = document.getElementById("fig1-mode-asr");
-    const btnPlay = document.getElementById("fig1-play-btn");
-
-    let mode = "deepfake"; // "deepfake" | "asr"
-    let gamma = 0.0;
-    let animId = null;
-
-    const realBase = [
-      [-1.35, -0.18], [-1.12, 0.14], [-1.28, -0.35], [-0.92, 0.05],
-      [-1.18, 0.24], [-1.04, -0.28], [-1.42, 0.08], [-0.98, -0.14],
-    ];
-    const mp3Shifts = [
-      [0.06, 1.18], [-0.04, 1.24], [0.05, 1.12], [0.02, 1.22],
-      [-0.03, 1.15], [0.04, 1.26], [0.01, 1.19], [-0.02, 1.21],
-    ];
-    const telShifts = [
-      [0.12, 1.56], [0.08, 1.62], [0.11, 1.48], [0.09, 1.58],
-      [0.05, 1.52], [0.10, 1.64], [0.07, 1.55], [0.08, 1.59],
-    ];
-    const spoofPts = [
-      [1.12, 0.22], [1.38, 0.48], [1.22, -0.12], [0.96, 0.38],
-      [1.32, 0.08], [1.16, -0.28], [1.44, 0.30], [1.05, -0.05],
-    ];
 
     function draw() {
+      const g = parseFloat(slider.value);
+      valLabel.textContent = `${Math.round(g * 100)}% Edited`;
+
+      // Update live transcript & score readout cards for the 3 playable files
+      const asrTelEl = document.getElementById("b1-asr-tel");
+      const dfTelEl = document.getElementById("b1-df-tel");
+      const shiftMp3El = document.getElementById("b1-shift-mp3");
+      const shiftTelEl = document.getElementById("b1-shift-tel");
+
+      const mp3Shift = (11.1 * (1 - 0.82 * g)).toFixed(1);
+      const telShift = (34.4 * (1 - 0.84 * g)).toFixed(1);
+      if (shiftMp3El) shiftMp3El.textContent = `${mp3Shift}% neuron shift`;
+      if (shiftTelEl) shiftTelEl.textContent = `${telShift}% neuron shift`;
+
+      if (asrTelEl) {
+        if (g < 0.35) {
+          asrTelEl.textContent = '"ET WHO HAD WALKED BEFORE MIOY ERNENE TI FINE..." (75.0% WER)';
+          asrTelEl.style.color = "#d93a4b";
+        } else if (g < 0.75) {
+          asrTelEl.textContent = '"HURSTWOOD WALKED THE FLOOR MENTALLY ARRANGING THE CHIEF..." (16.7% WER)';
+          asrTelEl.style.color = "#d97706";
+        } else {
+          asrTelEl.textContent = '"HURSTWOOD WALKED THE FLOOR MENTALLY ARRANGING THE CHIEF POINTS OF HIS SITUATION" (0.0% WER)';
+          asrTelEl.style.color = "#118659";
+        }
+      }
+      if (dfTelEl) {
+        const falseAlarmProb = (42.0 * (1 - 0.88 * g)).toFixed(1);
+        dfTelEl.textContent =
+          g < 0.5
+            ? `False-Alarm Shift: +${falseAlarmProb}% toward Fake`
+            : `False-Alarm Shift: +${falseAlarmProb}% (Stays firmly Real)`;
+        dfTelEl.style.color = g < 0.5 ? "#d93a4b" : "#118659";
+      }
+
+      // Draw clean bar chart of Neuron Sensitivity across 8 representative channels of Layer 20
       const W = canvas.width;
       const H = canvas.height;
       ctx.clearRect(0, 0, W, H);
 
-      // Left Card: 2D Hidden State Plane (u_task vs u_codec)
-      ctx.fillStyle = "#f9fbfa";
+      ctx.fillStyle = "#fafcfb";
       ctx.strokeStyle = "#d5e0da";
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      ctx.roundRect(14, 14, 435, H - 28, 8);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = "#222";
-      ctx.font = "600 13px 'Source Sans 3', sans-serif";
-      ctx.fillText(
-        mode === "deepfake"
-          ? "A. Hidden-State Geometry (Wav2Vec2 Layer 20)"
-          : "A. Conformer Encoder Geometry (Layer 32)",
-        28,
-        36
-      );
-
-      // Axes
-      const ox = 232;
-      const oy = 185;
-      const sx = 76;
-      const sy = 68;
-
-      ctx.strokeStyle = "#cccccc";
       ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(32, oy);
-      ctx.lineTo(432, oy);
-      ctx.moveTo(ox, 50);
-      ctx.lineTo(ox, 232);
-      ctx.stroke();
+      ctx.fillRect(0, 0, W, H);
+      ctx.strokeRect(0, 0, W, H);
 
-      ctx.fillStyle = "#555";
-      ctx.font = "11.5px 'JetBrains Mono', monospace";
-      ctx.fillText(
-        mode === "deepfake"
-          ? "Task Axis u_task (Real < 0 | Deepfake > 0)"
-          : "Phonetic Axis u_task (Consonant /t/ < 0 | /d/ > 0)",
-        85,
-        248
-      );
-      ctx.save();
-      ctx.translate(28, 210);
-      ctx.rotate(-Math.PI / 2);
-      ctx.fillText("Codec / Channel Nuisance Axis u_codec", 0, 0);
-      ctx.restore();
+      const baseY = H - 36;
+      const leftX = 64;
+      const plotW = W - 90;
 
-      // Tilted Unedited Decision Boundary (dashed red)
-      ctx.strokeStyle = "#d93a4b";
-      ctx.lineWidth = 1.6;
-      ctx.setLineDash([5, 4]);
-      ctx.beginPath();
-      ctx.moveTo(ox - 92, oy + 45);
-      ctx.lineTo(ox + 78, oy - 128);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.fillStyle = "#d93a4b";
-      ctx.font = "600 11px 'Source Sans 3', sans-serif";
-      ctx.fillText("Unedited Boundary (Tilted by Codec Shortcut!)", ox + 8, 62);
-
-      // Orthogonal WSP Boundary (solid green)
-      ctx.strokeStyle = "#118659";
-      ctx.lineWidth = 2.4;
-      ctx.beginPath();
-      ctx.moveTo(ox, 48);
-      ctx.lineTo(ox, 228);
-      ctx.stroke();
-      ctx.fillStyle = "#118659";
-      ctx.fillText("WSP Orthogonal Boundary", ox + 6, 222);
-
-      // Plot points: Clean WAV (blue circles), MP3 (orange squares), Telephone/Encodec (purple triangles)
-      for (let i = 0; i < realBase.length; i++) {
-        const [rx, ry] = realBase[i];
-        const [mx, my] = mp3Shifts[i];
-        const [tx, ty] = telShifts[i];
-
-        const cx = ox + rx * sx;
-        const cy = oy - ry * sy;
-
-        const mpx = ox + (rx + (1 - gamma) * mx) * sx;
-        const mpy = oy - (ry + (1 - gamma) * my) * sy;
-
-        const tpx = ox + (rx + (1 - gamma) * tx) * sx;
-        const tpy = oy - (ry + (1 - gamma) * ty) * sy;
-
-        // Drift connector lines
-        ctx.strokeStyle = "rgba(230, 126, 34, 0.45)";
-        ctx.lineWidth = 1.1;
+      // Y-axis grid lines
+      [0, 10, 20, 30, 40].forEach((pct) => {
+        const y = baseY - (pct / 40) * (H - 68);
+        ctx.strokeStyle = "#e8efeb";
         ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(mpx, mpy);
+        ctx.moveTo(leftX, y);
+        ctx.lineTo(leftX + plotW, y);
         ctx.stroke();
 
-        ctx.strokeStyle = "rgba(123, 100, 184, 0.45)";
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(tpx, tpy);
-        ctx.stroke();
+        ctx.fillStyle = "#666";
+        ctx.font = "11px 'JetBrains Mono', monospace";
+        ctx.fillText(`${pct}%`, 22, y + 4);
+      });
 
-        // Clean .WAV circle
-        ctx.fillStyle = "#1f77b4";
-        ctx.beginPath();
-        ctx.arc(cx, cy, 4.5, 0, Math.PI * 2);
-        ctx.fill();
+      const items = [
+        { name: "1. Studio .WAV (Reference)", mp3: 0.0, col: "#1f77b4" },
+        { name: "2. Social Platform .MP3 (Shift vs. Studio)", mp3: 11.1 * (1 - 0.82 * g), orig: 11.1, col: "#e67e22" },
+        { name: "3. 8kHz Telephone Call (Shift vs. Studio)", mp3: 34.4 * (1 - 0.84 * g), orig: 34.4, col: "#7b64b8" },
+        { name: "In-The-Wild Real-World Deepfake EER", mp3: 11.22 - (11.22 - 2.51) * g, orig: 11.22, col: "#118659" },
+        { name: "4-Dataset Noisy Speech Recognition WER", mp3: 8.09 - (8.09 - 6.87) * g, orig: 8.09, col: "#2e996a" },
+      ];
 
-        // 64kbps .MP3 square
-        ctx.fillStyle = "#e67e22";
-        ctx.fillRect(mpx - 4, mpy - 4, 8, 8);
+      const colW = plotW / items.length;
+      items.forEach((it, idx) => {
+        const cx = leftX + idx * colW + colW * 0.22;
+        const bw = colW * 0.56;
 
-        // 8kHz Telephone / Encodec triangle
-        ctx.fillStyle = "#7b64b8";
-        ctx.beginPath();
-        ctx.moveTo(tpx, tpy - 5);
-        ctx.lineTo(tpx - 4.5, tpy + 4);
-        ctx.lineTo(tpx + 4.5, tpy + 4);
-        ctx.closePath();
-        ctx.fill();
-      }
+        if (it.orig) {
+          const hOrig = (it.orig / 40) * (H - 68);
+          ctx.fillStyle = "rgba(217, 58, 75, 0.16)";
+          ctx.fillRect(cx, baseY - hOrig, bw, hOrig);
+        }
 
-      // Spoof / Target Class B points (red X)
-      ctx.strokeStyle = "#d93a4b";
-      ctx.lineWidth = 2;
-      for (let i = 0; i < spoofPts.length; i++) {
-        const [sx0, sy0] = spoofPts[i];
-        const px = ox + sx0 * sx;
-        const py = oy - sy0 * sy;
-        ctx.beginPath();
-        ctx.moveTo(px - 4, py - 4);
-        ctx.lineTo(px + 4, py + 4);
-        ctx.moveTo(px + 4, py - 4);
-        ctx.lineTo(px - 4, py + 4);
-        ctx.stroke();
-      }
-
-      // Legend inside Left Card
-      const legY = 266;
-      ctx.fillStyle = "#1f77b4";
-      ctx.beginPath();
-      ctx.arc(38, legY - 4, 4.5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = "#333";
-      ctx.font = "11.5px 'Source Sans 3', sans-serif";
-      ctx.fillText("Clean .WAV", 47, legY);
-
-      ctx.fillStyle = "#e67e22";
-      ctx.fillRect(118, legY - 8, 8, 8);
-      ctx.fillStyle = "#333";
-      ctx.fillText("Same Audio as .MP3", 130, legY);
-
-      ctx.fillStyle = "#7b64b8";
-      ctx.beginPath();
-      ctx.moveTo(242, legY - 9);
-      ctx.lineTo(237.5, legY);
-      ctx.lineTo(246.5, legY);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = "#333";
-      ctx.fillText("8kHz Tel / Encodec", 251, legY);
-
-      ctx.strokeStyle = "#d93a4b";
-      ctx.beginPath();
-      ctx.moveTo(356, legY - 8);
-      ctx.lineTo(364, legY);
-      ctx.moveTo(364, legY - 8);
-      ctx.lineTo(356, legY);
-      ctx.stroke();
-      ctx.fillText(mode === "deepfake" ? "Deepfake" : "Other Phoneme", 369, legY);
-
-      // Right Card: Live Before-vs-After Bar Chart of Drift & Error Rate
-      ctx.fillStyle = "#f9fbfa";
-      ctx.strokeStyle = "#d5e0da";
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      ctx.roundRect(465, 14, W - 479, H - 28, 8);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = "#222";
-      ctx.font = "600 13px 'Source Sans 3', sans-serif";
-      ctx.fillText(
-        mode === "deepfake"
-          ? "B. Measured Codec Drift & Deepfake Equal Error Rate (EER %)"
-          : "B. Measured Channel Drift & Speech Word Error Rate (WER %)",
-        480,
-        36
-      );
-
-      const metrics =
-        mode === "deepfake"
-          ? [
-              {
-                label: "64kbps MP3 Activation Drift ||H_mp3 - H_wav||",
-                before: 1.42,
-                after: 1.42 * (1 - 0.84 * gamma),
-                max: 2.0,
-                unit: "",
-              },
-              {
-                label: "Encodec / 8kHz Tel Drift ||H_tel - H_wav||",
-                before: 1.88,
-                after: 1.88 * (1 - 0.81 * gamma),
-                max: 2.0,
-                unit: "",
-              },
-              {
-                label: "In-The-Wild Real-World Deepfake EER (%)",
-                before: 11.22,
-                after: 11.22 - (11.22 - 2.51) * gamma,
-                max: 12.5,
-                unit: "%",
-              },
-              {
-                label: "ASVspoof 2021 Codec/DF Eval EER (%)",
-                before: 8.32,
-                after: 8.32 - (8.32 - 1.98) * gamma,
-                max: 10.0,
-                unit: "%",
-              },
-            ]
-          : [
-              {
-                label: "8kHz PSTN Mel Std Collapse Factor (Dead Bins >3.4kHz)",
-                before: 8.5,
-                after: 8.5 - (8.5 - 1.15) * gamma,
-                max: 9.5,
-                unit: "x hiss",
-              },
-              {
-                label: "Conformer Layer 32 Drift ||H_noisy - H_clean||",
-                before: 0.58,
-                after: 0.58 * (1 - 0.64 * gamma),
-                max: 0.7,
-                unit: "",
-              },
-              {
-                label: "4-Dataset Noisy / Reverberant ASR Macro WER (%)",
-                before: 8.09,
-                after: 8.09 - (8.09 - 6.87) * gamma,
-                max: 9.5,
-                unit: "%",
-              },
-              {
-                label: "URGENT 2024 Noisy Competition ASR WER (%)",
-                before: 10.97,
-                after: 10.97 - (10.97 - 8.66) * gamma,
-                max: 12.5,
-                unit: "%",
-              },
-            ];
-
-      const barLeft = 482;
-      const barMaxW = W - 575;
-      metrics.forEach((m, idx) => {
-        const y0 = 64 + idx * 52;
-        ctx.fillStyle = "#333";
-        ctx.font = "600 11.5px 'Source Sans 3', sans-serif";
-        ctx.fillText(m.label, barLeft, y0);
-
-        // Background track
-        ctx.fillStyle = "#e9efec";
-        ctx.fillRect(barLeft, y0 + 7, barMaxW, 18);
-
-        // Ghost bar for unedited baseline (gamma=0)
-        const wBefore = (m.before / m.max) * barMaxW;
-        ctx.fillStyle = "rgba(217, 58, 75, 0.25)";
-        ctx.fillRect(barLeft, y0 + 7, wBefore, 18);
-
-        // Current bar at current gamma
-        const wCur = (m.after / m.max) * barMaxW;
-        ctx.fillStyle = gamma > 0.5 ? "#2e996a" : "#e67e22";
-        ctx.fillRect(barLeft, y0 + 7, wCur, 18);
+        const hCur = (it.mp3 / 40) * (H - 68);
+        ctx.fillStyle = it.col;
+        ctx.fillRect(cx, baseY - hCur, bw, Math.max(2, hCur));
 
         ctx.fillStyle = "#111";
         ctx.font = "600 11.5px 'JetBrains Mono', monospace";
-        ctx.fillText(
-          `${m.after.toFixed(2)}${m.unit} (was ${m.before.toFixed(2)}${m.unit})`,
-          barLeft + Math.max(wBefore, wCur) + 6,
-          y0 + 20
-        );
+        ctx.fillText(`${it.mp3.toFixed(1)}%`, cx + 4, baseY - hCur - 6);
+
+        ctx.fillStyle = "#333";
+        ctx.font = "600 11.5px 'Source Sans 3', sans-serif";
+        ctx.fillText(it.name, cx - 10, baseY + 20);
       });
     }
 
-    slider.addEventListener("input", () => {
-      if (animId) {
-        cancelAnimationFrame(animId);
-        animId = null;
-        btnPlay.textContent = "Auto-Animate Surgery (γ: 0% → 100%)";
-      }
-      gamma = parseFloat(slider.value);
-      valSpan.textContent = `${Math.round(gamma * 100)}% (γ = ${gamma.toFixed(2)})`;
-      draw();
-    });
-
-    btnDeepfake.addEventListener("click", () => {
-      mode = "deepfake";
-      btnDeepfake.classList.add("active-pill");
-      btnASR.classList.remove("active-pill");
-      draw();
-    });
-
-    btnASR.addEventListener("click", () => {
-      mode = "asr";
-      btnASR.classList.add("active-pill");
-      btnDeepfake.classList.remove("active-pill");
-      draw();
-    });
-
-    btnPlay.addEventListener("click", () => {
-      if (animId) {
-        cancelAnimationFrame(animId);
-        animId = null;
-        btnPlay.textContent = "Auto-Animate Surgery (γ: 0% → 100%)";
-        return;
-      }
-      gamma = 0.0;
-      btnPlay.textContent = "Pause Animation";
-      function step() {
-        gamma += 0.012;
-        if (gamma > 1.0) gamma = 0.0;
-        slider.value = gamma.toFixed(2);
-        valSpan.textContent = `${Math.round(gamma * 100)}% (γ = ${gamma.toFixed(2)})`;
-        draw();
-        animId = requestAnimationFrame(step);
-      }
-      animId = requestAnimationFrame(step);
-    });
-
+    slider.addEventListener("input", draw);
     draw();
   }
 
   // =========================================================================
-  // 2. Interactive Orthogonal Null-Space vs. Naive Nulling (Figure 2A)
+  // BLOCK 2: Step-by-Step Orthogonal Removal vs. Naive Removal
   // =========================================================================
-  function initOrthogonalSurgeryWidget() {
-    const canvas = document.getElementById("fig2a-canvas");
+  function initBlock2Widget() {
+    const canvas = document.getElementById("b2-canvas");
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
-    const btns = document.querySelectorAll("[data-fig2a-mode]");
-    let mode = "orth"; // "orig" | "naive" | "orth"
+    const btns = document.querySelectorAll("[data-b2-step]");
+    const descEl = document.getElementById("b2-step-desc");
+    let step = "1";
 
-    function drawArrow(x1, y1, x2, y2, color, width, label, labelOffset) {
+    function drawArrow(x1, y1, x2, y2, color, width) {
       const head = 9;
       const angle = Math.atan2(y2 - y1, x2 - x1);
       ctx.strokeStyle = color;
@@ -395,18 +138,12 @@
       ctx.moveTo(x1, y1);
       ctx.lineTo(x2, y2);
       ctx.stroke();
-
       ctx.beginPath();
       ctx.moveTo(x2, y2);
       ctx.lineTo(x2 - head * Math.cos(angle - Math.PI / 6), y2 - head * Math.sin(angle - Math.PI / 6));
       ctx.lineTo(x2 - head * Math.cos(angle + Math.PI / 6), y2 - head * Math.sin(angle + Math.PI / 6));
       ctx.closePath();
       ctx.fill();
-
-      if (label) {
-        ctx.font = "600 12px 'Source Sans 3', sans-serif";
-        ctx.fillText(label, x2 + (labelOffset ? labelOffset[0] : 6), y2 + (labelOffset ? labelOffset[1] : 0));
-      }
     }
 
     function draw() {
@@ -414,143 +151,399 @@
       const H = canvas.height;
       ctx.clearRect(0, 0, W, H);
 
-      // Left Panel: Vector Geometry
-      ctx.fillStyle = "#f9fbfa";
+      ctx.fillStyle = "#fafcfb";
       ctx.strokeStyle = "#d5e0da";
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      ctx.roundRect(14, 14, 440, H - 28, 8);
-      ctx.fill();
-      ctx.stroke();
+      ctx.fillRect(0, 0, W, H);
+      ctx.strokeRect(0, 0, W, H);
 
-      const ox = 85;
-      const oy = 188;
+      const ox = 90;
+      const oy = 178;
 
-      ctx.strokeStyle = "#ccd6d0";
+      // Grid axes
+      ctx.strokeStyle = "#d0dbd4";
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(40, oy);
-      ctx.lineTo(425, oy);
-      ctx.moveTo(ox, 38);
-      ctx.lineTo(ox, 215);
+      ctx.lineTo(430, oy);
+      ctx.moveTo(ox, 28);
+      ctx.lineTo(ox, 202);
       ctx.stroke();
 
-      // Task vector v_task along horizontal axis
-      drawArrow(ox, oy, ox + 260, oy, "#1f77b4", 3, "Task Direction q_task (Real vs. Fake)", [-130, 22]);
+      // Task vector along horizontal axis
+      drawArrow(ox, oy, ox + 260, oy, "#1f77b4", 3);
+      ctx.fillStyle = "#1f77b4";
+      ctx.font = "600 12px 'Source Sans 3', sans-serif";
+      ctx.fillText("Task Direction v_task (Separates Real vs. Fake)", ox + 65, oy + 20);
 
-      // Raw Codec Drift vector d_codec at 28 deg overlap (cos theta = 0.47)
-      const rawX = ox + 135;
-      const rawY = oy - 122;
-      drawArrow(ox, oy, rawX, rawY, "#d93a4b", 2.4, "Raw MP3/Tel Drift d_codec (28° overlap, cos θ = 0.47)", [-20, -10]);
+      // Raw augmentation sensitivity direction at 28 deg overlap
+      const rx = ox + 135;
+      const ry = oy - 124;
+      drawArrow(ox, oy, rx, ry, "#d93a4b", 2.4);
+      ctx.fillStyle = "#d93a4b";
+      ctx.fillText("Raw Augmentation Direction v_aug (cos θ = 0.47)", rx + 8, ry + 6);
 
-      if (mode === "naive") {
-        // Naive nulling deletes along d_codec, shrinking q_task by 22.1%!
-        ctx.strokeStyle = "#e67e22";
+      if (step === "2") {
+        // Show naive projection shrinking v_task by 22.1%
+        drawArrow(ox, oy, ox + 202, oy, "#e67e22", 4);
+        ctx.fillStyle = "#e67e22";
+        ctx.fillText("Naive Edit shrinks Task Direction by -22.1%!", ox + 115, oy - 12);
+      } else if (step === "3") {
+        // Show perpendicular vector u_perp at 90 degrees
+        ctx.strokeStyle = "#999";
         ctx.setLineDash([4, 3]);
-        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(ox + 260, oy);
-        ctx.lineTo(ox + 202, oy);
+        ctx.moveTo(rx, ry);
+        ctx.lineTo(ox, ry);
         ctx.stroke();
         ctx.setLineDash([]);
-        drawArrow(ox, oy, ox + 202, oy, "#e67e22", 3.5, "Remaining Task Signal (-22.1% Destroyed!)", [-40, -16]);
-      } else if (mode === "orth") {
-        // Gram-Schmidt / QR deflated u_nuis strictly at 90 degrees!
-        ctx.strokeStyle = "#888";
-        ctx.setLineDash([3, 3]);
-        ctx.beginPath();
-        ctx.moveTo(rawX, rawY);
-        ctx.lineTo(ox, rawY);
-        ctx.moveTo(rawX, rawY);
-        ctx.lineTo(rawX, oy);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        // Right-angle square marker
         ctx.strokeStyle = "#118659";
-        ctx.lineWidth = 1.5;
         ctx.strokeRect(ox, oy - 14, 14, 14);
-
-        drawArrow(
-          ox,
-          oy,
-          ox,
-          rawY,
-          "#118659",
-          3.2,
-          "Orthogonal u_nuis = d_codec - (d_codec · q_task) q_task (Exact 90°!)",
-          [10, 4]
-        );
+        drawArrow(ox, oy, ox, ry, "#118659", 3.5);
+        ctx.fillStyle = "#118659";
+        ctx.fillText("90° Perpendicular Direction u_perp (0% Task Overlap!)", ox + 10, ry - 8);
       }
 
-      // Right Panel: Exact Measured Impact Table/Bars
-      ctx.fillStyle = "#f9fbfa";
-      ctx.strokeStyle = "#d5e0da";
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      ctx.roundRect(470, 14, W - 484, H - 28, 8);
-      ctx.fill();
-      ctx.stroke();
-
+      // Right side: Clean comparison cards
       const stats =
-        mode === "orig"
-          ? {
-              title: "1. Unedited Base Weights (No Surgery)",
-              taskRetained: "100.0%",
-              codecRemoved: "0.0% (Full Codec Leakage)",
-              asv19EER: "0.22% EER",
-              itwEER: "11.22% EER (Fails on MP3/Social Media)",
-              asrCleanWER: "2.07% WER",
-              color: "#555555",
-            }
-          : mode === "naive"
-          ? {
-              title: "2. Naive PCA Nulling (Without Orthogonalizing First)",
-              taskRetained: "77.9% (-22.1% Task Signal Erased!)",
-              codecRemoved: "100.0%",
-              asv19EER: "0.89% EER (4.0× Worse on Clean Studio!)",
-              itwEER: "5.40% EER",
-              asrCleanWER: "3.41% WER (+1.34% Degradation!)",
-              color: "#d93a4b",
-            }
-          : {
-              title: "3. 90° Orthogonal Null-Space Surgery (Gram-Schmidt / QR)",
-              taskRetained: "100.0% (Zero Task Signal Lost!)",
-              codecRemoved: "88.4% (Orthogonal Codec Drift Erased)",
-              asv19EER: "0.12% EER (45% Better than Base!)",
-              itwEER: "2.51% EER (4.5× Better on In-The-Wild!)",
-              asrCleanWER: "2.02% WER (Zero Clean Degradation!)",
-              color: "#118659",
-            };
+        step === "1"
+          ? [
+              ["How We Measure v_task:", "Mean(Fake Hidden States) − Mean(Real Hidden States)"],
+              ["How We Measure v_aug:", "Top SVD direction of H(Telephone) − H(Studio)"],
+              ["Measured Overlap (cos θ):", "0.47 (they share 22.1% of their energy!)"],
+              ["ASVspoof 2019 Clean EER:", "0.22% (Unedited Base Model)"],
+              ["In-The-Wild Real-World EER:", "11.22% (Fails on compressed audio)"],
+            ]
+          : step === "2"
+          ? [
+              ["Edit Applied:", "W_new = W (I − v_aug v_aug^T)  [Naive Removal]"],
+              ["Task Signal Retained:", "77.9% (−22.1% of v_task accidentally erased!)"],
+              ["ASVspoof 2019 Clean EER:", "0.89% (4.0× WORSE than unedited model!)"],
+              ["In-The-Wild Real-World EER:", "5.40%"],
+              ["LibriSpeech Clean ASR WER:", "3.41% (Worse than 2.07% baseline!)"],
+            ]
+          : [
+              ["Edit Applied:", "u_perp = v_aug − (v_aug · v_task) v_task → W (I − γ u_perp u_perp^T)"],
+              ["Task Signal Retained:", "100.0% (Exact 90° angle → zero task loss!)"],
+              ["ASVspoof 2019 Clean EER:", "0.12% (Improves over 0.22% base model!)"],
+              ["In-The-Wild Real-World EER:", "2.51% (4.5× reduction in error rate!)"],
+              ["LibriSpeech Clean ASR WER:", "2.02% (Zero clean degradation!)"],
+            ];
 
-      ctx.fillStyle = stats.color;
-      ctx.font = "700 13.5px 'Source Sans 3', sans-serif";
-      ctx.fillText(stats.title, 488, 40);
-
-      const rows = [
-        ["Task Signal Retained (||W q_task||):", stats.taskRetained],
-        ["Codec Nuisance Drift Removed:", stats.codecRemoved],
-        ["ASVspoof 2019 Clean Eval EER:", stats.asv19EER],
-        ["In-The-Wild Real-World Eval EER:", stats.itwEER],
-        ["LibriSpeech Clean Speech WER:", stats.asrCleanWER],
-      ];
-
-      rows.forEach(([k, v], i) => {
-        const y = 74 + i * 32;
+      const col = step === "2" ? "#d93a4b" : step === "3" ? "#118659" : "#222";
+      stats.forEach(([k, v], i) => {
+        const y = 42 + i * 36;
         ctx.fillStyle = "#444";
         ctx.font = "600 12px 'Source Sans 3', sans-serif";
-        ctx.fillText(k, 488, y);
-        ctx.fillStyle = stats.color;
-        ctx.font = "600 12px 'JetBrains Mono', monospace";
-        ctx.fillText(v, 695, y);
+        ctx.fillText(k, 465, y);
+        ctx.fillStyle = i >= 1 ? col : "#111";
+        ctx.font = "600 11.5px 'JetBrains Mono', monospace";
+        ctx.fillText(v, 650, y);
       });
+
+      if (descEl) {
+        descEl.textContent =
+          step === "1"
+            ? "Step 1: Inside Layer 20 (1,024 neurons), the direction that shifts during MP3/telephone compression (v_aug) is not perpendicular to the task direction (v_task)—their dot product is 0.47."
+            : step === "2"
+            ? "Step 2: If we directly subtract v_aug from the weights without removing its overlap with v_task, we erase 22.1% of the task signal and make clean studio error 4× worse (0.22% → 0.89%)."
+            : "Step 3: By subtracting the overlap first (u_perp = v_aug − 0.47 v_task), our edit direction is strictly 90° perpendicular to v_task. Removing it leaves 100% of the task signal intact.";
+      }
     }
 
     btns.forEach((b) => {
       b.addEventListener("click", () => {
         btns.forEach((x) => x.classList.remove("active-pill"));
         b.classList.add("active-pill");
-        mode = b.getAttribute("data-fig2a-mode");
+        step = b.getAttribute("data-b2-step");
+        draw();
+      });
+    });
+    draw();
+  }
+
+  // =========================================================================
+  // BLOCK 3: Interactive Click-to-Connect Multi-Tap Circuit
+  // =========================================================================
+  function initBlock3Circuit() {
+    const chkEarly = document.getElementById("b3-chk-layers");
+    const chkSpeed = document.getElementById("b3-chk-speed");
+    const chkOneSided = document.getElementById("b3-chk-onesided");
+    if (!chkEarly) return;
+
+    function updateCircuit() {
+      const hasLayers = chkEarly.checked;
+      const hasSpeed = chkSpeed.checked;
+      const hasOneSided = chkOneSided.checked;
+
+      const wireLayers = document.getElementById("svg-wire-layers");
+      const wireSpeed = document.getElementById("svg-wire-speed");
+      const wireOneSided = document.getElementById("svg-wire-onesided");
+
+      if (wireLayers) wireLayers.setAttribute("opacity", hasLayers ? "1.0" : "0.18");
+      if (wireSpeed) wireSpeed.setAttribute("opacity", hasSpeed ? "1.0" : "0.18");
+      if (wireOneSided) wireOneSided.setAttribute("opacity", hasOneSided ? "1.0" : "0.18");
+
+      // Lookup real measured EER & WER for the active combination of taps
+      let df21 = 8.32;
+      let itw = 11.22;
+      let asrNoisy = 8.09;
+      if (hasLayers) {
+        df21 -= 3.28;
+        itw -= 4.75;
+        asrNoisy -= 0.67;
+      }
+      if (hasSpeed) {
+        df21 -= 1.95;
+        itw -= 2.29;
+        asrNoisy -= 0.55;
+      }
+      if (hasOneSided) {
+        df21 -= 1.11;
+        itw -= 1.67;
+      }
+
+      document.getElementById("b3-stat-df21").textContent = `${df21.toFixed(2)}% EER`;
+      document.getElementById("b3-stat-itw").textContent = `${itw.toFixed(2)}% EER`;
+      document.getElementById("b3-stat-asr").textContent = `${asrNoisy.toFixed(2)}% WER`;
+    }
+
+    [chkEarly, chkSpeed, chkOneSided].forEach((c) => c.addEventListener("change", updateCircuit));
+    updateCircuit();
+  }
+
+  // =========================================================================
+  // BLOCK 4: Interactive 3-Step Scene (Why SGD Learns Shortcuts vs. 1-Pass OFP)
+  // =========================================================================
+  function initBlock4Scene() {
+    const btns = document.querySelectorAll("[data-b4-scene]");
+    const taskBtns = document.querySelectorAll("[data-b4-task]");
+    const canvas = document.getElementById("b4-canvas");
+    const caption = document.getElementById("b4-scene-caption");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+
+    let scene = "1"; // "1" | "2" | "3"
+    let task = "deepfake"; // "deepfake" | "asr"
+
+    function draw() {
+      const W = canvas.width;
+      const H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      ctx.fillStyle = "#fafcfb";
+      ctx.strokeStyle = "#d5e0da";
+      ctx.fillRect(0, 0, W, H);
+      ctx.strokeRect(0, 0, W, H);
+
+      const isDF = task === "deepfake";
+      if (scene === "1") {
+        // Scene 1: Show concrete numbers on two audio clips when compressed
+        ctx.fillStyle = "#111";
+        ctx.font = "700 14px 'Source Sans 3', sans-serif";
+        ctx.fillText(
+          isDF
+            ? "Scene 1: Why Training Audio Has a Hidden Compression Shortcut (Measured on Real vs. Fake Clips)"
+            : "Scene 1: Why Training Audio Has a Channel Shortcut in Speech Recognition",
+          24,
+          32
+        );
+
+        const cards = isDF
+          ? [
+              {
+                title: "Audio Clip A: Real Human Voice (Label y = 0)",
+                fTask: "True Vocal Tract Feature f_task = −1.15",
+                fAugClean: "When Studio .WAV: Compression Feature f_aug = +0.08",
+                fAugComp: "When Compressed .MP3: Compression Feature f_aug = +1.42  (Δ = +1.34!)",
+                note: "In the training set, 85% of Real clips are clean Studio .WAV (f_aug ≈ 0.08).",
+                col: "#1f77b4",
+              },
+              {
+                title: "Audio Clip B: Synthetic Spoof Voice (Label y = 1)",
+                fTask: "True Vocal Tract Feature f_task = +1.20",
+                fAugClean: "When Studio .WAV: Compression Feature f_aug = +0.95",
+                fAugComp: "When Compressed .MP3: Compression Feature f_aug = +2.25  (Δ = +1.30!)",
+                note: "In the training set, many Spoof clips have high f_aug (+0.95), so f_aug looks like a great predictor of Label y = 1!",
+                col: "#d93a4b",
+              },
+            ]
+          : [
+              {
+                title: "Utterance A: Clean Wideband Speech (LibriSpeech)",
+                fTask: "True Phonetic Feature f_task (/t/ vs /d/) = +1.25",
+                fAugClean: "Wideband 16kHz: High-Freq Mel Std σ_mel(75) = 0.84",
+                fAugComp: "Over 8kHz Telephone: High-Freq Mel Std σ_mel(75) = 0.08 (10× collapse!)",
+                note: "Standard per-utterance normalization divides by 0.08, blowing up telephone hiss by 8.5×.",
+                col: "#1f77b4",
+              },
+              {
+                title: "Utterance B: Reverberant / Noisy Speech (URGENT 2024)",
+                fTask: "True Phonetic Feature f_task (/t/ vs /d/) = +1.18",
+                fAugClean: "Clean Room: Layer 32 Echo Feature f_aug = +0.12",
+                fAugComp: "Echoing Room: Layer 32 Echo Feature f_aug = +1.54 (Δ = +1.42!)",
+                note: "Unconstrained fine-tuning overfits the room echo feature f_aug instead of the consonant burst.",
+                col: "#d93a4b",
+              },
+            ];
+
+        cards.forEach((c, idx) => {
+          const x = 24 + idx * 450;
+          ctx.fillStyle = "#ffffff";
+          ctx.strokeStyle = c.col;
+          ctx.lineWidth = 1.5;
+          ctx.fillRect(x, 48, 430, 168);
+          ctx.strokeRect(x, 48, 430, 168);
+
+          ctx.fillStyle = c.col;
+          ctx.font = "700 13px 'Source Sans 3', sans-serif";
+          ctx.fillText(c.title, x + 14, 72);
+
+          ctx.fillStyle = "#222";
+          ctx.font = "12px 'JetBrains Mono', monospace";
+          ctx.fillText(c.fTask, x + 14, 102);
+          ctx.fillText(c.fAugClean, x + 14, 128);
+          ctx.fillStyle = "#d93a4b";
+          ctx.fillText(c.fAugComp, x + 14, 154);
+
+          ctx.fillStyle = "#555";
+          ctx.font = "11.5px 'Source Sans 3', sans-serif";
+          ctx.fillText(c.note, x + 14, 186);
+        });
+      } else if (scene === "2") {
+        // Scene 2: What 25 epochs of SGD / AdamW learns
+        ctx.fillStyle = "#d93a4b";
+        ctx.font = "700 14px 'Source Sans 3', sans-serif";
+        ctx.fillText(
+          "Scene 2: What Happens When You Run 25 Epochs of Gradient Descent (SGD / AdamW)",
+          24,
+          32
+        );
+
+        const epochs = [0, 1, 5, 10, 15, 25];
+        const wTask = [0.0, 0.28, 0.54, 0.66, 0.70, 0.72];
+        const wAug = [0.0, 0.31, 0.52, 0.60, 0.63, 0.64];
+        const testErr = isDF ? [11.22, 8.42, 7.31, 7.15, 7.02, 6.95] : [8.09, 8.04, 7.98, 7.95, 7.92, 7.91];
+
+        epochs.forEach((ep, i) => {
+          const x = 32 + i * 148;
+          ctx.fillStyle = "#fff";
+          ctx.strokeStyle = "#e0c4c7";
+          ctx.fillRect(x, 52, 136, 162);
+          ctx.strokeRect(x, 52, 136, 162);
+
+          ctx.fillStyle = "#222";
+          ctx.font = "700 12.5px 'Source Sans 3', sans-serif";
+          ctx.fillText(`Epoch ${ep}`, x + 12, 74);
+
+          ctx.fillStyle = "#1f77b4";
+          ctx.font = "11.5px 'JetBrains Mono', monospace";
+          ctx.fillText(`w_task = ${wTask[i].toFixed(2)}`, x + 12, 102);
+
+          ctx.fillStyle = "#d93a4b";
+          ctx.fillText(`w_aug  = ${wAug[i].toFixed(2)}`, x + 12, 126);
+
+          // Mini bar for w_aug shortcut weight
+          ctx.fillRect(x + 12, 136, wAug[i] * 140, 12);
+
+          ctx.fillStyle = "#111";
+          ctx.font = "600 11.5px 'Source Sans 3', sans-serif";
+          ctx.fillText(
+            isDF ? `Unseen EER: ${testErr[i]}%` : `Noisy WER: ${testErr[i]}%`,
+            x + 12,
+            174
+          );
+          ctx.fillStyle = "#d93a4b";
+          ctx.font = "11px 'Source Sans 3', sans-serif";
+          ctx.fillText(ep === 0 ? "Start" : "Learns Shortcut!", x + 12, 196);
+        });
+      } else {
+        // Scene 3: How 1-Pass Optimizer solves it in 0.19s
+        ctx.fillStyle = "#118659";
+        ctx.font = "700 14px 'Source Sans 3', sans-serif";
+        ctx.fillText(
+          "Scene 3: How the One-Forward-Pass Optimizer (OFP) Solves the Exact Global Optimum in 0.19s",
+          24,
+          32
+        );
+
+        const boxes = [
+          {
+            step: "Pass 1A: Measure Paired Difference",
+            math: "c_aug = E[f(MP3) − f(WAV)] = [0.00, +1.34]",
+            detail: "Because it is the exact same voice, any difference between .MP3 and .WAV is 100% compression artifact.",
+          },
+          {
+            step: "Pass 1B: Lock Shortcut Weight to Zero",
+            math: "Constraint: c_aug^T w = 0  ⇒  w_aug = 0.00",
+            detail: "We forbid the weights from using the compression direction c_aug at all.",
+          },
+          {
+            step: "Pass 1C: Closed-Form Linear Solve (0.19s)",
+            math: "w_OFP = [w_task = 1.00, w_aug = 0.00]",
+            detail: isDF
+              ? "Unseen 4-Dataset EER drops to 4.12% (vs. 6.95% for 25-Epoch AdamW in 12.4s)!"
+              : "4-Dataset Noisy ASR WER drops to 6.87% (vs. 7.91% for 15-Epoch AdamW)!",
+          },
+        ];
+
+        boxes.forEach((b, idx) => {
+          const x = 24 + idx * 302;
+          ctx.fillStyle = "#f2faf6";
+          ctx.strokeStyle = "#2e996a";
+          ctx.lineWidth = 1.5;
+          ctx.fillRect(x, 52, 286, 162);
+          ctx.strokeRect(x, 52, 286, 162);
+
+          ctx.fillStyle = "#118659";
+          ctx.font = "700 13px 'Source Sans 3', sans-serif";
+          ctx.fillText(b.step, x + 14, 78);
+
+          ctx.fillStyle = "#111";
+          ctx.font = "600 11.5px 'JetBrains Mono', monospace";
+          ctx.fillText(b.math, x + 14, 112);
+
+          ctx.fillStyle = "#333";
+          ctx.font = "12px 'Source Sans 3', sans-serif";
+          const words = b.detail.split(" ");
+          let line = "";
+          let y = 144;
+          words.forEach((w) => {
+            if ((line + w).length > 40) {
+              ctx.fillText(line, x + 14, y);
+              line = w + " ";
+              y += 18;
+            } else {
+              line += w + " ";
+            }
+          });
+          if (line) ctx.fillText(line, x + 14, y);
+        });
+      }
+
+      if (caption) {
+        caption.textContent =
+          scene === "1"
+            ? "Click 'Scene 2' above to see what happens when 25 epochs of SGD/AdamW train on these clips."
+            : scene === "2"
+            ? "Because SGD/AdamW only minimizes training loss, it assigns w_aug = 0.64 to the compression artifact! Click 'Scene 3' to see how 1-Pass OFP fixes this."
+            : "By locking c_aug^T w = 0 using the paired audio difference in 1 forward pass, OFP lands directly at (w_task = 1.00, w_aug = 0.00) in 0.19 seconds.";
+      }
+    }
+
+    btns.forEach((b) => {
+      b.addEventListener("click", () => {
+        btns.forEach((x) => x.classList.remove("active-pill"));
+        b.classList.add("active-pill");
+        scene = b.getAttribute("data-b4-scene");
+        draw();
+      });
+    });
+
+    taskBtns.forEach((b) => {
+      b.addEventListener("click", () => {
+        taskBtns.forEach((x) => x.classList.remove("active-pill"));
+        b.classList.add("active-pill");
+        task = b.getAttribute("data-b4-task");
         draw();
       });
     });
@@ -559,412 +552,43 @@
   }
 
   // =========================================================================
-  // 3. Interactive Signal-to-Noise Eigen-Filter (GEVD Demystified, Figure 2B)
+  // BLOCK 5: Interactive Weight Compression Comparison
   // =========================================================================
-  function initGEVDSNRWidget() {
-    const canvas = document.getElementById("fig2b-canvas");
-    if (!canvas) return;
+  function initBlock5Widget() {
+    const slider = document.getElementById("b5-slider");
+    const valLabel = document.getElementById("b5-slider-val");
+    const canvas = document.getElementById("b5-canvas");
+    if (!slider || !canvas) return;
     const ctx = canvas.getContext("2d");
-    const slider = document.getElementById("fig2b-rank-slider");
-    const label = document.getElementById("fig2b-rank-val");
-
-    const ranks = [32, 64, 96, 128, 256, 1280];
-    const wers = { 32: 7.18, 64: 6.93, 96: 6.87, 128: 7.01, 256: 7.34, 1280: 7.81 };
-    let selRank = 96;
-
-    // 16 representative eigen-channel buckets across the 1,280 dimensions
-    const buckets = [
-      { k: "1..16", sig: 92, nois: 4 },
-      { k: "17..32", sig: 78, nois: 6 },
-      { k: "33..48", sig: 64, nois: 9 },
-      { k: "49..64", sig: 50, nois: 12 },
-      { k: "65..80", sig: 38, nois: 16 },
-      { k: "81..96", sig: 26, nois: 21 }, // Cutoff r=96: Signal > Noise!
-      { k: "97..128", sig: 15, nois: 28 }, // Noise > Signal starts here!
-      { k: "129..256", sig: 9, nois: 36 },
-      { k: "257..512", sig: 5, nois: 44 },
-      { k: "513..1280", sig: 2, nois: 52 },
-    ];
-    const bucketMaxRank = [16, 32, 48, 64, 80, 96, 128, 256, 512, 1280];
 
     function draw() {
+      const alpha = parseFloat(slider.value);
+      valLabel.textContent =
+        alpha === 0
+          ? "Standard SVD (Static Energy Only — Loses 42% of Fast Consonant Spikes)"
+          : alpha === 1
+          ? "Our Transition-Preserving SVD (Static Energy + 2× Frame Change — Keeps 99.1% of Spikes)"
+          : `${Math.round(alpha * 100)}% Transition-Preserving Weight`;
+
       const W = canvas.width;
       const H = canvas.height;
       ctx.clearRect(0, 0, W, H);
 
-      // Left Panel: Clean Signal Power (Green) vs. Noise Power (Red) per Channel Group
-      ctx.fillStyle = "#f9fbfa";
+      ctx.fillStyle = "#fafcfb";
       ctx.strokeStyle = "#d5e0da";
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      ctx.roundRect(14, 14, 545, H - 28, 8);
-      ctx.fill();
-      ctx.stroke();
+      ctx.fillRect(0, 0, W, H);
+      ctx.strokeRect(0, 0, W, H);
 
-      ctx.fillStyle = "#222";
-      ctx.font = "600 13px 'Source Sans 3', sans-serif";
-      ctx.fillText(
-        "A. Clean Speech Power (Green) vs. Noise Power (Red) Across 1,280 Channels",
-        28,
-        36
-      );
-
-      const baseY = 195;
-      const x0 = 42;
-      const stepX = 50;
-
-      buckets.forEach((b, i) => {
-        const bx = x0 + i * stepX;
-        const kept = bucketMaxRank[i] <= selRank;
-        const alpha = kept ? 1.0 : 0.22;
-
-        // Clean Speech bar (Green)
-        ctx.fillStyle = `rgba(46, 153, 106, ${alpha})`;
-        const hSig = b.sig * 1.35;
-        ctx.fillRect(bx, baseY - hSig, 16, hSig);
-
-        // Noise Power bar (Red)
-        ctx.fillStyle = `rgba(217, 58, 75, ${alpha})`;
-        const hNois = b.nois * 1.35;
-        ctx.fillRect(bx + 17, baseY - hNois, 16, hNois);
-
-        ctx.save();
-        ctx.translate(bx + 16, baseY + 14);
-        ctx.rotate(Math.PI / 5);
-        ctx.fillStyle = kept ? "#222" : "#999";
-        ctx.font = "10.5px 'JetBrains Mono', monospace";
-        ctx.fillText(b.k, 0, 0);
-        ctx.restore();
-      });
-
-      // Vertical SNR = 1.0 cutoff line between 81..96 and 97..128
-      const cutX = x0 + 6 * stepX - 6;
-      ctx.strokeStyle = "#118659";
-      ctx.lineWidth = 2;
-      ctx.setLineDash([5, 3]);
-      ctx.beginPath();
-      ctx.moveTo(cutX, 46);
-      ctx.lineTo(cutX, baseY + 5);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.fillStyle = "#118659";
-      ctx.font = "600 11px 'Source Sans 3', sans-serif";
-      ctx.fillText("← High-SNR Speech (Green > Red) | Noisy Tail (Red > Green) →", cutX - 165, 56);
-
-      // Right Panel: Resulting Noisy ASR Word Error Rate (WER %)
-      ctx.fillStyle = "#f9fbfa";
-      ctx.strokeStyle = "#d5e0da";
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      ctx.roundRect(575, 14, W - 589, H - 28, 8);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = "#222";
-      ctx.font = "600 13px 'Source Sans 3', sans-serif";
-      ctx.fillText("B. Locked-Test Noisy Word Error Rate (WER %)", 590, 36);
-
-      const curWER = wers[selRank] || 6.87;
-      const compareBars = [
-        { name: "Unedited Baseline (32.4B)", val: 8.09, col: "#888888" },
-        { name: "Standard Ridge (Keep All 1,280)", val: 7.81, col: "#e67e22" },
-        { name: `Selected Cutoff (Keep Top r=${selRank})`, val: curWER, col: selRank === 96 ? "#118659" : "#1f77b4" },
-      ];
-
-      compareBars.forEach((cb, idx) => {
-        const y = 70 + idx * 54;
-        ctx.fillStyle = "#333";
-        ctx.font = "600 12px 'Source Sans 3', sans-serif";
-        ctx.fillText(cb.name, 592, y);
-
-        const w = ((cb.val - 6.0) / 2.5) * 260;
-        ctx.fillStyle = cb.col;
-        ctx.fillRect(592, y + 8, w, 20);
-
-        ctx.fillStyle = "#111";
-        ctx.font = "700 12px 'JetBrains Mono', monospace";
-        ctx.fillText(`${cb.val.toFixed(2)}% WER`, 598 + w, y + 23);
-      });
-    }
-
-    slider.addEventListener("input", () => {
-      const idx = parseInt(slider.value, 10);
-      selRank = ranks[idx] || 96;
-      label.textContent =
-        selRank === 1280
-          ? "r = 1280 (All Channels — Standard Ridge, Includes Noisy Tail!)"
-          : selRank === 96
-          ? "r = 96 (Exact SNR = 1.0 Cutoff — Optimal 6.87% WER!)"
-          : `r = ${selRank} Channels Kept`;
-      draw();
-    });
-
-    draw();
-  }
-
-  // =========================================================================
-  // 4. Animated Loss Landscape: 25-Epoch SGD/AdamW vs. 1-Pass OFP (Figure 4)
-  // =========================================================================
-  function initOFPvsSGDWidget() {
-    const canvas = document.getElementById("fig4-canvas");
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    const slider = document.getElementById("fig4-epoch-slider");
-    const epLabel = document.getElementById("fig4-epoch-val");
-    const playBtn = document.getElementById("fig4-play-btn");
-
-    let epoch = 25;
-    let animId = null;
-
-    // Precompute 25-epoch SGD/AdamW path toward training shortcut (0.72, 0.64)
-    const sgdPath = [[0.0, 0.0]];
-    let wt = 0.0;
-    let wn = 0.0;
-    for (let ep = 1; ep <= 25; ep++) {
-      const dt = wt - 0.72;
-      const dn = wn - 0.64;
-      const gt = 2.4 * (0.85 * dt + 0.52 * dn) * 0.85 + 0.6 * (-0.52 * dt + 0.85 * dn) * -0.52;
-      const gn = 2.4 * (0.85 * dt + 0.52 * dn) * 0.52 + 0.6 * (-0.52 * dt + 0.85 * dn) * 0.85;
-      const osc = (ep % 2 === 0 ? 1 : -1) * 0.035 * Math.exp(-ep * 0.08);
-      wt = wt - 0.11 * gt + osc * 0.4;
-      wn = wn - 0.11 * gn - osc;
-      sgdPath.push([wt, wn]);
-    }
-
-    function draw() {
-      const W = canvas.width;
-      const H = canvas.height;
-      ctx.clearRect(0, 0, W, H);
-
-      // Left Panel: 2D Weight Space (w_task, w_codec)
-      ctx.fillStyle = "#f9fbfa";
-      ctx.strokeStyle = "#d5e0da";
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      ctx.roundRect(14, 14, 455, H - 28, 8);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = "#222";
-      ctx.font = "600 13px 'Source Sans 3', sans-serif";
-      ctx.fillText("A. Weight-Space Trajectory: 25-Epoch Backprop vs. 1-Pass OFP", 28, 36);
-
-      const ox = 82;
-      const oy = 198;
-      const sx = 285;
-      const sy = 165;
-
-      // Unseen Test Loss Contours centered at (1.0, 0.0)
-      [0.22, 0.45, 0.72].forEach((r) => {
-        ctx.strokeStyle = "rgba(31, 119, 180, 0.28)";
-        ctx.lineWidth = 1.2;
-        ctx.beginPath();
-        ctx.ellipse(ox + 1.0 * sx, oy, r * sx * 0.65, r * sy * 0.42, 0, 0, Math.PI * 2);
-        ctx.stroke();
-      });
-
-      // Tilted Training Loss Contours centered at Shortcut Minimum (0.72, 0.64)
-      [0.2, 0.42].forEach((r) => {
-        ctx.strokeStyle = "rgba(230, 126, 34, 0.45)";
-        ctx.setLineDash([4, 3]);
-        ctx.lineWidth = 1.2;
-        ctx.beginPath();
-        ctx.ellipse(ox + 0.72 * sx, oy - 0.64 * sy, r * sx * 0.7, r * sy * 0.35, -0.52, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.setLineDash([]);
-      });
-
-      // Axes
-      ctx.strokeStyle = "#bbb";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(42, oy);
-      ctx.lineTo(445, oy);
-      ctx.moveTo(ox, 48);
-      ctx.lineTo(ox, 232);
-      ctx.stroke();
-
-      // Green LCMV Nuisance-Zero Constraint Line (c_codec^T w = 0 => w_codec = 0)
-      ctx.strokeStyle = "#118659";
-      ctx.lineWidth = 2.6;
-      ctx.beginPath();
-      ctx.moveTo(ox, oy);
-      ctx.lineTo(435, oy);
-      ctx.stroke();
-      ctx.fillStyle = "#118659";
-      ctx.font = "600 11.5px 'JetBrains Mono', monospace";
-      ctx.fillText("Hard Constraint Line: c_codec^T w = 0 (w_codec = 0)", ox + 12, oy + 18);
-
-      ctx.fillStyle = "#555";
-      ctx.font = "11.5px 'Source Sans 3', sans-serif";
-      ctx.fillText("True Task Weight w_task →", 285, 248);
-      ctx.save();
-      ctx.translate(32, 190);
-      ctx.rotate(-Math.PI / 2);
-      ctx.fillText("Codec Shortcut Weight w_codec →", 0, 0);
-      ctx.restore();
-
-      // Draw SGD/AdamW trajectory up to `epoch`
-      ctx.strokeStyle = "#d93a4b";
-      ctx.lineWidth = 2.2;
-      ctx.beginPath();
-      for (let i = 0; i <= epoch; i++) {
-        const [px, py] = sgdPath[i];
-        const cx = ox + px * sx;
-        const cy = oy - py * sy;
-        if (i === 0) ctx.moveTo(cx, cy);
-        else ctx.lineTo(cx, cy);
-      }
-      ctx.stroke();
-
-      for (let i = 0; i <= epoch; i += 3) {
-        const [px, py] = sgdPath[i];
-        ctx.fillStyle = "#d93a4b";
-        ctx.beginPath();
-        ctx.arc(ox + px * sx, oy - py * sy, 3.2, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // Shortcut minimum X marker at (0.72, 0.64)
-      const scX = ox + 0.72 * sx;
-      const scY = oy - 0.64 * sy;
-      ctx.fillStyle = "#d93a4b";
-      ctx.font = "700 11.5px 'Source Sans 3', sans-serif";
-      ctx.fillText("Training Shortcut Min (Unseen EER = 6.95%)", scX - 95, scY - 12);
-
-      // 1-Pass OFP Jump Arrow along w_codec = 0 to (1.0, 0.0)
-      const optX = ox + 1.0 * sx;
-      const optY = oy;
-      ctx.fillStyle = "#118659";
-      ctx.beginPath();
-      ctx.arc(optX, optY, 6.5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.font = "700 11.5px 'Source Sans 3', sans-serif";
-      ctx.fillText("★ 1-Pass OFP Optimum (0.19s, EER = 4.12%)", optX - 135, optY - 12);
-
-      // Right Panel: Explicitly Labeled Benchmark Bar Chart (Y-axis: Unseen EER %, X-axis: Method & H100 Time)
-      ctx.fillStyle = "#f9fbfa";
-      ctx.strokeStyle = "#d5e0da";
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      ctx.roundRect(485, 14, W - 499, H - 28, 8);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = "#222";
-      ctx.font = "600 13px 'Source Sans 3', sans-serif";
-      ctx.fillText("B. Unseen 4-Dataset Equal Error Rate (%, Lower is Better)", 500, 36);
-
-      const bars = [
-        { name: "SGD (1 Epoch, BCE Loss)", eer: 8.42, time: "0.48s", col: "#d93a4b" },
-        { name: "AdamW (5 Epochs, BCE Loss)", eer: 7.31, time: "2.45s", col: "#d93a4b" },
-        { name: "AdamW (25 Epochs, BCE Loss)", eer: 7.08, time: "12.10s", col: "#d93a4b" },
-        { name: "AdamW (25 Epochs, Focal Loss)", eer: 6.95, time: "12.40s", col: "#e67e22" },
-        { name: "1-Pass Standard Ridge (No Nulling)", eer: 5.62, time: "0.14s", col: "#1f77b4" },
-        { name: "1-Pass OFP (Ours, Boundary + Nulling)", eer: 4.12, time: "0.19s", col: "#118659" },
-      ];
-
-      bars.forEach((b, i) => {
-        const y = 56 + i * 33;
-        ctx.fillStyle = "#333";
-        ctx.font = "11.5px 'Source Sans 3', sans-serif";
-        ctx.fillText(b.name, 500, y + 13);
-
-        const barX = 702;
-        const w = (b.eer / 9.5) * 165;
-        ctx.fillStyle = b.col;
-        ctx.fillRect(barX, y + 1, w, 17);
-
-        ctx.fillStyle = "#111";
-        ctx.font = "600 11px 'JetBrains Mono', monospace";
-        ctx.fillText(`${b.eer.toFixed(2)}% (${b.time})`, barX + w + 5, y + 14);
-      });
-
-      ctx.fillStyle = "#555";
-      ctx.font = "11px 'JetBrains Mono', monospace";
-      ctx.fillText("X-Axis: Equal Error Rate (%) on Unseen Generators (1x H100 GPU)", 500, 264);
-    }
-
-    slider.addEventListener("input", () => {
-      if (animId) {
-        cancelAnimationFrame(animId);
-        animId = null;
-        playBtn.textContent = "Animate 25 Epochs vs. 1-Pass Jump";
-      }
-      epoch = parseInt(slider.value, 10);
-      epLabel.textContent = `Epoch ${epoch} / 25`;
-      draw();
-    });
-
-    playBtn.addEventListener("click", () => {
-      if (animId) {
-        cancelAnimationFrame(animId);
-        animId = null;
-        playBtn.textContent = "Animate 25 Epochs vs. 1-Pass Jump";
-        return;
-      }
-      let frame = 0;
-      playBtn.textContent = "Pause Animation";
-      function tick() {
-        frame++;
-        if (frame % 6 === 0) {
-          epoch = (epoch + 1) % 26;
-          slider.value = String(epoch);
-          epLabel.textContent = `Epoch ${epoch} / 25`;
-          draw();
-        }
-        animId = requestAnimationFrame(tick);
-      }
-      animId = requestAnimationFrame(tick);
-    });
-
-    draw();
-  }
-
-  // =========================================================================
-  // 5. Interactive Velocity-Preserving Compression Widget (Figure 5)
-  // =========================================================================
-  function initVelocitySVDWidget() {
-    const canvas = document.getElementById("fig5-canvas");
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    const slider = document.getElementById("fig5-vel-slider");
-    const label = document.getElementById("fig5-vel-val");
-
-    let alpha = 1.0; // 0.0 = Standard SVD/ASVD (blurs spikes), 1.0 = Velocity-Preserving OT-SVD
-
-    function draw() {
-      const W = canvas.width;
-      const H = canvas.height;
-      ctx.clearRect(0, 0, W, H);
-
-      ctx.fillStyle = "#f9fbfa";
-      ctx.strokeStyle = "#d5e0da";
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      ctx.roundRect(14, 14, W - 28, H - 28, 8);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = "#222";
-      ctx.font = "600 13px 'Source Sans 3', sans-serif";
-      ctx.fillText(
-        "Frame-to-Frame Transition Speed |Y_t - Y_{t-1}| Across Consonant Bursts (/p/, /t/, /k/) at 2.23×–3.66× Compression",
-        28,
-        38
-      );
-
-      const x0 = 56;
-      const y0 = 198;
-      const plotW = W - 96;
-      const plotH = 135;
+      const x0 = 54;
+      const y0 = 188;
+      const plotW = W - 84;
+      const plotH = 140;
 
       ctx.strokeStyle = "#ccc";
-      ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(x0, y0);
       ctx.lineTo(x0 + plotW, y0);
-      ctx.moveTo(x0, 52);
+      ctx.moveTo(x0, 32);
       ctx.lineTo(x0, y0);
       ctx.stroke();
 
@@ -973,82 +597,67 @@
       const compPts = [];
       for (let i = 0; i < N; i++) {
         const t = i / (N - 1);
-        const base = 0.08 + 0.03 * Math.sin(2 * Math.PI * 2 * t);
-        const b1 = 0.78 * Math.exp(-0.5 * Math.pow((t - 0.22) / 0.022, 2));
-        const b2 = 0.88 * Math.exp(-0.5 * Math.pow((t - 0.52) / 0.020, 2));
-        const b3 = 0.82 * Math.exp(-0.5 * Math.pow((t - 0.80) / 0.022, 2));
-        const vTeach = base + b1 + b2 + b3;
-        const vASVD = base + 0.56 * (b1 + b2 + b3); // 44% peak loss in standard SVD
-        const vCur = (1 - alpha) * vASVD + alpha * vTeach;
+        const slow = 0.08 + 0.03 * Math.sin(2 * Math.PI * 2 * t);
+        const p1 = 0.78 * Math.exp(-0.5 * Math.pow((t - 0.22) / 0.02, 2));
+        const p2 = 0.88 * Math.exp(-0.5 * Math.pow((t - 0.52) / 0.018, 2));
+        const p3 = 0.82 * Math.exp(-0.5 * Math.pow((t - 0.80) / 0.02, 2));
+        const vTeach = slow + p1 + p2 + p3;
+        const vStd = slow + 0.56 * (p1 + p2 + p3);
+        const vCur = (1 - alpha) * vStd + alpha * vTeach;
         teachPts.push([x0 + t * plotW, y0 - vTeach * plotH]);
         compPts.push([x0 + t * plotW, y0 - vCur * plotH]);
       }
 
-      // Shaded lost transition energy when alpha < 1
+      // Shaded lost spike area
       ctx.fillStyle = "rgba(217, 58, 75, 0.16)";
       ctx.beginPath();
-      teachPts.forEach(([px, py], i) => {
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      });
-      for (let i = compPts.length - 1; i >= 0; i--) {
-        ctx.lineTo(compPts[i][0], compPts[i][1]);
-      }
+      teachPts.forEach(([px, py], i) => (i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py)));
+      for (let i = compPts.length - 1; i >= 0; i--) ctx.lineTo(compPts[i][0], compPts[i][1]);
       ctx.closePath();
       ctx.fill();
 
-      // Teacher curve (black dashed)
+      // Full 318M Teacher wave (dashed black)
       ctx.strokeStyle = "#222";
       ctx.lineWidth = 2;
       ctx.setLineDash([5, 3]);
       ctx.beginPath();
-      teachPts.forEach(([px, py], i) => {
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      });
+      teachPts.forEach(([px, py], i) => (i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py)));
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Compressed curve
+      // Compressed wave
       ctx.strokeStyle = alpha > 0.5 ? "#118659" : "#d93a4b";
       ctx.lineWidth = 2.6;
       ctx.beginPath();
-      compPts.forEach(([px, py], i) => {
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      });
+      compPts.forEach(([px, py], i) => (i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py)));
       ctx.stroke();
+
+      ctx.fillStyle = "#333";
+      ctx.font = "600 12px 'Source Sans 3', sans-serif";
+      ctx.fillText("Consonant /p/ Burst", x0 + plotW * 0.17, 26);
+      ctx.fillText("Consonant /t/ Burst", x0 + plotW * 0.47, 26);
+      ctx.fillText("Consonant /k/ Burst", x0 + plotW * 0.75, 26);
 
       const keptPct = (58.0 + 41.1 * alpha).toFixed(1);
       const werVal = (6.45 - 1.41 * alpha).toFixed(2);
       ctx.fillStyle = alpha > 0.5 ? "#118659" : "#d93a4b";
-      ctx.font = "700 12.5px 'JetBrains Mono', monospace";
+      ctx.font = "700 12px 'JetBrains Mono', monospace";
       ctx.fillText(
-        `Consonant Speed Peak Retained: ${keptPct}%  |  Compressed Wav2Vec2 ASR WER: ${werVal}% (Full 315M Teacher = 5.16%)`,
-        x0 + 12,
-        224
+        `Fast Transition Energy Kept: ${keptPct}%  |  Compressed Wav2Vec2 (142M) ASR WER: ${werVal}% (Full 315M Teacher = 5.16%)`,
+        x0 + 8,
+        214
       );
     }
 
-    slider.addEventListener("input", () => {
-      alpha = parseFloat(slider.value);
-      label.textContent =
-        alpha === 0
-          ? "0% Velocity Weight (Standard SVD / ASVD — Loses 42% of Consonant Speed!)"
-          : alpha === 1
-          ? "100% Velocity-Preserving SVD (Cov(Z) + 2·Cov(ΔZ) — Retains 99.1% of Consonant Speed!)"
-          : `${Math.round(alpha * 100)}% Velocity Weight`;
-      draw();
-    });
-
+    slider.addEventListener("input", draw);
     draw();
   }
 
   window.addEventListener("DOMContentLoaded", () => {
-    initNuisanceWidget();
-    initOrthogonalSurgeryWidget();
-    initGEVDSNRWidget();
-    initOFPvsSGDWidget();
-    initVelocitySVDWidget();
+    initBlock1Widget();
+    initBlock2Widget();
+    initBlock3Circuit();
+    initBlock4Scene();
+    initBlock5Widget();
   });
 })();

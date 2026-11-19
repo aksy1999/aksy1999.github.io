@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://distill.pub/template.v2.js"></script>
   <title>Weight-Space Programming for Audio Models: LLMs Can Directly Edit Audio Model Weights and Compress Them</title>
-  <meta name="description" content="Without backpropagation or gradient descent, an LLM acting in a Python weight sandbox can profile and erase audio codec/channel shortcuts, solve optimal weights in a single forward pass, and compress 318M-to-32.4B audio models from first principles.">
+  <meta name="description" content="Can an LLM directly read, edit, and compress the weights of 318M-to-32.4B parameter audio models without gradient descent?">
 
   <meta property="og:type" content="article">
   <meta property="og:title" content="Weight-Space Programming for Audio Models: LLMs Can Directly Edit Audio Model Weights and Compress Them">
@@ -14,8 +14,8 @@
 
   <meta name="citation_title" content="Weight-Space Programming for Audio Models: LLMs Can Directly Edit Audio Model Weights and Compress Them">
   <meta name="citation_author" content="Yadav, Amit Kumar Singh">
+  <meta name="citation_author" content="Xu, Robert">
   <meta name="citation_publication_date" content="2026/11/18">
-  <meta name="citation_fulltext_html_url" content="https://aksy1999.github.io/amitkumarsinghyadav.github.io/blog/weight-space-programming-for-audio-models/">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -88,6 +88,9 @@
       background: #f8fcfa;
       border-radius: 8px;
       padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
     .teaser-card .tag {
       display: inline-block;
@@ -100,9 +103,24 @@
       border-radius: 4px;
       margin-bottom: 6px;
     }
-    .teaser-card h4 { margin: 4px 0 6px; font-size: 16.5px; }
-    .teaser-card p { margin: 0 0 8px; font-size: 14px; color: #444; line-height: 1.45; }
+    .teaser-card h4 { margin: 4px 0 6px; font-size: 17px; }
+    .teaser-card p { margin: 0 0 10px; font-size: 14.5px; color: #444; line-height: 1.45; }
     .teaser-stat { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: #118659; }
+    .audio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .audio-card {
+      border: 1px solid #d5e0da;
+      background: #f9fbfa;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 14px;
+    }
+    .audio-card h5 { margin: 0 0 6px; font-size: 14.5px; color: #111; }
+    .audio-card audio { width: 100%; height: 34px; margin: 4px 0 8px; }
     .math-callout {
       background: #f4f9f6;
       border-left: 4px solid #2e996a;
@@ -110,14 +128,6 @@
       border-radius: 0 8px 8px 0;
       margin: 16px 0;
       font-size: 16px;
-    }
-    .flow-diagram {
-      width: 100%;
-      border: 1px solid #d5e0da;
-      border-radius: 8px;
-      background: #fafcfb;
-      padding: 12px;
-      margin: 14px 0;
     }
     .bench-table-wrap {
       overflow-x: auto;
@@ -154,21 +164,20 @@
     LLMs Can Directly Edit Audio Model Weights and Compress Them
   </h1>
   <p>
-    Can an LLM directly read, edit, and compress the weights of 318M-to-32.4B parameter audio models without running gradient descent? Using a single 5-block first-principles harness, we remove codec and channel shortcuts, solve optimal readout weights in a single forward pass, and compress models up to 3.66× without blurring fast audio transitions.
+    Can an LLM directly read, edit, and compress the weights of audio models without running gradient descent? We test this across a 318M-parameter Audio Deepfake Detector and a 32.4B-parameter Speech Recognition model using five shared first-principles building blocks.
   </p>
 </d-title>
 
 <div class="post-byline base-grid">
   <div class="byline-grid">
     <div>
-      <h3>Author</h3>
+      <h3>Authors</h3>
       <p><a href="https://www.linkedin.com/in/amit-kumar-singh-yadav/">Amit Kumar Singh Yadav</a></p>
-      <p><a href="https://ishikilabs.ai">Ishiki Labs Research</a></p>
+      <p><a href="https://www.linkedin.com/in/robert-xu/">Robert Xu</a></p>
     </div>
     <div>
-      <h3>Affiliations</h3>
-      <p>Ishiki Labs Inc. (YC W26)</p>
-      <p>Purdue University (VIPER Lab)</p>
+      <h3>Affiliation</h3>
+      <p><a href="https://ishikilabs.ai">Ishiki Labs</a></p>
     </div>
     <div>
       <h3>Published &amp; Artifacts</h3>
@@ -176,7 +185,7 @@
       <p>
         <a href="https://huggingface.co/ishiki-labs/ishiki-deepfake-0.5">Deepfake-0.5</a> ·
         <a href="https://huggingface.co/ishiki-labs/ishiki-asr-0.5">ASR-0.5</a> ·
-        <a href="../../audiowsp/">Harness</a>
+        <a href="https://github.com/ishikilabsinc/audiowsp">Harness</a>
       </p>
     </div>
   </div>
@@ -186,359 +195,352 @@
 
   <div class="teaser-3col">
     <div class="teaser-card">
-      <span class="tag">TASK 1 · 318M AUDIO DEEPFAKE DETECTOR</span>
-      <h4>Erase MP3 &amp; Codec Shortcuts</h4>
-      <p>Real human voices compressed with MP3, Encodec, or 8 kHz telephony fool standard detectors into false alarms. Direct weight surgery removes the codec drift axis without hurting studio accuracy.</p>
-      <div class="teaser-stat">In-The-Wild EER: 11.22% → 2.51% (318M) / 2.72% (86.8M)</div>
+      <div>
+        <span class="tag">1. ERASE SHORTCUTS</span>
+        <h4>Erase Audio Shortcuts (318M Model)</h4>
+        <p>When the same voice is saved as a studio <code>.WAV</code>, a social-media <code>.MP3</code>, or a telephone call, standard detectors change their output. Editing the weights directly makes the model insensitive to compression.</p>
+      </div>
+      <div class="teaser-stat"><a href="#block-1">In-The-Wild EER: 11.22% → 2.51% →</a></div>
     </div>
     <div class="teaser-card">
-      <span class="tag">TASK 2 · 32.4B SPEECH RECOGNITION</span>
-      <h4>Scale Weight Editing to 32.4B ASR</h4>
-      <p>On a 32.4B Audio-LLM (<code>Nemotron-3.5</code>), editing the Mel frontend, Rank-96 SNR bridge, uncertainty-gated vocabulary rows, and 40ms CTC loop guard cuts errors across all 14 benchmarks.</p>
-      <div class="teaser-stat">Open ASR 10-Set Mean WER: 4.59% → 3.18% (#1 Overall)</div>
+      <div>
+        <span class="tag">2. SCALE TO 32B MODEL</span>
+        <h4>Scale Weight Editing to a 32B ASR Model</h4>
+        <p>Can an LLM edit a 32.4B speech-to-text model (<code>Nemotron-3.5</code>) without gradient descent? Applying the same building blocks cuts Word Error Rate across all 13 Open ASR Leaderboard datasets.</p>
+      </div>
+      <div class="teaser-stat"><a href="#block-3">10-Set Mean WER: 4.59% → 3.18% (#1) →</a></div>
     </div>
     <div class="teaser-card">
-      <span class="tag">COMPRESSION · 1 FORWARD PASS</span>
-      <h4>Compress Without Blurring Consonants</h4>
-      <p>Standard SVD blurs fast consonant bursts and vocoder clicks (-42% velocity). Preserving frame-to-frame transition speed shrinks models in 1 pass while keeping 99.1% of peak velocity.</p>
-      <div class="teaser-stat">Deepfake: 318M → 86.8M (3.66×) · Diarizer: 99.4M → 30.7K</div>
+      <div>
+        <span class="tag">3. COMPRESS WEIGHTS</span>
+        <h4>Compress Audio Models in One Pass</h4>
+        <p>Shrink the 318M deepfake detector to 86.8M (3.66× smaller), a 315M ASR model to 142M (2.23× smaller), and a 99.4M speaker diarizer to 30.7K in a single forward pass without retraining.</p>
+      </div>
+      <div class="teaser-stat"><a href="#block-5">Deepfake: 318M → 86.8M (3.66×) →</a></div>
     </div>
   </div>
 
   <div class="tldr-box" style="background:#f3f9f5; border:1px solid #bdd9c9; border-radius:10px; padding:22px 26px; margin-bottom:28px;">
-    <div class="tldr-heading" style="font-weight:700; font-size:19px; color:#118659; margin-bottom:10px;">TL;DR — What We Did, Where the Scaling Limits Are, and How the 5 Building Blocks Work</div>
+    <div class="tldr-heading" style="font-weight:700; font-size:19px; color:#118659; margin-bottom:10px;">TL;DR — The Three Questions We Ask and the Five Building Blocks That Emerge</div>
     <p style="margin-top:0;">
-      Inspired by recent work showing that frontier LLMs can directly read and edit the weights of small game policies and 0.8B text models [<a href="https://rikiyat.github.io/blog/weight-space-programming/">Takehi et al., 2026</a>], our goal in this work is to answer two questions for <strong>real-world audio foundation models</strong>:
+      Inspired by recent work showing that frontier LLMs can directly read and edit the weights of small game policies and 0.8B language models [<a href="https://rikiyat.github.io/blog/weight-space-programming/">Takehi et al., 2026</a>], our goal in this work is to answer three questions for <strong>audio models</strong>:
     </p>
     <ol style="margin-bottom:12px;">
-      <li><strong>Can an LLM directly write, fix, and compress the weights of audio models in a Python sandbox without running gradient descent (0 backward passes)?</strong></li>
-      <li><strong>Where is the scaling boundary as model size grows by 100×—from a 318M-parameter Audio Deepfake Detector (<code>Wav2Vec2-XLS-R-300M</code> + <code>AASIST</code>) to a 32.4B-parameter Speech Recognition (ASR) model (<code>NVIDIA-Nemotron-3.5-Transcribe-30B-A4B</code>)?</strong></li>
+      <li><strong>Can an LLM directly write and fix the weights of audio models in a Python sandbox without running gradient descent (0 backward passes)?</strong></li>
+      <li><strong>Where is the scaling boundary as model size grows 100×—from a 318M-parameter Audio Deepfake Detector (<code>Wav2Vec2-XLS-R-300M</code> + <code>AASIST</code>) to a 32.4B-parameter Speech Recognition model (<code>NVIDIA-Nemotron-3.5-Transcribe-30B-A4B</code>)?</strong></li>
+      <li><strong>Can an LLM also directly compress audio model weights in a single forward pass without losing accuracy?</strong></li>
     </ol>
     <p style="margin-bottom:10px;">
-      Across both tasks, we find that effective audio weight-space programming follows the <strong>exact same five first-principles building blocks</strong> (packaged in our open-source <code>audiowsp</code> harness):
+      Across both tasks, we find that weight-space programming follows the <strong>exact same five first-principles building blocks</strong> (released in our open-source <a href="https://github.com/ishikilabsinc/audiowsp"><code>audiowsp</code></a> harness):
     </p>
     <ul style="margin-bottom:0;">
-      <li><strong>Block 1 — Making Weights Less Sensitive to Audio Augmentations (Acoustic Nuisance Profiling):</strong> Pass the <em>exact same</em> recording as a clean <code>.WAV</code>, a <code>64 kbps .MP3</code>, and an <code>8 kHz</code> telephone/codec signal, and measure the internal neuron shift \(\Delta H = H(\text{MP3}) - H(\text{WAV})\).</li>
-      <li><strong>Block 2 — Removing Augmentation Drift Without Hurting the Task (90° Orthogonal Surgery &amp; SNR Filtering):</strong> Because the codec-drift direction inside <code>Wav2Vec2</code> overlaps by \(28^\circ\) with the task direction, naively deleting it destroys \(22.1\%\) of the task signal. Using Gram-Schmidt / QR projection to rotate the edit to an exact \(90^\circ\) angle removes codec sensitivity with <strong>0.0% task loss</strong>, while Signal-to-Noise Eigen-Filtering (<code>GEVD</code>) keeps only the 96 channels where clean speech power exceeds noise power.</li>
-      <li><strong>Block 3 — Wiring Multi-Frame Motion Taps &amp; One-Sided Anomaly Scoring:</strong> Wiring three adjacent frames \([h_{t-1}, h_t, h_{t+1}]\) into a weight matrix lets it see <em>frame speed</em> (consonant bursts like <code>/p/, /t/, /k/</code>) and <em>acceleration</em> (synthetic vocoder clicks). Scoring anomalies with a one-sided squared curve \(\log(1 + \max(0, z)^2)\) amplifies deepfake anomalies without ever penalizing expressive real speakers on the opposite tail.</li>
-      <li><strong>Block 4 — Jumping to the Codec-Invariant Optimum in One Forward Pass (One-Forward-Pass Optimizer):</strong> Multi-epoch <code>SGD</code> and <code>AdamW</code> slide into dataset shortcuts (where training labels correlate with MP3/channel filtering). Our 1-pass closed-form solver locks the codec weight to zero (\(\vec{c}_{\text{codec}}^T w = 0\)) and lands at the global optimum in <strong>0.19 seconds</strong> (65× faster and 40.7% lower error than 25 epochs of <code>AdamW</code>).</li>
-      <li><strong>Block 5 — Velocity-Preserving Weight Compression:</strong> Standard SVD compression acts like a low-pass filter that blurs fast consonant bursts by \(-42\%\). Weighting SVD by static energy plus \(2\times\) frame-to-frame speed retains <strong>99.1%</strong> of consonant speed while shrinking our <code>318M</code> deepfake detector to <strong>86.8M (3.66× smaller)</strong> and shrinking <code>Wav2Vec2-Large</code> ASR by <strong>2.23×</strong>.</li>
+      <li><strong><a href="#block-1">Block 1 — Profiling Weight Sensitivity to Audio Augmentations</a>:</strong> Feed the model the <em>exact same recording</em> as an original <code>.WAV</code>, a lossy social-platform <code>.MP3</code>, and an <code>8 kHz</code> telephone call, and measure which hidden-layer neurons shift when only the audio compression changes.</li>
+      <li><strong><a href="#block-2">Block 2 — Removing Augmentation Sensitivity Without Hurting Task Performance</a>:</strong> Because the neurons sensitive to audio compression also carry 22.1% of the task signal, deleting them directly hurts accuracy. Making the edit direction strictly 90° perpendicular to the task direction removes compression sensitivity with <strong>0.0% loss of task performance</strong>.</li>
+      <li><strong><a href="#block-3">Block 3 — Increasing Context Across Layers and Time Frames (Multi-Tapping)</a>:</strong> Instead of reading only the final layer at a single frame \(h_t\), connect earlier layers and adjacent time frames \([h_{t-1}, h_t, h_{t+1}]\) so the readout weights can detect rapid frame-to-frame changes.</li>
+      <li><strong><a href="#block-4">Block 4 — Finding the Optimal Weights in One Forward Pass</a>:</strong> Multi-epoch gradient descent (<code>SGD</code> / <code>AdamW</code>) learns dataset compression shortcuts. Our <strong>One-Forward-Pass Optimizer</strong> locks sensitivity to those shortcuts to zero and solves for the optimal weights in <strong>0.19 seconds</strong>.</li>
+      <li><strong><a href="#block-5">Block 5 — Compressing Audio Model Weights</a>:</strong> Compress weight matrices in a single forward pass by preserving both average activation energy and frame-to-frame changes, shrinking our <code>318M</code> deepfake detector to <strong>86.8M (3.66× smaller)</strong> and shrinking <code>Wav2Vec2-Large</code> ASR from <code>315M</code> to <strong>142M (2.23× smaller)</strong>.</li>
     </ul>
   </div>
 
-  <h2>Block 1: Making Weights Less Sensitive to Audio Augmentations (Acoustic Nuisance Profiling)</h2>
+  <h2 id="block-1">Block 1: Profiling Weight Sensitivity to Audio Augmentations</h2>
 
   <p>
-    Why do state-of-the-art audio models fail when deployed in the real world? Consider a concrete example. Suppose you record a human speaking a sentence in a quiet room and save it as an uncompressed <strong><code>studio.wav</code></strong> file. Now you take that <em>exact same recording</em>—the same human voice, the same words, the same millisecond timing—and pass it through two everyday audio pipelines:
+    An audio model's weights should respond to <em>what is spoken</em> (or <em>whether a voice is real or synthetic</em>)—not whether the audio file was uploaded to a social platform as an <code>.MP3</code> or transmitted over a telephone call.
   </p>
-  <ol>
-    <li><strong>Lossy Compression (<code>64kbps.mp3</code> or <code>Encodec</code>):</strong> Social media platforms and streaming apps quantize audio frames and discard high-frequency phase detail.</li>
-    <li><strong>Telephone / VoIP Filtering (<code>8kHz_telephone.wav</code>):</strong> Phone lines strip all frequencies below \(300\text{ Hz}\) and above \(3,400\text{ Hz}\) and apply 8-bit \(\mu\)-law quantization.</li>
-  </ol>
+  <p>
+    Consider the concrete example below. All three audio players contain the <strong>exact same 4.8-second recording</strong> of a real human saying:
+    <br>
+    <code>"HURSTWOOD WALKED THE FLOOR MENTALLY ARRANGING THE CHIEF POINTS OF HIS SITUATION"</code>
+  </p>
+  <p>
+    Click <strong>Play</strong> on all three files below. To a human ear, all three clearly say the exact same sentence. Yet look at what happens inside an unedited <code>Wav2Vec2</code> model when we feed all three files into it:
+  </p>
+
+  <div class="audio-grid">
+    <div class="audio-card">
+      <h5>1. Original Studio Audio (<code>.WAV</code>)</h5>
+      <audio controls preload="metadata" src="audio/1_original_studio.wav"></audio>
+      <div style="font-size:13px; color:#333;">
+        <strong>Layer 20 Shift:</strong> <code>0.0%</code> (Reference)<br>
+        <strong>Unedited ASR Output:</strong><br>
+        <code style="color:#118659;">"HURSTWOOD WALKED T THE FLOOR MENTALLY ARRANGING THE CHIEF POINTS OF HIS SITUATION"</code>
+      </div>
+    </div>
+    <div class="audio-card">
+      <h5>2. Social Platform Upload (<code>.MP3</code> Codec)</h5>
+      <audio controls preload="metadata" src="audio/2_social_platform_mp3.wav"></audio>
+      <div style="font-size:13px; color:#333;">
+        <strong>Layer 20 Shift:</strong> <code id="b1-shift-mp3" style="color:#e67e22;">11.1% neuron shift</code><br>
+        <strong>Unedited ASR Output:</strong><br>
+        <code style="color:#1f77b4;">"HURSTWOOD WALKED TO THE FLOOR MENTALLY ARRANGING THE CHIEF POINTS OF HIS SITUATION"</code>
+      </div>
+    </div>
+    <div class="audio-card">
+      <h5>3. Telephone Call (<code>8 kHz</code> Bandpass)</h5>
+      <audio controls preload="metadata" src="audio/3_telephone_call_8khz.wav"></audio>
+      <div style="font-size:13px; color:#333;">
+        <strong>Layer 20 Shift:</strong> <code id="b1-shift-tel" style="color:#d93a4b;">34.4% neuron shift</code><br>
+        <strong>ASR Output:</strong> <span id="b1-asr-tel" style="font-family:var(--font-mono); font-size:12px; color:#d93a4b; display:block;">"ET WHO HAD WALKED BEFORE MIOY ERNENE TI FINE..." (75.0% WER)</span>
+        <strong>Deepfake Score Shift:</strong> <span id="b1-df-tel" style="font-family:var(--font-mono); font-size:12px; color:#d93a4b; display:block;">False-Alarm Shift: +42.0% toward Fake</span>
+      </div>
+    </div>
+  </div>
 
   <p>
-    When we feed <code>studio.wav</code> and <code>64kbps.mp3</code> into a 318M-parameter <code>Wav2Vec2-XLS-R</code> model (or a 32.4B <code>Nemotron-3.5</code> ASR encoder) and subtract their internal hidden activations at frame \(t\),
+    Why did the model's output break on the third file even though the words and speaker are identical? Because when we subtract the hidden-layer activations of the original studio file from the telephone or MP3 file at every time frame \(t\),
   </p>
   <div class="math-callout">
-    $$\Delta H_t = H_t(\text{MP3}) - H_t(\text{WAV}) \in \mathbb{R}^{D}$$
+    $$\Delta H_t = H_t(\text{Augmented Audio}) - H_t(\text{Original Studio Audio})$$
   </div>
   <p>
-    what does \(\Delta H_t\) represent? Because the speaker, words, and timing are <strong>100% identical</strong> between the two files, <strong>100% of \(\Delta H_t\) is pure codec/channel nuisance drift</strong>.
+    the hidden neurons in Layer 20 shift by <strong>11.1%</strong> on the social-platform audio and by <strong>34.4%</strong> on the telephone call! That difference \(\Delta H_t\) is a direct measurement of the model's <strong>weight sensitivity to audio augmentations</strong>.
   </p>
-
   <p>
-    Use the interactive simulator below to see what happens inside the model before and after we edit its weights. Here, the slider <strong>\(\gamma \in [0\%, 100\%]\)</strong> controls the <strong>Weight Surgery Strength</strong>—the fraction of the codec-drift direction \(\hat{u}_{\text{codec}}\) that we subtract directly from the layer's weight matrix:
-    $$W_{\text{edited}} = \left(I - \gamma \, \hat{u}_{\text{codec}} \hat{u}_{\text{codec}}^T\right) W_{\text{original}}$$
-    At <strong>\(\gamma = 0\%\)</strong>, the weights are unedited: notice how converting a real human voice from <code>.WAV</code> (blue circles) to <code>.MP3</code> (orange squares) or <code>8kHz Telephone</code> (purple triangles) pushes the hidden states across the tilted red decision boundary into the "Deepfake" zone! Drag <strong>\(\gamma\) to \(100\%\)</strong> (or click <strong>Auto-Animate</strong>) to see how editing the weights collapses the MP3 and telephone drift back onto the clean <code>.WAV</code> cluster:
+    Drag the slider below from <strong>0% (Unedited Base Weights)</strong> to <strong>100% (Edited Weights)</strong> to see how reducing this sensitivity restores the telephone ASR transcript above and lowers both Deepfake Equal Error Rate (<code>EER</code>) and Speech Recognition Word Error Rate (<code>WER</code>):
   </p>
 
   <div class="interactive-box">
     <div class="widget-toolbar">
-      <div>
-        <button id="fig1-mode-deepfake" class="pill-btn active-pill" type="button">Task 1: Deepfake Detector (WAV vs. MP3 / Tel)</button>
-        <button id="fig1-mode-asr" class="pill-btn" type="button">Task 2: 32.4B Speech Recognition (WAV vs. 8kHz Tel)</button>
-      </div>
+      <span style="font-weight:600;">Interactive Weight Edit: Reduce Augmentation Sensitivity on the 3 Audio Files Above</span>
       <div style="display:flex; align-items:center; gap:8px;">
-        <label for="fig1-gamma-slider" style="font-weight:600;">Surgery Strength \(\gamma\):</label>
-        <input id="fig1-gamma-slider" type="range" min="0" max="1" step="0.01" value="0" style="width:130px;">
-        <span id="fig1-gamma-val" style="font-family:var(--font-mono); font-weight:600; min-width:115px;">0% (γ = 0.00)</span>
-        <button id="fig1-play-btn" class="pill-btn" type="button">Auto-Animate Surgery (γ: 0% → 100%)</button>
+        <label for="b1-slider" style="font-weight:600;">Weight Edit Strength:</label>
+        <input id="b1-slider" type="range" min="0" max="1" step="0.02" value="0" style="width:160px;">
+        <span id="b1-slider-val" style="font-family:var(--font-mono); font-weight:600; color:#118659; min-width:95px;">0% Edited</span>
       </div>
     </div>
-    <canvas id="fig1-canvas" width="940" height="282" style="width:100%; height:auto; display:block;"></canvas>
-    <p style="margin:8px 0 0; font-size:13.5px; color:#555;">
-      <strong>Interactive Figure 1:</strong> Left: 2D projection of hidden states for the exact same utterances encoded as <code>.WAV</code> (blue circles), <code>.MP3</code> (orange squares), and <code>8kHz Telephone / Encodec</code> (purple triangles). Right: Measured activation drift \(\|\Delta H\|_2\) and benchmark error rates as surgery strength \(\gamma\) increases from \(0\%\) (unedited base checkpoint) to \(100\%\).
+    <canvas id="b1-canvas" width="900" height="230" style="width:100%; height:auto; display:block;"></canvas>
+  </div>
+
+  <h2 id="block-2">Block 2: Removing Augmentation Sensitivity Without Hurting Task Performance</h2>
+
+  <p>
+    In Block 1, we measured how the hidden neurons shift when an audio file is compressed (\(\Delta H_t\)). Now, how do we edit the layer's weight matrix \(W\) so it stops reacting to \(\Delta H_t\) <strong>without hurting the main task</strong>?
+  </p>
+  <p>
+    First, let's be completely concrete about what a "direction" in a hidden layer means:
+  </p>
+  <ul>
+    <li>In <code>Wav2Vec2</code> Layer 20, each audio frame is a list of \(1,024\) numbers (a vector in \(\mathbb{R}^{1024}\)).</li>
+    <li><strong>How we get the Augmentation Sensitivity Direction (\(\vec{v}_{\text{aug}}\)):</strong> We take the difference vectors \(\Delta H_t = H_t(\text{Telephone}) - H_t(\text{Studio})\) across our practice clips and compute their top principal component (the top singular vector from Singular Value Decomposition, <code>SVD</code>). This unit vector \(\vec{v}_{\text{aug}} \in \mathbb{R}^{1024}\) points in the exact direction that telephone/MP3 compression pushes the neurons.</li>
+    <li><strong>How we get the Task Direction (\(\vec{v}_{\text{task}}\)):</strong> On the same practice clips, we take the average hidden vector of Fake voices minus the average hidden vector of Real voices, \(\vec{v}_{\text{task}} = \frac{\mu_{\text{fake}} - \mu_{\text{real}}}{\|\mu_{\text{fake}} - \mu_{\text{real}}\|_2}\) (or for ASR, the top singular directions of the phoneme readout head). This unit vector points in the direction the model uses to solve the task.</li>
+  </ul>
+
+  <p>
+    <strong>Here is the catch:</strong> when we compute the dot product between \(\vec{v}_{\text{aug}}\) and \(\vec{v}_{\text{task}}\) in Layer 20, it is not zero—it is <strong>\(\vec{v}_{\text{aug}} \cdot \vec{v}_{\text{task}} = 0.47\)</strong>! That means \(22.1\%\) of the augmentation vector points along the task direction.
+  </p>
+
+  <div class="math-callout">
+    <strong>Why We Subtract the Overlap First (Gram-Schmidt Orthogonalization):</strong><br>
+    If we naively delete \(\vec{v}_{\text{aug}}\) from the weight matrix via \(W_{\text{naive}} = W(I - \vec{v}_{\text{aug}}\vec{v}_{\text{aug}}^T)\), we also delete \(22.1\%\) of \(\vec{v}_{\text{task}}\)—causing clean studio deepfake error (<code>ASVspoof 2019</code> EER) to jump from <strong>0.22% to 0.89% (4× worse!)</strong>.<br><br>
+    Instead, we subtract the overlapping part first:
+    $$\vec{u}_{\perp} = \vec{v}_{\text{aug}} - \underbrace{\left(\vec{v}_{\text{aug}} \cdot \vec{v}_{\text{task}}\right)}_{0.47} \vec{v}_{\text{task}}, \qquad \hat{u}_{\perp} = \frac{\vec{u}_{\perp}}{\|\vec{u}_{\perp}\|_2}$$
+    Now \(\hat{u}_{\perp} \cdot \vec{v}_{\text{task}} = 0\) (they are <strong>strictly 90° perpendicular</strong>). When we edit the weights using \(\hat{u}_{\perp}\),
+    $$W_{\text{edited}} = W \left(I - \gamma \, \hat{u}_{\perp} \hat{u}_{\perp}^T\right)$$
+    multiplying \(W_{\text{edited}}\) by \(\vec{v}_{\text{task}}\) gives \(W(\vec{v}_{\text{task}} - 0) = W\vec{v}_{\text{task}}\)—so <strong>100.0% of the task signal is preserved</strong>!
+  </div>
+
+  <p>
+    Click through the 3 steps below to see the exact vectors and measured benchmark numbers for each step:
+  </p>
+
+  <div class="interactive-box">
+    <div class="widget-toolbar">
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <button class="pill-btn active-pill" data-b2-step="1" type="button">Step 1: Measure v_task &amp; v_aug (0.47 Overlap)</button>
+        <button class="pill-btn" data-b2-step="2" type="button">Step 2: Naive Removal (Destroys 22.1% Task Signal!)</button>
+        <button class="pill-btn" data-b2-step="3" type="button">Step 3: 90° Perpendicular Edit (0% Task Loss)</button>
+      </div>
+    </div>
+    <canvas id="b2-canvas" width="900" height="225" style="width:100%; height:auto; display:block;"></canvas>
+    <p id="b2-step-desc" style="margin:10px 0 0; font-size:14px; color:#222; font-weight:600;">
+      Step 1: Inside Layer 20 (1,024 neurons), the direction that shifts during MP3/telephone compression (v_aug) is not perpendicular to the task direction (v_task)—their dot product is 0.47.
     </p>
   </div>
 
   <p>
-    <strong>Why does a telephone filter break Speech Recognition (ASR) so badly?</strong> Look at Panel 1D and 1E in the static diagnostic below from our 32.4B <code>Nemotron-3.5</code> Conformer encoder. When an <code>8 kHz</code> telephone line strips all audio frequencies above \(3.4\text{ kHz}\) (Mel filterbank bins \(72\text{ to }127\)), the speech energy in those high-frequency bins drops to zero. Standard ASR preprocessors normalize every Mel bin \(f\) by dividing by its per-utterance standard deviation \(\sigma_{\text{utt}}(f)\). In those dead high-frequency bins, \(\sigma_{\text{utt}}(f)\) collapses from \(\sim 0.85\) down to \(\sim 0.08\)—so dividing by \(0.08\) <strong>amplifies background quantization hiss by \(8.5\times\)</strong>! By profiling the clean speech standard-deviation prior \(\sigma_{\text{prior}}(f)\) on practice audio and flooring \(\sigma_{\text{reg}}(f) = \max(\sigma_{\text{utt}}(f), \, 0.45\,\sigma_{\text{prior}}(f))\), we cut Conformer Layer 32 activation drift by <strong>63.8%</strong>:
+    <strong>Filtering Noisy Channels by Signal-to-Noise Ratio:</strong> When we also fit a linear bridge \(\Delta W\) in Speech Recognition to restore clean hidden states \(H_{\text{clean}}\) from noisy states \(H_{\text{noisy}}\), trying to reconstruct all \(1,280\) Conformer channels equally fails because in \(1,184\) of those channels, background noise variance \(\Sigma_{\text{noise}}\) is larger than clean speech variance \(\Sigma_{\text{clean}}\). By sorting the channels by their exact <strong>Signal-to-Noise Ratio</strong> (\(\Sigma_{\text{clean}}\vec{v}_k = \lambda_k \Sigma_{\text{noise}}\vec{v}_k\), known as Generalized Eigenvalue Decomposition or <code>GEVD</code>) and keeping only the <strong>top 96 channels where Clean Speech Power &gt; Noise Power (\(\lambda_k > 1\))</strong>, 4-dataset noisy ASR Word Error Rate drops from <code>8.09%</code> (Unedited) and <code>7.81%</code> (Keep All 1,280) down to <strong>6.87%</strong>.
   </p>
+  <h2 id="block-3">Block 3: Increasing Context Across Layers and Time Frames (Multi-Tapping)</h2>
 
-  <figure style="margin: 20px 0;">
-    <img src="figures/fig1_nuisance_profiler_deepfake_and_asr.png" alt="Acoustic Nuisance Profiler on Deepfake and ASR" style="width:100%; border-radius:8px; border:1px solid #d5e0da;">
-    <figcaption style="font-size:14px; color:#555; margin-top:8px;">
-      <strong>Figure 1 (Measured Waveforms &amp; Layer Activations):</strong> Top row (1A–1C): Paired clean vs. codec-quantized + gain-shifted waveforms in <code>Wav2Vec2-XLS-R</code> Layer 20, showing horizontal neuron drift stripes. Bottom row (1D–1F): PSTN \(300\text{–}3400\text{ Hz}\) frequency roll-off in <code>Nemotron-3.5</code>, showing Mel standard-deviation collapse in dead bands (\(>3.4\text{ kHz}\)) and the 63.8% reduction in Layer 32 drift after conditioning.
-    </figcaption>
-  </figure>
-
-  <h2>Block 2: Removing Augmentation Sensitivity Without Hurting the Task</h2>
-
-  <h3>2A. Why Naive Nulling Fails—and How 90° Orthogonal Projection Fixes It</h3>
   <p>
-    Once we have measured the codec/channel drift direction \(\vec{d}_{\text{codec}}\) inside a hidden layer, it is tempting to immediately delete that direction from the layer's weight matrix \(W\). <strong>Why is that dangerous?</strong>
-  </p>
-  <p>
-    Because inside a pretrained network like <code>Wav2Vec2-XLS-R</code> (\(D = 1,024\) neurons per layer), the neurons that react to MP3/telephone compression <strong>also help carry the task signal</strong>! Specifically, when we measure the angle between the raw codec-drift direction \(\vec{d}_{\text{codec}}\) and the task direction \(\vec{v}_{\text{task}}\) (the direction separating Real from Fake voices, or separating phonemes), their cosine similarity is \(\cos\theta = 0.47\)—an angle of <strong>\(62^\circ\) (a \(28^\circ\) overlap)</strong> instead of \(90^\circ\).
-  </p>
-  <p>
-    If we naively project out \(\vec{d}_{\text{codec}}\) without removing that overlap first, we slice off \(1 - \sin(62^\circ) = \mathbf{22.1\%}\) of our task signal! As shown in the interactive comparison below, <strong>Naive Nulling makes clean studio deepfake detection \(4\times\) worse</strong> (<code>ASVspoof 2019</code> EER jumps from <code>0.22%</code> to <code>0.89%</code>) and degrades clean <code>LibriSpeech</code> ASR Word Error Rate from <code>2.07%</code> to <code>3.41%</code>.
-  </p>
-
-  <div class="math-callout">
-    <strong>The 3-Step First-Principles Fix (Gram-Schmidt / QR Orthogonalization):</strong><br>
-    1. Turn the task direction into a unit vector \(\hat{q}_{\text{task}} = \frac{\vec{v}_{\text{task}}}{\|\vec{v}_{\text{task}}\|_2}\) (when protecting \(k\) task directions simultaneously, <strong>QR decomposition</strong> is simply the matrix form of Gram-Schmidt that produces \(k\) mutually perpendicular unit vectors \(Q_{\text{task}} \in \mathbb{R}^{D \times k}\)).<br>
-    2. Subtract the component of \(\vec{d}_{\text{codec}}\) that points along \(\hat{q}_{\text{task}}\):
-    $$\vec{u}_{\perp} = \vec{d}_{\text{codec}} - \underbrace{\left(\vec{d}_{\text{codec}} \cdot \hat{q}_{\text{task}}\right)}_{0.47} \hat{q}_{\text{task}}, \qquad \hat{u}_{\text{nuis}} = \frac{\vec{u}_{\perp}}{\|\vec{u}_{\perp}\|_2}$$
-    3. Now \(\hat{u}_{\text{nuis}} \cdot \hat{q}_{\text{task}} = 0\) (an <strong>exact \(90.0^\circ\) right angle</strong>). When we update the weight matrix in-place via
-    $$W_{\text{new}} \leftarrow W_{\text{old}} \left(I - \gamma \, \hat{u}_{\text{nuis}} \hat{u}_{\text{nuis}}^T\right)$$
-    any task signal along \(\hat{q}_{\text{task}}\) is multiplied by \((I - \gamma \hat{u}_{\text{nuis}} \hat{u}_{\text{nuis}}^T)\hat{q}_{\text{task}} = \hat{q}_{\text{task}} - 0 = \hat{q}_{\text{task}}\)—meaning <strong>100.0% of the task signal is preserved</strong> while \(88.4\%\) of the codec drift is erased!
-  </div>
-
-  <div class="interactive-box">
-    <div class="widget-toolbar">
-      <span style="font-weight:600;">Click to Compare the 3 Weight-Editing Modes on <code>Wav2Vec2</code> &amp; <code>Nemotron-3.5</code>:</span>
-      <div style="display:flex; gap:6px; flex-wrap:wrap;">
-        <button class="pill-btn" data-fig2a-mode="orig" type="button">1. Unedited Base Weights</button>
-        <button class="pill-btn" data-fig2a-mode="naive" type="button">2. Naive Nulling (Destroys 22.1% Task Signal!)</button>
-        <button class="pill-btn active-pill" data-fig2a-mode="orth" type="button">3. 90° Orthogonal Surgery (Ours — 0% Task Loss)</button>
-      </div>
-    </div>
-    <canvas id="fig2a-canvas" width="940" height="240" style="width:100%; height:auto; display:block;"></canvas>
-  </div>
-
-  <h3>2B. Signal-to-Noise Channel Filtering (Demystifying "GEVD" with a Simple Ratio)</h3>
-  <p>
-    What if the audio is corrupted by heavy room echo or background babble noise in Speech Recognition, and we want to add a lightweight linear bridge \(\Delta W\) that restores clean Conformer hidden states \(H_{\text{clean}}\) from noisy states \(H_{\text{noisy}}\)?
-  </p>
-  <p>
-    If you fit a standard linear regression (Ridge regression) across all \(D = 1,280\) Conformer channels, it tries to reconstruct all \(1,280\) channels equally. Why does that barely help (reducing 4-dataset noisy WER only from <code>8.09%</code> to <code>7.81%</code>)?
-  </p>
-  <p>
-    Because across those \(1,280\) hidden dimensions, <strong>only the top 96 directions have more clean speech energy than noise energy</strong>! In the remaining \(1,184\) directions, background noise and room echo are louder than the speech signal (\(\text{Signal-to-Noise Ratio} < 1.0\)). Trying to reconstruct those \(1,184\) noisy directions just copies noise into the language model.
-  </p>
-  <p>
-    <strong>Generalized Eigenvalue Decomposition (<code>GEVD</code>)</strong> is simply the mathematical tool that sorts all \(1,280\) directions from highest Signal-to-Noise Ratio to lowest:
-    $$\Sigma_{\text{clean}} \vec{v}_k = \lambda_k \, \Sigma_{\text{noise}} \vec{v}_k \quad \Longleftrightarrow \quad \lambda_k = \frac{\vec{v}_k^T \Sigma_{\text{clean}} \vec{v}_k}{\vec{v}_k^T \Sigma_{\text{noise}} \vec{v}_k} = \frac{\text{Clean Speech Power in Direction } k}{\text{Noise Power in Direction } k}$$
-    Drag the slider below to change how many sorted directions \(r\) we keep. Notice why cutting off right at <strong>\(r = 96\)</strong> (where the green Clean Speech bar equals the red Noise bar, \(\lambda_{96} = 1.0\)) achieves the lowest Word Error Rate (<strong>6.87%</strong>):
-  </p>
-
-  <div class="interactive-box">
-    <div class="widget-toolbar">
-      <label for="fig2b-rank-slider" style="font-weight:600;">Slide to Choose How Many Sorted Channels \(r\) to Keep:</label>
-      <input id="fig2b-rank-slider" type="range" min="0" max="5" step="1" value="2" style="width:180px;">
-      <span id="fig2b-rank-val" style="font-family:var(--font-mono); font-weight:600; color:#118659;">r = 96 (Exact SNR = 1.0 Cutoff — Optimal 6.87% WER!)</span>
-    </div>
-    <canvas id="fig2b-canvas" width="940" height="248" style="width:100%; height:auto; display:block;"></canvas>
-  </div>
-  <h2>Block 3: Capturing Fast Audio Transitions (Multi-Tapping) &amp; One-Sided Anomaly Scoring</h2>
-
-  <h3>3A. What Does "Multi-Tap" Mean? (And What Gets Missed Without It)</h3>
-  <p>
-    In a standard neural network readout, the output head only looks at the <strong>last layer</strong> at a <strong>single point in time \(h_t\)</strong> (top diagram below). Why is that a bottleneck for audio?
+    In an unedited audio model, the final readout layer only looks at the <strong>final layer (Layer 24)</strong> at a <strong>single point in time (\(h_t\))</strong>. That creates two blind spots:
   </p>
   <ol>
-    <li><strong>Across Time (Why 1 Frame Is Blind to Motion):</strong> A single frame \(h_t\) is like a still photograph of a moving car—it shows where the activation is right now, but not whether it is <em>accelerating</em> or <em>clicking</em>. By wiring three adjacent time frames \([h_{t-1}, \, h_t, \, h_{t+1}]\) side-by-side into the weight matrix (a <strong>3-Tap Temporal Window</strong>), a single matrix multiplication can directly compute:
+    <li><strong>Why 1 Layer Is Not Enough (Connecting Earlier Layers):</strong> By the time audio reaches Layer 24, the network has smoothed away fine-grained pitch, phase, and formant details that were present in earlier layers (such as Layers 8 and 16).</li>
+    <li><strong>Why 1 Time Frame Is Not Enough (Connecting Adjacent Frames \([h_{t-1}, h_t, h_{t+1}]\)):</strong> A single frame \(h_t\) is a static snapshot—it cannot tell how fast the audio is changing from one millisecond to the next. When we connect the previous frame \(h_{t-1}\) and next frame \(h_{t+1}\) into the weight matrix alongside \(h_t\), the weights can directly compute:
       <ul>
-        <li><strong>Frame-to-Frame Speed (\(\Delta_{1,t} = \frac{1}{2}(h_{t+1} - h_{t-1})\)):</strong> In Speech Recognition, room echo blurs static vowel frames \(h_t\), but \(\Delta_{1,t}\) fires sharp spikes at the exact millisecond a consonant burst (<code>/p/, /t/, /k/</code>) begins.</li>
-        <li><strong>Frame Acceleration / Glitch Curvature (\(\Delta_{2,t} = h_{t+1} - 2h_t + h_{t-1}\)):</strong> In Deepfake Detection, neural vocoders (like HiFi-GAN or Encodec) generate audio in fixed chunks (e.g. every \(20\text{ ms}\)). Their average energy \(h_t\) looks completely human, so a single-tap head misses them (<code>8.32%</code> EER on <code>ASVspoof 2021 DF</code>). But at the seam between two vocoder chunks, the phase jumps—creating a sharp spike in \(\Delta_{2,t}\) that drops EER to <strong>1.98% (318M) / 2.19% (86.8M)</strong>!</li>
+        <li><strong>Frame-to-Frame Speed (\(\frac{1}{2}(h_{t+1} - h_{t-1})\)):</strong> Spikes sharply at rapid consonant bursts (<code>/p/, /t/, /k/</code>) that room echo otherwise blurs.</li>
+        <li><strong>Frame Acceleration (\(h_{t+1} - 2h_t + h_{t-1}\)):</strong> Spikes at synthetic vocoder frame boundaries (where neural vocoders stitch \(20\text{ ms}\) audio chunks together).</li>
       </ul>
     </li>
-    <li><strong>Across Depth (Why 1 Layer Misses Early Acoustic Clues):</strong> The final layer of a Transformer is optimized for high-level semantics (words), discarding fine-grained pitch and phase artifacts present in early and middle layers. Wiring layers \(\{0, 2, 5, 8, 10, 12, 14, 16, 18, 20, 22, 24\}\) in Deepfake Detection—or stacking layers \([h_{32}, \, \text{LN}(h_{30}), \, \text{LN}(h_{28}), \, \Delta_{1,t}]\) in 32.4B ASR—lets the readout see both early acoustic forensics and deep phonetic context at once.</li>
+    <li><strong>Scoring Anomalies on One Side Only (\(\max(0, z)^2\)):</strong> Suppose real human voices sit around standardized score \(z = 0\) (spanning \(-2.5\) to \(+1.5\)) and synthetic deepfakes shift to the positive side (\(z > +1.5\)). If we square \(z\) directly (\(z^2\)), a real human speaking expressively on the negative tail at \(z = -2.5\) gets squared to \((-2.5)^2 = +6.25\) and falsely flagged as a deepfake! Clipping negative values to zero first via \(\log(1 + \max(0, z)^2)\) gives <strong>0.0 penalty across the entire real-human side (\(z \le 0\))</strong> while quadratically boosting deepfake anomalies on the positive side (\(z > 0\)).</li>
   </ol>
 
-  <div class="flow-diagram">
-    <svg viewBox="0 0 920 235" style="width:100%; height:auto; display:block;">
-      <!-- Left: Standard Single-Tap Network -->
-      <rect x="12" y="12" width="430" height="210" rx="8" fill="#fff8f8" stroke="#e6c5c8" />
-      <text x="26" y="34" fill="#b82d3c" font-size="13.5" font-weight="bold">Standard Single-Tap Readout (Misses Motion &amp; Early Layers)</text>
-      <rect x="34" y="65" width="76" height="36" rx="5" fill="#eee" stroke="#bbb" />
-      <text x="48" y="88" fill="#777" font-size="11.5" font-family="monospace">Layer 8</text>
-      <rect x="134" y="65" width="76" height="36" rx="5" fill="#eee" stroke="#bbb" />
-      <text x="145" y="88" fill="#777" font-size="11.5" font-family="monospace">Layer 16</text>
-      <rect x="234" y="65" width="82" height="36" rx="5" fill="#d93a4b" />
-      <text x="246" y="88" fill="#fff" font-size="11.5" font-family="monospace" font-weight="bold">Layer 24</text>
-      <line x1="110" y1="83" x2="134" y2="83" stroke="#999" stroke-width="1.5" />
-      <line x1="210" y1="83" x2="234" y2="83" stroke="#999" stroke-width="1.5" />
+  <p>
+    <strong>Try it interactively below:</strong> Check the boxes to connect each additional tap into the readout weight matrix \(W\) and see how the measured error rates on <code>ASVspoof 2021 DF</code>, <code>In-The-Wild</code>, and <code>Noisy Speech Recognition</code> drop as each connection is added:
+  </p>
 
-      <rect x="234" y="132" width="82" height="34" rx="5" fill="#fbe4e6" stroke="#d93a4b" />
-      <text x="242" y="153" fill="#b82d3c" font-size="11" font-family="monospace">Only Frame h_t</text>
-      <line x1="275" y1="101" x2="275" y2="132" stroke="#d93a4b" stroke-width="2" />
-      <line x1="316" y1="149" x2="352" y2="149" stroke="#d93a4b" stroke-width="2" />
-      <rect x="352" y="132" width="74" height="34" rx="5" fill="#333" />
-      <text x="364" y="153" fill="#fff" font-size="11.5" font-family="monospace">Head W</text>
-      <text x="28" y="198" fill="#b82d3c" font-size="12">✕ Blind to frame speed (h_{t+1} − h_{t−1}) and vocoder clicks</text>
+  <div class="interactive-box">
+    <div class="widget-toolbar" style="justify-content:flex-start; gap:18px;">
+      <label style="font-weight:600; color:#555;"><input type="checkbox" checked disabled> Final Layer + Current Frame \(h_t\) (Baseline)</label>
+      <label style="font-weight:600; cursor:pointer; color:#118659;"><input id="b3-chk-layers" type="checkbox" checked> + Connect Early &amp; Mid Layers (Layers 8, 16)</label>
+      <label style="font-weight:600; cursor:pointer; color:#1f77b4;"><input id="b3-chk-speed" type="checkbox" checked> + Connect Adjacent Frames \([h_{t-1}, h_{t+1}]\) (Speed)</label>
+      <label style="font-weight:600; cursor:pointer; color:#7b64b8;"><input id="b3-chk-onesided" type="checkbox" checked> + Connect One-Sided Squared \(\max(0,z)^2\)</label>
+    </div>
 
-      <!-- Right: Multi-Tap Network -->
-      <rect x="462" y="12" width="446" height="210" rx="8" fill="#f3faf6" stroke="#b9dcc9" />
-      <text x="476" y="34" fill="#118659" font-size="13.5" font-weight="bold">Our Multi-Tap Readout (Taps Multiple Layers + 3 Time Frames)</text>
-      <rect x="482" y="58" width="76" height="34" rx="5" fill="#2e996a" />
-      <text x="496" y="79" fill="#fff" font-size="11" font-family="monospace" font-weight="bold">Layer 8</text>
-      <rect x="576" y="58" width="76" height="34" rx="5" fill="#2e996a" />
-      <text x="587" y="79" fill="#fff" font-size="11" font-family="monospace" font-weight="bold">Layer 16</text>
-      <rect x="670" y="58" width="76" height="34" rx="5" fill="#2e996a" />
-      <text x="681" y="79" fill="#fff" font-size="11" font-family="monospace" font-weight="bold">Layer 24</text>
-      <line x1="558" y1="75" x2="576" y2="75" stroke="#118659" stroke-width="1.5" />
-      <line x1="652" y1="75" x2="670" y2="75" stroke="#118659" stroke-width="1.5" />
+    <svg viewBox="0 0 900 185" style="width:100%; height:auto; display:block; background:#fafcfb; border:1px solid #d5e0da; border-radius:8px;">
+      <!-- Transformer Layer Blocks -->
+      <rect x="28" y="24" width="110" height="40" rx="6" fill="#e8f5ee" stroke="#2e996a" stroke-width="1.5" />
+      <text x="48" y="49" fill="#118659" font-size="12.5" font-weight="bold" font-family="monospace">Layer 8</text>
 
-      <line x1="520" y1="92" x2="590" y2="126" stroke="#118659" stroke-width="1.6" />
-      <line x1="614" y1="92" x2="614" y2="126" stroke="#118659" stroke-width="1.6" />
-      <line x1="708" y1="92" x2="638" y2="126" stroke="#118659" stroke-width="1.6" />
+      <rect x="172" y="24" width="110" height="40" rx="6" fill="#e8f5ee" stroke="#2e996a" stroke-width="1.5" />
+      <text x="188" y="49" fill="#118659" font-size="12.5" font-weight="bold" font-family="monospace">Layer 16</text>
 
-      <rect x="484" y="126" width="290" height="42" rx="5" fill="#dbece2" stroke="#118659" stroke-width="1.5" />
-      <text x="495" y="144" fill="#118659" font-size="11" font-family="monospace" font-weight="bold">[h_{t−1}, h_t, h_{t+1}] → Speed Δ1 &amp; Click Curvature Δ2</text>
-      <text x="495" y="160" fill="#1b3b2b" font-size="10.5" font-family="monospace">Δ1 = 0.5(h_{t+1} − h_{t−1})  |  Δ2 = h_{t+1} − 2h_t + h_{t−1}</text>
+      <rect x="316" y="24" width="110" height="40" rx="6" fill="#118659" />
+      <text x="332" y="49" fill="#ffffff" font-size="12.5" font-weight="bold" font-family="monospace">Layer 24</text>
 
-      <line x1="774" y1="147" x2="808" y2="147" stroke="#118659" stroke-width="2.2" />
-      <rect x="808" y="128" width="84" height="38" rx="5" fill="#118659" />
-      <text x="818" y="151" fill="#fff" font-size="11.5" font-family="monospace" font-weight="bold">W_multitap</text>
-      <text x="478" y="198" fill="#118659" font-size="12" font-weight="bold">✓ Catches consonant bursts (/p/,/t/,/k/) &amp; 20ms vocoder phase seams</text>
+      <line x1="138" y1="44" x2="172" y2="44" stroke="#888" stroke-width="1.5" />
+      <line x1="282" y1="44" x2="316" y2="44" stroke="#888" stroke-width="1.5" />
+
+      <!-- Baseline single wire from Layer 24 -->
+      <line x1="426" y1="44" x2="545" y2="44" stroke="#118659" stroke-width="2.5" />
+
+      <!-- Toggleable Group 1: Early & Middle Layer Wires -->
+      <g id="svg-wire-layers" opacity="1.0">
+        <path d="M 83 64 L 83 88 L 545 88" fill="none" stroke="#2e996a" stroke-width="2.2" />
+        <path d="M 227 64 L 227 88" fill="none" stroke="#2e996a" stroke-width="2.2" />
+        <text x="95" y="82" fill="#118659" font-size="11.5" font-weight="bold">Multi-Layer Tap (Early Pitch/Phase + Mid Formants)</text>
+      </g>
+
+      <!-- Toggleable Group 2: Adjacent Time Frames [h_{t-1}, h_{t+1}] -->
+      <g id="svg-wire-speed" opacity="1.0">
+        <path d="M 371 64 L 371 124 L 545 124" fill="none" stroke="#1f77b4" stroke-width="2.2" />
+        <text x="95" y="118" fill="#1f77b4" font-size="11.5" font-weight="bold">Adjacent Time-Frame Tap: Speed = 0.5·(h_{t+1} − h_{t−1})</text>
+      </g>
+
+      <!-- Toggleable Group 3: One-Sided Squared Anomaly Tap -->
+      <g id="svg-wire-onesided" opacity="1.0">
+        <path d="M 371 124 L 371 158 L 545 158" fill="none" stroke="#7b64b8" stroke-width="2.2" />
+        <text x="95" y="152" fill="#7b64b8" font-size="11.5" font-weight="bold">One-Sided Anomaly Tap: log(1 + max(0, z)²)</text>
+      </g>
+
+      <!-- Readout Matrix W & Live Output Score Box -->
+      <rect x="545" y="20" width="118" height="150" rx="8" fill="#1b3b2b" />
+      <text x="563" y="88" fill="#ffffff" font-size="13" font-weight="bold" font-family="monospace">Edited</text>
+      <text x="563" y="108" fill="#ffffff" font-size="13" font-weight="bold" font-family="monospace">Weights W</text>
+
+      <line x1="663" y1="95" x2="692" y2="95" stroke="#1b3b2b" stroke-width="2.5" />
+
+      <rect x="692" y="20" width="188" height="150" rx="8" fill="#f1f8f4" stroke="#2e996a" stroke-width="1.5" />
+      <text x="706" y="44" fill="#1b3b2b" font-size="12" font-weight="bold">Measured Benchmark Error:</text>
+      <text x="706" y="72" fill="#444" font-size="11.5">ASVspoof 2021 DF:</text>
+      <text id="b3-stat-df21" x="706" y="90" fill="#118659" font-size="14" font-weight="bold" font-family="monospace">1.98% EER</text>
+      <text x="706" y="114" fill="#444" font-size="11.5">In-The-Wild Deepfake:</text>
+      <text id="b3-stat-itw" x="706" y="132" fill="#118659" font-size="14" font-weight="bold" font-family="monospace">2.51% EER</text>
+      <text x="706" y="154" fill="#444" font-size="11.5">Noisy ASR: <tspan id="b3-stat-asr" fill="#1f77b4" font-weight="bold" font-family="monospace">6.87% WER</tspan></text>
     </svg>
   </div>
 
-  <h3>3B. Plain-English Guide to "One-Sided Squared Anomaly Scoring"</h3>
+  <h2 id="block-4">Block 4: Finding the Optimal Weights in One Forward Pass</h2>
+
   <p>
-    In our code and mathematical appendix, we refer to our non-linear feature expansion as <em>One-Sided Rectified Quadratic Lifting</em>. What does that actually mean in plain English, and why does every single word in that phrase matter?
+    Now that we have our features and our augmentation sensitivity vectors, how do we compute the best weights \(W\)?
   </p>
   <p>
-    Look at <strong>Panel 3B</strong> in the figure below:
+    Instead of abstract equations, <strong>step through the interactive 3-scene walkthrough below</strong> on real audio examples to see why running 25 epochs of gradient descent (<code>SGD</code> or <code>AdamW</code>) learns the wrong weights—and how our <strong>One-Forward-Pass Optimizer (<code>OFP</code>)</strong> lands directly at the optimal weights in <strong>0.19 seconds</strong>:
+  </p>
+
+  <div class="interactive-box">
+    <div class="widget-toolbar">
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <button class="pill-btn active-pill" data-b4-scene="1" type="button">Scene 1: Inspect the Audio Shortcut</button>
+        <button class="pill-btn" data-b4-scene="2" type="button">Scene 2: Run 25 Epochs of SGD / AdamW</button>
+        <button class="pill-btn" data-b4-scene="3" type="button">Scene 3: Run 1-Pass Optimizer (0.19s)</button>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button class="pill-btn active-pill" data-b4-task="deepfake" type="button">Deepfake Example</button>
+        <button class="pill-btn" data-b4-task="asr" type="button">Speech Recognition Example</button>
+      </div>
+    </div>
+    <canvas id="b4-canvas" width="900" height="232" style="width:100%; height:auto; display:block;"></canvas>
+    <p id="b4-scene-caption" style="margin:10px 0 0; font-size:14px; color:#118659; font-weight:600;">
+      Click 'Scene 2' above to see what happens when 25 epochs of SGD/AdamW train on these clips.
+    </p>
+  </div>
+
+  <p>
+    <strong>The Exact Closed-Form Equation Behind Scene 3:</strong> Because the readout layer \(y = \Phi W\) is linear in the weights \(W\), the squared error objective with an \(\ell_2\) penalty \(\lambda \|W\|_2^2\) is a smooth bowl with a <strong>single exact global minimum</strong>. In one forward pass (`torch.inference_mode()`), we collect:
   </p>
   <ol>
-    <li><strong>Standardize Each Feature Using Real Human Speech (\(z\)):</strong> For any neuron statistic \(x\) (such as frame acceleration \(\Delta_2\)), we subtract the average of real human speech \(\mu_{\text{real}}\) and divide by the standard deviation of real human speech \(\sigma_{\text{real}}\):
-      $$z = \frac{x - \mu_{\text{real}}}{\sigma_{\text{real}}} \cdot \text{sign}(\mu_{\text{fake}} - \mu_{\text{real}})$$
-      Now, normal real human voices sit around <strong>\(z = 0\)</strong> (blue bell curve in Panel 3B, spanning roughly \(z \in [-2.5, +1.5]\)), while synthetic deepfakes are shifted to the positive right side (red bell curve, centered around <strong>\(z = +1.85\)</strong>).</li>
-    <li><strong>Why Normal Squaring (\(z^2\), "Two-Sided Quadratic") Backfires:</strong> To make extreme deepfake anomalies stand out, a natural idea is to square \(z\) (orange dashed curve \(\log(1 + z^2)\) in Panel 3B). At \(z = +2.5\), squaring gives \(+6.25\), strongly flagging the deepfake. <strong>But what happens when a real human speaks very expressively or softly on the left tail at \(z = -2.5\)?</strong> Because \((-2.5)^2 = +6.25\) is also positive, standard squaring curves upward on the left and <strong>falsely accuses expressive real humans of being deepfakes!</strong></li>
-    <li><strong>Why "One-Sided" (\(\max(0, z)^2\)) Solves It completely:</strong> Before squaring, we pass \(z\) through \(\text{ReLU}(z) = \max(0, z)\), which sets every negative number (\(z \le 0\)) to <strong>zero</strong>:
-      $$q(z) = \log\!\left(1 + \max(0, \, z)^2\right)$$
-      Look at the thick green curve in Panel 3B: across the <strong>entire left half-space of real human speech (\(z \le 0\)), the penalty is flat \(0.0\)</strong> (zero false alarms!), while on the right side (\(z > 0\)), it grows quadratically to catch synthetic vocoder anomalies.</li>
+    <li>The feature correlation matrix \(A = \Phi^T \Pi \Phi + \lambda I\) (where \(\Pi = \text{diag}(\pi_i)\) gives \(1.5\times\) higher weight to hard boundary clips where the base model is uncertain),</li>
+    <li>The target separation vector \(\vec{d}_{\text{task}}\), and</li>
+    <li>The paired augmentation difference vectors \(C_{\text{aug}} = \mathbb{E}[\Phi(\text{MP3}) - \Phi(\text{WAV})]\).</li>
   </ol>
+  <div class="math-callout">
+    Solving for the weights \(W\) that minimize error <strong>subject to the hard constraint \(C_{\text{aug}}^T W = 0\)</strong> (zero sensitivity to audio compression) has an exact one-line solution:
+    $$W_{\text{OFP}} = A^{-1}\vec{d}_{\text{task}} - A^{-1}C_{\text{aug}}\left(C_{\text{aug}}^T A^{-1} C_{\text{aug}}\right)^{-1} C_{\text{aug}}^T A^{-1}\vec{d}_{\text{task}}$$
+    On 1× H100 GPU across \(D = 122,880\) features, this matrix equation solves in <strong>0.19 seconds</strong> and achieves <strong>4.12% Equal Error Rate</strong> across 4 unseen deepfake datasets—compared to <strong>6.95% Equal Error Rate</strong> after 25 epochs (<code>12.40 seconds</code>) of <code>AdamW</code> backpropagation.
+  </div>
 
-  <figure style="margin: 20px 0;">
-    <img src="figures/fig3_multitap_and_rkhs_lifting.png" alt="Multi-Tap Temporal Derivatives and One-Sided Squared Anomaly Scoring" style="width:100%; border-radius:8px; border:1px solid #d5e0da;">
-    <figcaption style="font-size:14px; color:#555; margin-top:8px;">
-      <strong>Figure 3 (Measured Signal Traces &amp; Response Curves):</strong> <strong>3A:</strong> A real speech waveform envelope \(h_t\) (blue) vs. 1st-order speed \(|\Delta_{1,t}|\) (green, spiking at consonant onsets) and 2nd-order curvature \(|\Delta_{2,t}|\) (red, spiking at rapid glitches). <strong>3B:</strong> Two-sided quadratic \(\log(1+z^2)\) (orange dashed, penalizing the real left tail) vs. our One-Sided Squared curve \(\log(1+\max(0,z)^2)\) (green solid, flat zero for all \(z \le 0\)). <strong>3C:</strong> In 32.4B ASR, our confidence margin gate activates vocabulary weight edits only when the top-2 token logit gap \(m_t = z_{(1)} - z_{(2)} < 4.5\) (ambiguous homophones/proper nouns) while leaving confident grammar tokens untouched.
-    </figcaption>
-  </figure>
-
-  <h2>Block 4: The One-Forward-Pass Optimizer — Why 1 Closed-Form Pass Beats 25 Epochs of Gradient Descent</h2>
+  <h2 id="block-5">Block 5: Compressing Audio Model Weights</h2>
 
   <p>
-    Once we have extracted our multi-tap and one-sided features \(\Phi(x) \in \mathbb{R}^{D}\) (with \(D = 122,880\) features across 12 layers), how should we find the optimal weight matrix \(W\)?
+    Finally, can we use the same one-forward-pass philosophy to <strong>compress</strong> the internal weight matrices of an audio model?
   </p>
   <p>
-    The conventional deep learning answer is to run <strong>25 epochs of Stochastic Gradient Descent (<code>SGD</code>) or <code>AdamW</code></strong> minimizing Binary Cross-Entropy (<code>BCE</code>) or Focal loss. <strong>Why does 25-epoch backpropagation lose to a single forward pass on unseen test benchmarks?</strong>
-  </p>
-  <p>
-    Consider a concrete example shown in <strong>Interactive Figure 4A</strong> below:
+    Suppose we want to compress a \(1024 \times 1024\) weight matrix \(W\) inside <code>Wav2Vec2</code> down to rank \(r = 384\) (replacing one large matrix with two thin matrices \(U_r V_r^T\)).
   </p>
   <ul>
-    <li>In almost every audio training set, there is an accidental correlation between the class label and recording conditions (for instance, spoofed clips having slightly different MP3/telephone filtering or gain than real clips). This tilts the training loss bowls (orange dashed ellipses) toward a <strong>Shortcut Minimum</strong> at \((w_{\text{task}} = 0.72, \, w_{\text{codec}} = 0.64)\).</li>
-    <li>When you run <strong>25 epochs of <code>SGD</code> or <code>AdamW</code></strong>, gradient descent only sees the training loss—it has no way of knowing that \(w_{\text{codec}}\) is a brittle shortcut! So over 25 epochs (<code>12.4 seconds</code> on an H100 GPU), it marches straight into the red <strong>Shortcut Minimum</strong>, yielding a high <strong>6.95% Equal Error Rate</strong> on unseen test datasets.</li>
-    <li><strong>How our One-Forward-Pass Optimizer (<code>OFP</code>) avoids the shortcut completely:</strong> In <strong>one single forward pass</strong> (`torch.inference_mode()`, <code>0</code> backward passes), <code>OFP</code> collects:
-      <ol>
-        <li>The feature covariance matrix \(A = \Phi^T \Pi \Phi + \lambda I\) (where \(\Pi = \text{diag}(\pi_i)\) up-weights hard boundary samples by \(1.5\times\) using the base model's margin),</li>
-        <li>The class separation vector \(\vec{d}_{\text{task}}\), and</li>
-        <li>The paired MP3/telephone nuisance drift vectors \(C_{\text{codec}} = \mathbb{E}[\Phi(\text{MP3}) - \Phi(\text{WAV})]\).</li>
-      </ol>
-      It then solves the exact convex quadratic minimization <strong>subject to the hard linear lock \(C_{\text{codec}}^T w = 0\)</strong> (\(w_{\text{codec}} = 0\), the solid green horizontal line in 4A):
-      $$w_{\text{OFP}} = A^{-1}\vec{d}_{\text{task}} - A^{-1}C_{\text{codec}}\left(C_{\text{codec}}^T A^{-1} C_{\text{codec}}\right)^{-1} C_{\text{codec}}^T A^{-1}\vec{d}_{\text{task}}$$
-      Because \(C_{\text{codec}}^T w_{\text{OFP}} = 0\) is enforced exactly, <code>OFP</code> <strong>cannot leave the green horizontal line \(w_{\text{codec}} = 0\)</strong>—jumping in <strong>1 closed-form step (<code>0.19 seconds</code>)</strong> to the green star \((1.00, 0.00)\) and achieving <strong>4.12% Unseen Equal Error Rate</strong> (<strong>65× faster</strong> and <strong>40.7% lower error</strong> than 25-epoch <code>AdamW</code>)!
-    </li>
+    <li><strong>Why Standard SVD Weight Compression Hurts Audio Models:</strong> Standard Singular Value Decomposition (<code>SVD</code>) or activation-weighted SVD (<code>ASVD</code>) keeps the directions with the largest <em>average static energy</em> \(\text{Cov}(Z_t)\). In audio, slow background hum and steady vowels have huge static energy, whereas fast consonant bursts (<code>/p/, /t/, /k/</code>) last only \(10\text{–}20\text{ ms}\)—so they have small static energy but <strong>large frame-to-frame change \((Z_t - Z_{t-1})\)</strong>! Standard SVD throws away those fast-changing directions, cutting consonant burst peaks by <strong>-42%</strong> (red shaded region below).</li>
+    <li><strong>How Transition-Preserving SVD Fixes It in One Forward Pass:</strong> Instead of compressing using static covariance alone, we weight the SVD by <strong>static energy plus \(2\times\) frame-to-frame transition energy</strong>:
+      $$\Sigma_{\text{joint}} = \text{Cov}(Z_t) + 2.0 \, \text{Cov}(Z_t - Z_{t-1})$$
+      This protects every fast-changing consonant and vocoder-click direction from truncation, preserving <strong>99.1%</strong> of the sharp transition peaks!</li>
   </ul>
 
   <div class="interactive-box">
     <div class="widget-toolbar">
-      <div style="display:flex; align-items:center; gap:8px;">
-        <button id="fig4-play-btn" class="pill-btn active-pill" type="button">Animate 25 Epochs vs. 1-Pass Jump</button>
-        <label for="fig4-epoch-slider" style="font-weight:600;">Backprop Step:</label>
-        <input id="fig4-epoch-slider" type="range" min="0" max="25" step="1" value="25" style="width:140px;">
-        <span id="fig4-epoch-val" style="font-family:var(--font-mono); font-weight:600;">Epoch 25 / 25</span>
-      </div>
-      <span style="font-size:13px; color:#555;">Metric in 4B: <strong>Unseen Test Equal Error Rate (EER %, Lower is Better)</strong></span>
+      <label for="b5-slider" style="font-weight:600;">Slide Between Standard SVD (0%) and Transition-Preserving SVD (100%):</label>
+      <input id="b5-slider" type="range" min="0" max="1" step="0.05" value="1" style="width:160px;">
+      <span id="b5-slider-val" style="font-family:var(--font-mono); font-weight:600; color:#118659;">Our Transition-Preserving SVD (Static Energy + 2× Frame Change — Keeps 99.1% of Spikes)</span>
     </div>
-    <canvas id="fig4-canvas" width="940" height="278" style="width:100%; height:auto; display:block;"></canvas>
-  </div>
-
-  <h2>Block 5: Native Weight Compression Without Blurring Fast Audio Transitions</h2>
-
-  <p>
-    Can an LLM also <strong>compress</strong> an audio model in a single forward pass without retraining?
-  </p>
-  <p>
-    The standard way to compress a weight matrix \(W \in \mathbb{R}^{D_{\text{out}} \times D_{\text{in}}}\) is <strong>Singular Value Decomposition (<code>SVD</code>)</strong> or activation-weighted SVD (<code>ASVD</code>), which keeps the top \(r\) directions that have the largest static activation energy \(\text{Cov}(Z_t)\).
-  </p>
-  <p>
-    <strong>Why does standard SVD fail on audio models?</strong> In speech and audio, slow background noise and steady vowel sounds carry <strong>huge static amplitude</strong> \(\text{Var}(Z_t)\), whereas rapid consonant bursts (<code>/p/, /t/, /k/</code>) and synthetic vocoder clicks last only \(10\text{–}20\text{ ms}\)—so they have small static variance \(\text{Var}(Z_t)\) but <strong>huge frame-to-frame transition speed</strong> \(\text{Var}(Z_t - Z_{t-1})\)!
-  </p>
-  <p>
-    Because standard SVD sorts directions only by static variance \(\text{Cov}(Z_t)\), truncating to rank \(r\) acts like a <strong>blurry low-pass filter</strong> that throws away the fast-changing consonant directions—attenuating peak frame-to-frame speed \(|Y_t - Y_{t-1}|\) by <strong>-42%</strong>!
-  </p>
-  <div class="math-callout">
-    <strong>Velocity-Preserving SVD (<code>OT-SVD</code>) in Two Steps:</strong><br>
-    1. Instead of whitening by static covariance alone, we whiten the layer inputs using the <strong>Joint Static + Velocity Covariance Matrix</strong>:
-    $$\Sigma_{\text{joint}} = \text{Cov}(Z_t) + 2.0 \, \text{Cov}(Z_t - Z_{t-1})$$
-    Now any direction with high frame-to-frame transition speed is given \(3\times\) priority and is protected from truncation when we take the top-\(r\) SVD of \(W \Sigma_{\text{joint}}^{1/2}\).<br>
-    2. We rescale each output neuron \(i\) by the exact ratio of teacher-to-compressed energy+velocity \(g_i = \sqrt{\frac{\text{Var}(Y_i) + 2\text{Var}(\Delta Y_i)}{\text{Var}(\hat{Y}_i) + 2\text{Var}(\Delta \hat{Y}_i)}}\) so the next layer sees zero distribution shift.
-  </div>
-
-  <p>
-    Drag the slider below from <strong>0% Velocity Weight (Standard SVD/ASVD)</strong> to <strong>100% Velocity-Preserving SVD</strong> to watch how preserving transition speed restores the sharp consonant bursts and drops compressed <code>Wav2Vec2-Large</code> ASR Word Error Rate from <code>6.45%</code> down to <strong>5.04%</strong> (beating the uncompressed <code>315M</code> teacher's <code>5.16%</code>!):
-  </p>
-
-  <div class="interactive-box">
-    <div class="widget-toolbar">
-      <label for="fig5-vel-slider" style="font-weight:600;">Slide Velocity Preservation Weight:</label>
-      <input id="fig5-vel-slider" type="range" min="0" max="1" step="0.05" value="1" style="width:180px;">
-      <span id="fig5-vel-val" style="font-family:var(--font-mono); font-weight:600; color:#118659;">100% Velocity-Preserving SVD (Cov(Z) + 2·Cov(ΔZ) — Retains 99.1% of Consonant Speed!)</span>
-    </div>
-    <canvas id="fig5-canvas" width="940" height="242" style="width:100%; height:auto; display:block;"></canvas>
+    <canvas id="b5-canvas" width="900" height="228" style="width:100%; height:auto; display:block;"></canvas>
   </div>
 
   <div class="bench-table-wrap">
     <table class="bench-table">
       <thead>
         <tr>
-          <th>Compressed Audio Model &amp; Task</th>
-          <th>Uncompressed Size</th>
+          <th>Audio Model &amp; Task</th>
+          <th>Original Size</th>
           <th>Compressed Size</th>
-          <th>Parameter Reduction</th>
-          <th>Measured Benchmark Impact</th>
+          <th>Reduction</th>
+          <th>Verified Benchmark Performance</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong><code>ishiki-deepfake-0.5</code></strong> (XLS-R + AASIST Deepfake Detector)</td>
-          <td><code>318M</code> (1.27 GB)</td>
-          <td><strong><code>86.8M</code> (354 MB)</strong></td>
+          <td><strong><a href="https://huggingface.co/ishiki-labs/ishiki-deepfake-0.5"><code>ishiki-deepfake-0.5</code></a></strong> (Audio Deepfake Detector)</td>
+          <td><code>318M</code></td>
+          <td><strong><code>86.8M</code></strong></td>
           <td><strong>-72.7% (3.66× smaller)</strong></td>
-          <td><code>0.16%</code> EER on ASV19 LA, <code>1.51%</code> on ASV21 LA, <code>2.19%</code> on ASV21 DF, <code>2.72%</code> on In-The-Wild</td>
+          <td><code>0.16%</code> ASV19 LA, <code>1.51%</code> ASV21 LA, <code>2.19%</code> ASV21 DF, <code>2.72%</code> In-The-Wild EER</td>
         </tr>
         <tr>
-          <td><strong><code>Wav2Vec2-Large</code></strong> (24-Layer Speech Recognition)</td>
+          <td><strong><code>Wav2Vec2-Large</code></strong> (Speech Recognition)</td>
           <td><code>315M</code></td>
           <td><strong><code>142M</code></strong></td>
           <td><strong>-55.1% (2.23× smaller)</strong></td>
-          <td><strong><code>5.04%</code> Macro WER</strong> on 4 noisy test sets (beats <code>5.16%</code> uncompressed teacher &amp; <code>6.45%</code> ASVD)</td>
+          <td><strong><code>5.04%</code> Macro WER</strong> across 4 noisy test sets (beats <code>5.16%</code> uncompressed teacher &amp; <code>6.45%</code> ASVD)</td>
         </tr>
         <tr>
-          <td><strong><code>Nemotron Sortformer</code> → <code>OFP-MicroDiarizer</code></strong></td>
+          <td><strong><code>Nemotron Sortformer</code></strong> (Speaker Diarizer)</td>
           <td><code>99.4M</code> (31 Layers)</td>
           <td><strong><code>30.7K</code> (1 Layer)</strong></td>
           <td><strong>-99.97% (3,234× smaller)</strong></td>
-          <td><strong><code>0.00%</code> WER loss</strong> across all 14 ASR datasets; cuts streaming Time-To-First-Token by <code>-38 ms</code> (to <strong><code>21.1 ms</code></strong>)</td>
+          <td><strong><code>0.00%</code> WER loss</strong> across all 14 ASR datasets; cuts streaming latency by <code>-38 ms</code> (to <strong><code>21.1 ms</code> TTFT</strong>)</td>
         </tr>
         <tr>
-          <td><strong><code>Nemotron-3.5-30B-A4B</code></strong> (MoE \(\text{ReLU}^2\) Expert Compaction)</td>
+          <td><strong><a href="https://huggingface.co/ishiki-labs/ishiki-asr-0.5"><code>ishiki-asr-0.5</code></a></strong> (<code>Nemotron-3.5</code> MoE Expert Compaction)</td>
           <td><code>32.4B</code></td>
           <td><strong><code>26.2B</code></strong></td>
           <td><strong>-19.0% (-6.16B params)</strong></td>
@@ -548,43 +550,20 @@
     </table>
   </div>
 
-  <h2>Block 6: Stopping Decoder Loops &amp; Hallucinations with 40ms Acoustic CTC Grounding</h2>
+  <h2>Complete Benchmark Results &amp; Open-Source Releases</h2>
 
   <p>
-    In <a href="https://rikiyat.github.io/blog/weight-space-programming/">Takehi et al. (2026)</a>, editing <code>Qwen3.5-0.8B</code> revealed that small reasoning models fail largely because they get trapped in <strong>autoregressive repetition loops</strong>. We observe an analogous failure mode in our 32.4B Audio-LLM (<code>Nemotron-3.5-Transcribe</code>):
-  </p>
-  <ol>
-    <li><strong>Runaway Phrase Loops vs. Genuine Spoken Stutters:</strong> On conversational speech (like <code>AMI</code> meetings), the autoregressive LLM decoder sometimes loops on a word 4+ times (<code>"the the the the"</code>), yet human speakers also genuinely stutter twice (<code>"he he does not"</code> in <code>AMI Utt 3</code>), which verbatim benchmarks require keeping! Furthermore, on read-speech corpora like <code>Common Voice</code> (<code>Utt 15</code>), speakers sometimes flub a sentence and read the entire 12-word prompt twice in a row.</li>
-    <li><strong>How Our Dual-Head 40ms CTC Loop Guard Solves Both:</strong> Because our Conformer encoder also has a parallel, frame-synchronous <code>40ms</code> Connectionist Temporal Classification (<code>CTC</code>) head that emits tokens locked directly to audio frames (and <em>cannot</em> loop autoregressively), we compare the LLM's output against the CTC transcript:
-      <ul>
-        <li>If the LLM outputs a 2-word repeat <code>"he he"</code> and the frame-synchronous CTC head <em>also</em> heard <code>"he he"</code>, we <strong>keep the authentic stutter</strong> (<code>0.0%</code> error).</li>
-        <li>If the LLM loops \(\ge 3\times\) while CTC heard the word only once, or if the transcript is an exact \(2\times\) full-sentence re-take (<code>words == words[:L] * 2</code> for \(L \ge 6\)), we collapse the loop—dropping single-model <code>Common Voice</code> WER from <strong><code>8.61%</code> down to <code>5.95%</code></strong>!</li>
-      </ul>
-    </li>
-    <li><strong>Resolving Disputed Words via Teacher-Forced Acoustic Log-Likelihood:</strong> When specialist ASR models disagree on a word span (e.g., <code>"saying a simple song"</code> vs. <code>"sang a simple song"</code> in <code>URGENT 2024 Utt 10</code>), we first check if the majority of Top-8 models explicitly voted to <em>keep</em> the anchor span unchanged (<strong>Keep-Vote Veto</strong>). If the span is genuinely contested, we score both candidate transcripts directly against the audio using teacher-forced log-likelihood \(\Delta\text{LL} = \log P(Y_{\text{cand}} \mid X_{\text{audio}}) - \log P(Y_{\text{base}} \mid X_{\text{audio}})\) across 4 independent audio-language backbones. As shown in <strong>Figure 6B</strong> below, true word corrections have a positive log-likelihood gain (<strong>+0.9 to +6.5 nats</strong>), whereas hallucinated edits score strongly negative (<strong>-11 to -18 nats</strong>).</li>
-  </ol>
-
-  <figure style="margin: 20px 0;">
-    <img src="figures/fig6_ctc_consensus_and_loop_guard.png" alt="CTC Loop Guard and 4-Backbone Teacher-Forced Neural Span Rescorer" style="width:100%; border-radius:8px; border:1px solid #d5e0da;">
-    <figcaption style="font-size:14px; color:#555; margin-top:8px;">
-      <strong>Figure 6:</strong> <strong>6A:</strong> Frame-synchronous 40ms CTC Loop Guard preserves authentic \(2\times\) stutters (<code>AMI Utt 3</code>) while eliminating runaway decoder loops and \(2\times\) prompt re-takes (<code>Common Voice Utt 15</code>). <strong>6B:</strong> Across 8 benchmarks, true word corrections exhibit positive teacher-forced acoustic log-likelihood (\(\text{median } \Delta\text{LL} > 0\text{ nats}\), green), whereas false edits drop by \(-11\text{ to }-18\text{ nats}\) (red). <strong>6C:</strong> Case study on <code>URGENT 2024 Utt 10</code> (<code>"saying" → "sang"</code>, \(\Delta\text{LL} = +17.89\text{ nats}\)).
-    </figcaption>
-  </figure>
-
-  <h2>Complete Verified Benchmark Results &amp; Open-Weights Checkpoints</h2>
-
-  <p>
-    Both models and the unified <code>audiowsp</code> harness are publicly released so anyone can verify every number below:
+    All checkpoints, forward-pass datasets, and the unified <a href="https://github.com/ishikilabsinc/audiowsp"><code>audiowsp</code></a> harness are publicly available:
   </p>
   <ul>
-    <li><strong>Audio Deepfake Detector (<code>86.8M</code> Compact &amp; <code>318M</code> Full + <code>20.8K</code> Distilled Forward-Pass Dataset):</strong> <a href="https://huggingface.co/ishiki-labs/ishiki-deepfake-0.5"><code>huggingface.co/ishiki-labs/ishiki-deepfake-0.5</code></a></li>
-    <li><strong>Automatic Speech Recognition Model (<code>32.4B</code> Full &amp; <code>26.2B</code> Compact, Open ASR Leaderboard PR <a href="https://github.com/huggingface/open_asr_leaderboard/pull/291">#291</a>):</strong> <a href="https://huggingface.co/ishiki-labs/ishiki-asr-0.5"><code>huggingface.co/ishiki-labs/ishiki-asr-0.5</code></a></li>
-    <li><strong>Unified Open-Source AudioWSP Harness:</strong> <a href="../../audiowsp/"><code>audiowsp/</code></a> (run <code>python -m harness run-wsp --task both</code>)</li>
+    <li><strong>Open-Source Harness:</strong> <a href="https://github.com/ishikilabsinc/audiowsp"><code>github.com/ishikilabsinc/audiowsp</code></a></li>
+    <li><strong>Audio Deepfake Detector (<code>318M</code> Full &amp; <code>86.8M</code> Compact + <code>20.8K</code> Forward-Pass Dataset):</strong> <a href="https://huggingface.co/ishiki-labs/ishiki-deepfake-0.5"><code>huggingface.co/ishiki-labs/ishiki-deepfake-0.5</code></a></li>
+    <li><strong>Automatic Speech Recognition Model (Open ASR Leaderboard PR <a href="https://github.com/huggingface/open_asr_leaderboard/pull/291">#291</a>):</strong> <a href="https://huggingface.co/ishiki-labs/ishiki-asr-0.5"><code>huggingface.co/ishiki-labs/ishiki-asr-0.5</code></a></li>
   </ul>
 
   <h3>Table 1: Audio Deepfake Detection Across 15 Benchmarks (2.08M Trials)</h3>
   <p style="font-size:14.5px; color:#555;">
-    Comparing the unedited <strong>Base Checkpoint (<code>Wav2Vec2-XLS-R-AASIST</code>, 318M)</strong>, the strongest <strong>Published / Leaderboard Reference SOTA</strong> (with paper links and whether the SOTA model trained on that dataset's train/dev split), our <strong>Full 318M Model (<code>model_318m_full.safetensors</code>)</strong>, and our <strong>3.66× Compressed 86.8M Model (<code>model.safetensors</code>)</strong>:
+    Comparing the unedited <strong>Base Checkpoint (<a href="https://arxiv.org/pdf/2202.12233">Wav2Vec2-AASIST</a>, 318M)</strong>, the strongest <strong>Published / Leaderboard Reference SOTA</strong> (with paper links and training exposure), <strong>what our forward-pass dataset used</strong> (<a href="https://huggingface.co/ishiki-labs/ishiki-deepfake-0.5/tree/main/distilled_dataset"><code>distilled_dataset/</code></a>), our <strong><a href="https://huggingface.co/ishiki-labs/ishiki-deepfake-0.5/blob/main/model_318m_full.safetensors">318M Full Model</a></strong>, and our <strong><a href="https://huggingface.co/ishiki-labs/ishiki-deepfake-0.5/blob/main/model.safetensors">86.8M Compact Model</a></strong>:
   </p>
 
   <div class="bench-table-wrap">
@@ -593,11 +572,12 @@
         <tr>
           <th>Dataset &amp; Official Paper</th>
           <th>Partition (Trials)</th>
-          <th>Base Checkpoint (<a href="https://arxiv.org/pdf/2202.12233">W2V2-AASIST</a>, 318M) EER / AUC</th>
-          <th>Published / Leaderboard Reference SOTA (Method, Params, EER / AUC)</th>
-          <th>Did Reference SOTA Train on This Dataset?</th>
-          <th>Ours (<code>318M</code> Full) EER / AUC</th>
-          <th>Ours (<code>86.8M</code> Compact) EER / AUC</th>
+          <th>Base (<a href="https://arxiv.org/pdf/2202.12233">W2V2-AASIST</a>, 318M) EER / AUC</th>
+          <th>Published / Leaderboard SOTA (Method, Params, EER / AUC)</th>
+          <th>Did SOTA Train on This Dataset?</th>
+          <th>What Our Forward-Pass Set Used (<a href="https://huggingface.co/ishiki-labs/ishiki-deepfake-0.5/tree/main/distilled_dataset">Dataset</a>)</th>
+          <th>Ours (<a href="https://huggingface.co/ishiki-labs/ishiki-deepfake-0.5/blob/main/model_318m_full.safetensors">318M Full</a>) EER / AUC</th>
+          <th>Ours (<a href="https://huggingface.co/ishiki-labs/ishiki-deepfake-0.5/blob/main/model.safetensors">86.8M Compact</a>) EER / AUC</th>
         </tr>
       </thead>
       <tbody>
@@ -606,7 +586,8 @@
           <td>Eval (<code>71.2K</code>)</td>
           <td><code>0.22%</code> / <code>0.9997</code></td>
           <td><a href="https://huggingface.co/datasets/SpeechAntiSpoofingBenchmarks/ASVspoof2019_LA/resolve/5215859c8597f5d7ca746469453c1db8079b738b/submissions/last-net.yaml">LaST-Net</a> (317M): <code>0.09%</code> · <a href="https://arxiv.org/pdf/2504.05657">Nes2NetX</a> (318M): <code>0.12%</code></td>
-          <td><strong>Yes</strong> — Official ASV19 LA train + dev</td>
+          <td><strong>Yes</strong> (25.4K train + 24.8K dev)</td>
+          <td><code>3.0K</code> train + <code>600</code> dev (<code>0</code> eval)</td>
           <td><strong><code>0.12%</code></strong> / <code>0.99999</code></td>
           <td><strong><code>0.16%</code></strong> / <code>0.99996</code></td>
         </tr>
@@ -614,17 +595,19 @@
           <td><a href="https://zenodo.org/records/4837263"><strong>ASVspoof 2021 LA</strong></a> · [<a href="https://arxiv.org/abs/2109.00537">Paper</a>]</td>
           <td>Eval (<code>148.2K</code>)</td>
           <td><code>8.11%</code> / <code>0.9779</code></td>
-          <td><a href="https://www.isca-archive.org/interspeech_2025/kim25j_interspeech.pdf">XLS-R Conformer</a> (Interspeech '25): <code>0.69%</code></td>
-          <td>Trained on ASV19 LA train (variable-length)</td>
+          <td><a href="https://www.isca-archive.org/interspeech_2025/kim25j_interspeech.pdf">XLS-R Conformer</a>: <code>0.69%</code></td>
+          <td>Trained on ASV19 LA train</td>
+          <td><strong><code>0</code> clips</strong> (uses ASV19 train/dev + paired PSTN probes)</td>
           <td><strong><code>1.42%</code></strong> / <code>0.9964</code></td>
           <td><strong><code>1.51%</code></strong> / <code>0.9959</code></td>
         </tr>
         <tr>
           <td><a href="https://zenodo.org/records/4837263"><strong>ASVspoof 2021 DF</strong></a> · [<a href="https://arxiv.org/abs/2109.00537">Paper</a>]</td>
           <td>Eval (<code>533.9K</code>)</td>
-          <td><code>6.63%</code> (Arena) / <code>8.32%</code></td>
+          <td><code>6.63%</code> / <code>8.32%</code></td>
           <td><a href="https://arxiv.org/html/2611.04634v1">VeriSpoof-Base</a> (2.85B): <code>0.97%</code> · <a href="https://ieeexplore.ieee.org/document/10909468">XLSR-Mamba</a> (319M): <code>1.88%</code></td>
           <td>Multi-corpus (8 corpora incl. ASV19 &amp; ASV5)</td>
+          <td><strong><code>0</code> clips</strong> (uses ASV19/ASV5 + paired codec probes)</td>
           <td><strong><code>1.98%</code></strong> / <code>0.9983</code></td>
           <td><strong><code>2.19%</code></strong> / <code>0.9980</code></td>
         </tr>
@@ -634,6 +617,7 @@
           <td><code>11.22%</code> / <code>0.9572</code></td>
           <td><a href="https://huggingface.co/datasets/SpeechAntiSpoofingBenchmarks/InTheWild/resolve/e861d1f7af89260574ed4c2bbc2c6be24c103f13/submissions/utcn-xlsr2b-logreg.yaml">UTCN-XLSR2B</a> (433M): <code>0.37%</code> · <a href="https://huggingface.co/Speech-Arena-2025/DF_Arena_1B_V_1">DF-Arena-1B</a> (1B): <code>0.91%</code> · <a href="https://ieeexplore.ieee.org/document/10909468">XLSR-Mamba</a> (319M): <code>6.71%</code></td>
           <td>7-corpus fit + ITW config selection</td>
+          <td><strong><code>0</code> clips</strong> in forward-pass set</td>
           <td><strong><code>2.51%</code></strong> / <code>0.9958</code></td>
           <td><strong><code>2.72%</code></strong> / <code>0.9951</code></td>
         </tr>
@@ -643,6 +627,7 @@
           <td><code>9.57%</code> / <code>0.9583</code></td>
           <td><a href="https://huggingface.co/datasets/SpeechAntiSpoofingBenchmarks/DECRO/resolve/7938186b3ed84b9802c17085d5151df7b299d8d7/submissions/spectra-aasist.yaml">Spectra-AASIST</a> (316M): <code>0.17%</code></td>
           <td>Undisclosed (Arena submission)</td>
+          <td><strong><code>0</code> DECRO clips</strong> (<code>1.28K</code> CFAD Chinese in ancestor)</td>
           <td><strong><code>1.30%</code></strong> / <code>0.9986</code></td>
           <td><strong><code>1.41%</code></strong> / <code>0.9980</code></td>
         </tr>
@@ -650,8 +635,9 @@
           <td><a href="https://huggingface.co/datasets/jungjee/asvspoof5"><strong>ASVspoof 5 (Track 1)</strong></a> · [<a href="https://www.isca-archive.org/asvspoof_2024/wang24_asvspoof.pdf">Paper</a>]</td>
           <td>Eval (<code>680.8K</code>)</td>
           <td><code>16.25%</code> / <code>0.9003</code></td>
-          <td><a href="https://speech-arena-2025-speech-df-arena.hf.space/">VELMA-2</a> (316M, Prop.): <code>0.38%</code> · <a href="https://arxiv.org/html/2604.01330">NSGA-II Fusion</a> (6.6B, Open): <code>2.37%</code></td>
-          <td><strong>Yes</strong> — NSGA-II trained on ASV5 train + dev</td>
+          <td><a href="https://speech-arena-2025-speech-df-arena.hf.space/">VELMA-2</a> (316M, Prop.): <code>0.38%</code> · <a href="https://arxiv.org/html/2604.01330">NSGA-II Fusion</a> (6.6B): <code>2.37%</code></td>
+          <td><strong>Yes</strong> (full ASV5 train + dev)</td>
+          <td><code>5.0K</code> train + <code>3.44K</code> unique dev (<code>0</code> eval)</td>
           <td><strong><code>5.73%</code></strong> / <code>0.9856</code></td>
           <td><strong><code>5.80%</code></strong> / <code>0.9857</code></td>
         </tr>
@@ -659,8 +645,9 @@
           <td><a href="https://huggingface.co/datasets/isjwdu/DFADD"><strong>DFADD</strong></a> · [<a href="https://arxiv.org/html/2409.08731">Paper</a>]</td>
           <td>Test (<code>3.8K</code>)</td>
           <td><code>11.88%</code> / <code>0.9436</code></td>
-          <td><a href="https://arxiv.org/html/2611.04634v1">VeriSpoof-Base</a> (2.85B) / <a href="https://huggingface.co/Speech-Arena-2025/DF_Arena_1B_V_1">DF-Arena-1B</a> (1B): <code>0.00%</code> · <a href="https://openreview.net/pdf?id=acJMIXJg2u">XLSR+SLS</a> (340M): <code>7.54%</code></td>
-          <td><strong>Yes</strong> — VeriSpoof trained on DFADD train</td>
+          <td><a href="https://arxiv.org/html/2611.04634v1">VeriSpoof-Base</a> (2.85B): <code>0.00%</code> · <a href="https://openreview.net/pdf?id=acJMIXJg2u">XLSR+SLS</a> (340M): <code>7.54%</code></td>
+          <td><strong>Yes</strong> (full DFADD train)</td>
+          <td><code>704</code> train + <code>350</code> dev aliases</td>
           <td><strong><code>0.27%</code></strong> / <code>0.99995</code></td>
           <td><strong><code>0.53%</code></strong> / <code>0.99991</code></td>
         </tr>
@@ -668,8 +655,9 @@
           <td><a href="https://zenodo.org/records/6560159"><strong>TIMIT-TTS (Clean)</strong></a> · [<a href="https://arxiv.org/pdf/2209.08000v1">Paper</a>]</td>
           <td>Full (<code>20.2K</code>)</td>
           <td><code>2.09%</code> / <code>0.9954</code></td>
-          <td><a href="https://arxiv.org/html/2409.16077">Standard MoE</a> (Negroni et al.): <code>0.93%</code> (<code>0.9512</code> AUC)</td>
+          <td><a href="https://arxiv.org/html/2409.16077">Standard MoE</a>: <code>0.93%</code> (<code>0.9512</code> AUC)</td>
           <td><strong>No</strong> (unseen test corpus)</td>
+          <td><strong><code>0</code> clips</strong> (completely unseen)</td>
           <td><strong><code>0.01%</code></strong> / <code>0.999998</code></td>
           <td><strong><code>0.03%</code></strong> / <code>0.999997</code></td>
         </tr>
@@ -679,6 +667,7 @@
           <td><code>10.51%</code> / <code>0.9535</code></td>
           <td><a href="https://arxiv.org/pdf/2209.08000v1">RawNet2 Baseline</a> (17.6M): <code>0.7800</code> AUC</td>
           <td><strong>No</strong> (ASV19-trained)</td>
+          <td><strong><code>0</code> clips</strong> (completely unseen)</td>
           <td><strong><code>0.69%</code></strong> / <code>0.9995</code></td>
           <td><strong><code>0.93%</code></strong> / <code>0.9997</code></td>
         </tr>
@@ -688,6 +677,7 @@
           <td><code>2.14%</code> / <code>0.9946</code></td>
           <td><a href="https://arxiv.org/pdf/2209.08000v1">RawNet2 Baseline</a> (17.6M): <code>0.9300</code> AUC</td>
           <td><strong>No</strong> (ASV19-trained)</td>
+          <td><strong><code>0</code> clips</strong> (completely unseen)</td>
           <td><strong><code>0.46%</code></strong> / <code>0.9996</code></td>
           <td><strong><code>1.17%</code></strong> / <code>0.9994</code></td>
         </tr>
@@ -695,8 +685,9 @@
           <td><a href="https://zenodo.org/records/6560159"><strong>TIMIT-TTS (DTW + Aug)</strong></a> · [<a href="https://arxiv.org/pdf/2209.08000v1">Paper</a>]</td>
           <td>Orig Real (<code>20.2K</code>)</td>
           <td><code>12.84%</code> / <code>0.9381</code></td>
-          <td><a href="https://www.isca-archive.org/interspeech_2024/pascu24_interspeech.pdf">XLS-R 2B + LogReg</a> (2B, Pascu et al.): <code>3.60%</code></td>
+          <td><a href="https://www.isca-archive.org/interspeech_2024/pascu24_interspeech.pdf">XLS-R 2B + LogReg</a> (2B): <code>3.60%</code></td>
           <td><strong>No</strong> (ASV19 train + dev)</td>
+          <td><strong><code>0</code> clips</strong> (completely unseen)</td>
           <td><strong><code>1.85%</code></strong> / <code>0.9972</code></td>
           <td><strong><code>1.86%</code></strong> / <code>0.9983</code></td>
         </tr>
@@ -706,6 +697,7 @@
           <td><code>14.62%</code> / <code>0.9214</code></td>
           <td><a href="https://cmsworkshops.com/Asilomar2026/view_paper.php?PaperNum=1333">Asilomar 2026</a> (no public test table)</td>
           <td>N/A</td>
+          <td><code>1.33K</code> val clips in ancestor (<code>0</code> test)</td>
           <td><strong><code>2.94%</code></strong> / <code>0.9964</code></td>
           <td><strong><code>3.32%</code></strong> / <code>0.9955</code></td>
         </tr>
@@ -714,7 +706,8 @@
           <td>Testing (<code>4.6K</code>)</td>
           <td><code>7.42%</code> / <code>0.9816</code></td>
           <td><a href="https://arxiv.org/html/2611.04634v1">VeriSpoof-Plus</a> (2.85B): <code>0.09%</code> · <a href="https://openreview.net/pdf?id=acJMIXJg2u">XLSR+SLS</a> (340M): <code>5.08%</code></td>
-          <td><strong>Yes</strong> — VeriSpoof-Plus trained on for-norm train</td>
+          <td><strong>Yes</strong> (full for-norm train)</td>
+          <td><strong><code>0</code> clips</strong> (completely unseen)</td>
           <td><strong><code>3.13%</code></strong> / <code>0.9953</code></td>
           <td><strong><code>4.29%</code></strong> / <code>0.9912</code></td>
         </tr>
@@ -722,8 +715,9 @@
           <td><a href="https://huggingface.co/datasets/mueller91/MLAAD"><strong>MLAAD</strong></a> · [<a href="https://arxiv.org/html/2401.09512">Paper</a>]</td>
           <td>Eval (<code>64.0K</code>)</td>
           <td><code>15.40%</code> / <code>0.9120</code></td>
-          <td><a href="https://arxiv.org/html/2608.24639">AASIST Voiced/Unvoiced</a>: <code>5.82%</code> (9.4K split) · <a href="https://aclanthology.org/2026.trustaudio-1.1.pdf">WavLM-LDA</a>: <code>10.00%</code></td>
-          <td><strong>Yes</strong> — Trained on custom MLAAD splits / CV</td>
+          <td><a href="https://arxiv.org/html/2608.24639">AASIST Voiced/Unvoiced</a>: <code>5.82%</code> · <a href="https://aclanthology.org/2026.trustaudio-1.1.pdf">WavLM-LDA</a>: <code>10.00%</code></td>
+          <td><strong>Yes</strong> (custom MLAAD train splits)</td>
+          <td><code>664</code> train + <code>200</code> dev aliases</td>
           <td><strong><code>6.84%</code></strong> / <code>0.9785</code></td>
           <td><strong><code>7.51%</code></strong> / <code>0.9730</code></td>
         </tr>
@@ -732,7 +726,8 @@
           <td>Test (<code>54.6K</code>)</td>
           <td><code>18.90%</code> / <code>0.8840</code></td>
           <td><a href="https://arxiv.org/html/2607.12584">Wiener-Hopf 2D CNN</a> (0.42M): <code>2.95%</code> · <a href="https://arxiv.org/html/2409.13049">Wav2Vec2 Baseline</a>: <code>3.00%</code></td>
-          <td><strong>Yes</strong> — Trained on full DiffSSD train (~70K)</td>
+          <td><strong>Yes</strong> (full ~70K DiffSSD train)</td>
+          <td><code>755</code> train + <code>249</code> val aliases</td>
           <td><strong><code>8.92%</code></strong> / <code>0.9742</code></td>
           <td><strong><code>9.77%</code></strong> / <code>0.9691</code></td>
         </tr>
@@ -741,46 +736,141 @@
   </div>
 
   <h3>Table 2: Automatic Speech Recognition Across All 13 Open ASR Leaderboard Benchmarks</h3>
+  <p style="font-size:14.5px; color:#555;">
+    Comparing the unedited <strong>Base Checkpoint (<a href="https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B">NVIDIA-Nemotron-3.5-30B-A4B</a>)</strong>, the strongest <strong>Previous Open ASR Leaderboard SOTA</strong> on each dataset, our <strong>Single-Model Weight-Edited Checkpoint</strong>, and our full <strong><a href="https://huggingface.co/ishiki-labs/ishiki-asr-0.5">ishiki-asr-0.5</a></strong> system (calibrated strictly on <code>LibriSpeech dev-clean</code> + <code>dev-other</code>, with <code>0</code> evaluation test samples):
+  </p>
+
   <div class="bench-table-wrap">
     <table class="bench-table">
       <thead>
         <tr>
-          <th>Benchmark Dataset</th>
-          <th>Base Checkpoint (<code>NVIDIA-Nemotron-3.5-30B-A4B</code>) WER</th>
+          <th>Dataset &amp; Official Paper / Repo</th>
+          <th>Base (<a href="https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B">Nemotron-3.5-30B</a>) WER</th>
           <th>Previous Open ASR Leaderboard #1 (Model &amp; WER)</th>
-          <th>Single-Model AudioWSP + CTC Loop Guard WER</th>
-          <th><code>ishiki-asr-0.5</code> (Full System) WER</th>
+          <th>Ours (Single-Model Edited <a href="https://huggingface.co/ishiki-labs/ishiki-asr-0.5/blob/main/audio_adapter.safetensors">Weights</a>) WER</th>
+          <th>Ours (<a href="https://huggingface.co/ishiki-labs/ishiki-asr-0.5"><code>ishiki-asr-0.5</code></a> Full) WER</th>
         </tr>
       </thead>
       <tbody>
-        <tr><td><strong>AMI-Cleaned</strong></td><td><code>6.14%</code></td><td>Cohere-Transcribe-03-2026: <code>5.66%</code></td><td><code>5.97%</code></td><td><strong><code>5.14%</code></strong></td></tr>
-        <tr><td><strong>Earnings22-Cleaned</strong></td><td><code>4.19%</code></td><td>NVIDIA-Nemotron-3.5-30B-A4B: <code>4.19%</code></td><td><code>4.07%</code></td><td><strong><code>3.54%</code></strong></td></tr>
-        <tr><td><strong>GigaSpeech-Cleaned</strong></td><td><code>4.34%</code></td><td>NVIDIA-Nemotron-3.5-30B-A4B: <code>4.34%</code></td><td><code>4.28%</code></td><td><strong><code>3.55%</code></strong></td></tr>
-        <tr><td><strong>SPGISpeech</strong></td><td><code>1.45%</code></td><td>Canary-Qwen-2.5B / Parakeet-TDT-0.6B: <code>1.42%</code></td><td><code>1.41%</code></td><td><strong><code>1.21%</code></strong></td></tr>
-        <tr><td><strong>URGENT 2024</strong></td><td><code>10.97%</code></td><td>StagesLabs-Whisper-Large-v3: <code>9.45%</code></td><td><code>10.72%</code></td><td><strong><code>8.66%</code></strong></td></tr>
-        <tr><td><strong>URGENT 2024 (Clean)</strong></td><td><code>6.37%</code></td><td>FireRedASR2-AED: <code>4.68%</code></td><td><code>5.99%</code></td><td><strong><code>4.02%</code></strong></td></tr>
-        <tr><td><strong>Voice Arena Monsoon (en-IN)</strong></td><td><code>3.32%</code></td><td>NVIDIA-Nemotron-3.5-30B-A4B: <code>3.32%</code></td><td><code>3.26%</code></td><td><strong><code>2.34%</code></strong></td></tr>
-        <tr><td><strong>VoxPopuli-AA-Cleaned</strong></td><td><code>1.28%</code></td><td>NVIDIA-Nemotron-3.5-30B-A4B: <code>1.28%</code></td><td><code>1.23%</code></td><td><strong><code>0.90%</code></strong></td></tr>
-        <tr><td><strong>LibriSpeech (test-clean)</strong></td><td><code>1.12%</code></td><td>MusicAudio-Qwen2-7B: <code>1.08%</code></td><td><code>1.10%</code></td><td><strong><code>0.58%</code></strong></td></tr>
-        <tr><td><strong>LibriSpeech (test-other)</strong></td><td><code>2.07%</code></td><td>NVIDIA-Nemotron-3.5-30B-A4B: <code>2.07%</code></td><td><code>2.02%</code></td><td><strong><code>1.90%</code></strong></td></tr>
-        <tr><td><strong>TED-LIUM (test)</strong></td><td><code>2.45%</code></td><td>Cohere-Transcribe-03-2026: <code>2.28%</code></td><td><code>2.41%</code></td><td><strong><code>1.83%</code></strong></td></tr>
-        <tr><td><strong>Multilingual LibriSpeech (en)</strong></td><td><code>3.82%</code></td><td>Cohere-Transcribe-03-2026: <code>3.64%</code></td><td><code>3.82%</code></td><td><strong><code>3.10%</code></strong></td></tr>
-        <tr><td><strong>Common Voice (en)</strong></td><td><code>8.61%</code></td><td>StagesLabs-Whisper-Large-v3: <code>6.45%</code></td><td><code>5.95%</code></td><td><strong><code>3.75%</code></strong></td></tr>
-        <tr style="background:#e8f5ee;"><td><strong>Mean WER (10 Public Leaderboard Sets)</strong></td><td><strong><code>4.59%</code></strong></td><td>NVIDIA-Nemotron-3.5-30B-A4B: <strong><code>4.59%</code> (#1)</strong></td><td><strong><code>4.27%</code></strong></td><td><strong><code>3.18%</code></strong></td></tr>
-        <tr style="background:#e8f5ee;"><td><strong>Mean WER (8 Main Short-Form Sets)</strong></td><td><strong><code>4.76%</code></strong></td><td>NVIDIA-Nemotron-3.5-30B-A4B: <strong><code>4.76%</code> (#1)</strong></td><td><strong><code>4.62%</code></strong></td><td><strong><code>3.67%</code></strong></td></tr>
+        <tr>
+          <td><a href="https://huggingface.co/datasets/hf-audio/esb-datasets-test-only-sorted"><strong>AMI-Cleaned</strong></a> · [<a href="https://groups.inf.ed.ac.uk/ami/corpus/">Paper</a>]</td>
+          <td><code>6.14%</code></td>
+          <td><a href="https://huggingface.co/CohereLabs/cohere-transcribe-03-2026">Cohere-Transcribe-03-2026</a>: <code>5.66%</code></td>
+          <td><code>5.97%</code></td>
+          <td><strong><code>5.14%</code></strong></td>
+        </tr>
+        <tr>
+          <td><a href="https://huggingface.co/datasets/hf-audio/esb-datasets-test-only-sorted"><strong>Earnings22-Cleaned</strong></a> · [<a href="https://arxiv.org/abs/2203.15591">Paper</a>]</td>
+          <td><code>4.19%</code></td>
+          <td><a href="https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B">NVIDIA-Nemotron-3.5-30B</a>: <code>4.19%</code></td>
+          <td><code>4.07%</code></td>
+          <td><strong><code>3.54%</code></strong></td>
+        </tr>
+        <tr>
+          <td><a href="https://huggingface.co/datasets/hf-audio/esb-datasets-test-only-sorted"><strong>GigaSpeech-Cleaned</strong></a> · [<a href="https://arxiv.org/abs/2106.06909">Paper</a>]</td>
+          <td><code>4.34%</code></td>
+          <td><a href="https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B">NVIDIA-Nemotron-3.5-30B</a>: <code>4.34%</code></td>
+          <td><code>4.28%</code></td>
+          <td><strong><code>3.55%</code></strong></td>
+        </tr>
+        <tr>
+          <td><a href="https://huggingface.co/datasets/hf-audio/esb-datasets-test-only-sorted"><strong>SPGISpeech</strong></a> · [<a href="https://arxiv.org/abs/2104.02014">Paper</a>]</td>
+          <td><code>1.45%</code></td>
+          <td><a href="https://huggingface.co/nvidia/canary-qwen-2.5b">Canary-Qwen-2.5B</a> / <a href="https://huggingface.co/nvidia/parakeet-tdt-0.6b-v2">Parakeet-TDT</a>: <code>1.42%</code></td>
+          <td><code>1.41%</code></td>
+          <td><strong><code>1.21%</code></strong></td>
+        </tr>
+        <tr>
+          <td><a href="https://huggingface.co/datasets/hf-audio/open-asr-leaderboard"><strong>URGENT 2024</strong></a> · [<a href="https://arxiv.org/abs/2406.04660">Paper</a>]</td>
+          <td><code>10.97%</code></td>
+          <td><a href="https://huggingface.co/StagesLabs/StagesLabs-Whisper-Large-v3">StagesLabs-Whisper-Large-v3</a>: <code>9.45%</code></td>
+          <td><code>10.72%</code></td>
+          <td><strong><code>8.66%</code></strong></td>
+        </tr>
+        <tr>
+          <td><a href="https://huggingface.co/datasets/hf-audio/open-asr-leaderboard"><strong>URGENT 2024 (Clean)</strong></a> · [<a href="https://arxiv.org/abs/2406.04660">Paper</a>]</td>
+          <td><code>6.37%</code></td>
+          <td><a href="https://huggingface.co/FireRedTeam/FireRedASR-AED-L">FireRedASR2-AED</a>: <code>4.68%</code></td>
+          <td><code>5.99%</code></td>
+          <td><strong><code>4.02%</code></strong></td>
+        </tr>
+        <tr>
+          <td><a href="https://huggingface.co/datasets/voice-arena-leaderboard/Monsoon-en-IN-test"><strong>Voice Arena Monsoon (en-IN)</strong></a> · [<a href="https://huggingface.co/datasets/voice-arena-leaderboard/Monsoon-en-IN-test">Repo</a>]</td>
+          <td><code>3.32%</code></td>
+          <td><a href="https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B">NVIDIA-Nemotron-3.5-30B</a>: <code>3.32%</code></td>
+          <td><code>3.26%</code></td>
+          <td><strong><code>2.34%</code></strong></td>
+        </tr>
+        <tr>
+          <td><a href="https://huggingface.co/datasets/hf-audio/esb-datasets-test-only-sorted"><strong>VoxPopuli-AA-Cleaned</strong></a> · [<a href="https://arxiv.org/abs/2101.00390">Paper</a>]</td>
+          <td><code>1.28%</code></td>
+          <td><a href="https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B">NVIDIA-Nemotron-3.5-30B</a>: <code>1.28%</code></td>
+          <td><code>1.23%</code></td>
+          <td><strong><code>0.90%</code></strong></td>
+        </tr>
+        <tr>
+          <td><a href="https://huggingface.co/datasets/hf-audio/esb-datasets-test-only-sorted"><strong>LibriSpeech (test-clean)</strong></a> · [<a href="https://www.danielpovey.com/files/2015_icassp_librispeech.pdf">Paper</a>]</td>
+          <td><code>1.12%</code></td>
+          <td><a href="https://huggingface.co/spaces/hf-audio/open_asr_leaderboard">MusicAudio-Qwen2-7B</a>: <code>1.08%</code></td>
+          <td><code>1.10%</code></td>
+          <td><strong><code>0.58%</code></strong></td>
+        </tr>
+        <tr>
+          <td><a href="https://huggingface.co/datasets/hf-audio/esb-datasets-test-only-sorted"><strong>LibriSpeech (test-other)</strong></a> · [<a href="https://www.danielpovey.com/files/2015_icassp_librispeech.pdf">Paper</a>]</td>
+          <td><code>2.07%</code></td>
+          <td><a href="https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B">NVIDIA-Nemotron-3.5-30B</a>: <code>2.07%</code></td>
+          <td><code>2.02%</code></td>
+          <td><strong><code>1.90%</code></strong></td>
+        </tr>
+        <tr>
+          <td><a href="https://huggingface.co/datasets/hf-audio/esb-datasets-test-only-sorted"><strong>TED-LIUM (test)</strong></a> · [<a href="https://arxiv.org/abs/1805.04699">Paper</a>]</td>
+          <td><code>2.45%</code></td>
+          <td><a href="https://huggingface.co/CohereLabs/cohere-transcribe-03-2026">Cohere-Transcribe-03-2026</a>: <code>2.28%</code></td>
+          <td><code>2.41%</code></td>
+          <td><strong><code>1.83%</code></strong></td>
+        </tr>
+        <tr>
+          <td><a href="https://huggingface.co/datasets/hf-audio/esb-datasets-test-only-sorted"><strong>Multilingual LibriSpeech (en)</strong></a> · [<a href="https://arxiv.org/abs/2012.03411">Paper</a>]</td>
+          <td><code>3.82%</code></td>
+          <td><a href="https://huggingface.co/CohereLabs/cohere-transcribe-03-2026">Cohere-Transcribe-03-2026</a>: <code>3.64%</code></td>
+          <td><code>3.82%</code></td>
+          <td><strong><code>3.10%</code></strong></td>
+        </tr>
+        <tr>
+          <td><a href="https://huggingface.co/datasets/hf-audio/esb-datasets-test-only-sorted"><strong>Common Voice (en)</strong></a> · [<a href="https://arxiv.org/abs/1912.06670">Paper</a>]</td>
+          <td><code>8.61%</code></td>
+          <td><a href="https://huggingface.co/StagesLabs/StagesLabs-Whisper-Large-v3">StagesLabs-Whisper-Large-v3</a>: <code>6.45%</code></td>
+          <td><code>5.95%</code></td>
+          <td><strong><code>3.75%</code></strong></td>
+        </tr>
+        <tr style="background:#e8f5ee;">
+          <td><strong>Mean WER (10 Public Leaderboard Sets)</strong></td>
+          <td><strong><code>4.59%</code></strong></td>
+          <td><a href="https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B">NVIDIA-Nemotron-3.5-30B</a>: <strong><code>4.59%</code> (#1)</strong></td>
+          <td><strong><code>4.27%</code></strong></td>
+          <td><strong><code>3.18%</code></strong></td>
+        </tr>
+        <tr style="background:#e8f5ee;">
+          <td><strong>Mean WER (8 Main Short-Form Sets)</strong></td>
+          <td><strong><code>4.76%</code></strong></td>
+          <td><a href="https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B">NVIDIA-Nemotron-3.5-30B</a>: <strong><code>4.76%</code> (#1)</strong></td>
+          <td><strong><code>4.62%</code></strong></td>
+          <td><strong><code>3.67%</code></strong></td>
+        </tr>
       </tbody>
     </table>
   </div>
 
   <h2>Citation</h2>
-  <p>If you use our models, distilled forward-pass dataset, or the <code>audiowsp</code> harness in your research, please cite:</p>
-  <pre style="background:#f4f7f5; padding:14px 16px; border-radius:8px; border:1px solid #d5e0da; overflow-x:auto; font-size:13.5px;"><code>Amit Kumar Singh Yadav and Ishiki Labs Research. "Weight-Space Programming for Audio Models: LLMs Can Directly Edit Audio Model Weights and Compress Them." November 2026. https://aksy1999.github.io/amitkumarsinghyadav.github.io/blog/weight-space-programming-for-audio-models/</code></pre>
+  <p>If you use our models, forward-pass datasets, or the <a href="https://github.com/ishikilabsinc/audiowsp"><code>audiowsp</code></a> harness in your work, please cite:</p>
+  <pre style="background:#f4f7f5; padding:14px 16px; border-radius:8px; border:1px solid #d5e0da; overflow-x:auto; font-size:13.5px;"><code>Amit Kumar Singh Yadav and Robert Xu. "Weight-Space Programming for Audio Models: LLMs Can Directly Edit Audio Model Weights and Compress Them." Ishiki Labs, November 2026.</code></pre>
   <pre style="background:#f4f7f5; padding:14px 16px; border-radius:8px; border:1px solid #d5e0da; overflow-x:auto; font-size:13.5px;"><code>@misc{yadav2026audiowsp,
   title        = {{Weight-Space Programming for Audio Models: LLMs Can Directly Edit Audio Model Weights and Compress Them}},
-  author       = {Yadav, Amit Kumar Singh and {Ishiki Labs Research}},
+  author       = {Yadav, Amit Kumar Singh and Xu, Robert},
   year         = {2026},
   month        = nov,
-  howpublished = {\url{https://aksy1999.github.io/amitkumarsinghyadav.github.io/blog/weight-space-programming-for-audio-models/}},
+  organization = {Ishiki Labs},
+  howpublished = {\url{https://github.com/ishikilabsinc/audiowsp}},
   note         = {Research Blog Post and Open-Weights Release}
 }</code></pre>
 
