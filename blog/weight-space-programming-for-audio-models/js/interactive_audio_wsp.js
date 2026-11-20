@@ -1000,35 +1000,17 @@
     const btns = document.querySelectorAll("[data-b6-stage]");
     let stage = "3";
 
-    const compRows = [
-      {
-        label: "1. Nemotron-3.5-30B (128 MoE Experts/Layer + Dense)",
-        before: 33.70,
-        after: 6.62,
-        note: "33.70B → 6.62B (30.65B MoE shrunk 8× via Shared Avg + SVD)",
-        col: "#118659",
-      },
-      {
-        label: "2. SOV-Transcribe-1 (MoE Experts + Dense Backbone)",
-        before: 26.63,
-        after: 6.45,
-        note: "26.63B → 6.45B (22.84B MoE shrunk 8.5× via Shared Avg + SVD)",
-        col: "#118659",
-      },
-      {
-        label: "3. Qwen3-ASR Specialists (88.1° Perpendicular Updates)",
-        before: 8.16,
-        after: 2.48,
-        note: "8.16B (4 copies) → 2.48B (1 Shared 2.04B Base + Adapters)",
-        col: "#1f77b4",
-      },
-      {
-        label: "4. Frame-Locked & Auxiliary Audio Encoders",
-        before: 11.93,
-        after: 11.93,
-        note: "11.93B kept intact (3.23B Frame-Locked + 8.70B Audio Encoders)",
-        col: "#5b7065",
-      },
+    const compBars = [
+      { label: "Nemotron MoE", before: 33.7, after: 6.62 },
+      { label: "SOV MoE", before: 26.63, after: 6.45 },
+      { label: "Qwen3 (4→1)", before: 8.16, after: 2.48 },
+      { label: "Core Encoders", before: 11.93, after: 11.93 },
+    ];
+
+    const stageBars = [
+      { id: "1", label: "Single (33.7B)", wer: 4.69 },
+      { id: "2", label: "Combined (65.3B)", wer: 3.66 },
+      { id: "3", label: "Compressed (27.5B)", wer: 3.58 },
     ];
 
     function draw() {
@@ -1037,7 +1019,7 @@
 
       const pw = (W - 22) / 2;
 
-      // Left Panel: Where the Parameters Live & How They Compress
+      // Left Panel: Clean Vertical Bar Chart of Component Sizes (Billions)
       ctx.fillStyle = "#fafcfb";
       ctx.strokeStyle = "#d5e0da";
       ctx.lineWidth = 1.2;
@@ -1046,34 +1028,42 @@
 
       ctx.fillStyle = "#1b3b2b";
       ctx.font = "700 13px 'Source Sans 3', sans-serif";
-      ctx.fillText("A. How Redundant MoE & Specialist Weights Compress", 14, 24);
+      ctx.fillText("A. Component Parameters (Billions) — Before vs. After", 14, 24);
 
-      const barX = 16;
-      const maxW = pw - 32;
+      const chartH = H - 72;
+      const baseY = H - 32;
+      const bwA = 56;
+      const gapA = 36;
+      const startXA = 32;
 
-      compRows.forEach((r, idx) => {
-        const yTop = 42 + idx * 48;
-        ctx.fillStyle = "#111";
-        ctx.font = "700 11.5px 'Source Sans 3', sans-serif";
-        ctx.fillText(r.label, barX, yTop + 11);
+      compBars.forEach((b, i) => {
+        const bx = startXA + i * (bwA + gapA);
+        const hBefore = (b.before / 38.0) * chartH;
+        const curVal =
+          stage === "1" ? (i === 0 ? 33.7 : 0) : stage === "2" ? b.before : b.after;
+        const hCur = (curVal / 38.0) * chartH;
 
-        // Faint pink ghost bar for uncompressed size
-        const wBefore = (r.before / 32.0) * maxW;
-        const curVal = stage === "3" ? r.after : stage === "1" && idx > 0 ? (idx === 3 ? 3.05 : 0) : r.before;
-        const wAfter = (curVal / 32.0) * maxW;
-
+        // Ghost bar (uncompressed)
         ctx.fillStyle = "rgba(217, 58, 75, 0.16)";
-        ctx.fillRect(barX, yTop + 16, wBefore, 11);
+        ctx.fillRect(bx, baseY - hBefore, bwA, hBefore);
+        ctx.strokeStyle = "rgba(217, 58, 75, 0.40)";
+        ctx.strokeRect(bx, baseY - hBefore, bwA, hBefore);
 
-        ctx.fillStyle = stage === "3" ? r.col : "#e67e22";
-        ctx.fillRect(barX, yTop + 16, wAfter, 11);
+        // Current bar
+        ctx.fillStyle = stage === "3" ? "#118659" : stage === "2" ? "#e67e22" : "#d93a4b";
+        ctx.fillRect(bx, baseY - hCur, bwA, hCur);
 
-        ctx.fillStyle = "#444";
-        ctx.font = "600 10.5px 'JetBrains Mono', monospace";
-        ctx.fillText(r.note, barX, yTop + 40);
+        ctx.fillStyle = "#111";
+        ctx.font = "700 11px 'JetBrains Mono', monospace";
+        ctx.textAlign = "center";
+        ctx.fillText(`${curVal.toFixed(1)}B`, bx + bwA / 2, baseY - Math.max(hBefore, hCur) - 6);
+
+        ctx.fillStyle = "#333";
+        ctx.font = "600 11px 'Source Sans 3', sans-serif";
+        ctx.fillText(b.label, bx + bwA / 2, baseY + 18);
       });
 
-      // Right Panel: Total Parameters vs. 10-Benchmark Average WER
+      // Right Panel: Clean Vertical Bar Chart of 10-Benchmark Mean WER (%)
       const rx0 = pw + 22;
       ctx.fillStyle = "#fafcfb";
       ctx.strokeStyle = "#d5e0da";
@@ -1081,68 +1071,38 @@
       ctx.fillRect(rx0, 0, pw, H);
       ctx.strokeRect(rx0, 0, pw, H);
 
+      ctx.textAlign = "left";
       ctx.fillStyle = "#1b3b2b";
       ctx.font = "700 13px 'Source Sans 3', sans-serif";
-      ctx.fillText("B. Total Parameters (B) & 10-Benchmark Average WER", rx0 + 14, 24);
+      ctx.fillText("B. 10-Benchmark Mean WER (%) — Lower Is Better", rx0 + 14, 24);
 
-      const specs = [
-        {
-          id: "1",
-          name: "Stage 1: Single Model (Nemotron-3.5-30B)",
-          params: 33.7,
-          wer: 4.69,
-          detail: "30.65B in 128 MoE Experts + 3.05B Dense | Noisy URGENT: 10.98% | AMI: 7.81%",
-          col: "#d93a4b",
-        },
-        {
-          id: "2",
-          name: "Stage 2: Combined Models (Before Compression)",
-          params: 65.3,
-          wer: 3.66,
-          detail: "Separate Uncompressed Checkpoints (65.30B) | Noisy URGENT: 8.69% | AMI: 5.96%",
-          col: "#e67e22",
-        },
-        {
-          id: "3",
-          name: "Stage 3: Ishiki-ASR-0.5 (Shared Base + MoE-SVD)",
-          params: 27.48,
-          wer: 3.58,
-          detail: "8× MoE Compression + 1 Shared Qwen3 Base | Noisy URGENT: 8.23% | AMI: 5.90%",
-          col: "#118659",
-        },
-      ];
+      const bwB = 76;
+      const gapB = 46;
+      const startXB = rx0 + 44;
 
-      specs.forEach((s, idx) => {
-        const by = 42 + idx * 62;
+      stageBars.forEach((s, i) => {
+        const bx = startXB + i * (bwB + gapB);
+        const hBar = (s.wer / 5.5) * chartH;
         const isSel = stage === s.id;
-        ctx.fillStyle = isSel ? "rgba(17, 134, 89, 0.08)" : "#ffffff";
-        ctx.strokeStyle = isSel ? s.col : "#e2ebe6";
-        ctx.lineWidth = isSel ? 1.8 : 1.0;
-        ctx.fillRect(rx0 + 12, by, pw - 24, 54);
-        ctx.strokeRect(rx0 + 12, by, pw - 24, 54);
 
-        ctx.fillStyle = "#111";
-        ctx.font = "700 12px 'Source Sans 3', sans-serif";
-        ctx.fillText(s.name, rx0 + 20, by + 17);
+        ctx.fillStyle = isSel ? "#118659" : "rgba(17, 134, 89, 0.25)";
+        ctx.fillRect(bx, baseY - hBar, bwB, hBar);
+        if (isSel) {
+          ctx.strokeStyle = "#0b5c3d";
+          ctx.lineWidth = 1.8;
+          ctx.strokeRect(bx, baseY - hBar, bwB, hBar);
+        }
 
-        ctx.fillStyle = s.col;
-        ctx.font = "700 12px 'JetBrains Mono', monospace";
-        ctx.textAlign = "right";
-        ctx.fillText(`${s.params.toFixed(2)}B  |  ${s.wer.toFixed(2)}% WER`, rx0 + pw - 20, by + 17);
-        ctx.textAlign = "left";
+        ctx.fillStyle = isSel ? "#118659" : "#444";
+        ctx.font = "700 11.5px 'JetBrains Mono', monospace";
+        ctx.textAlign = "center";
+        ctx.fillText(`${s.wer.toFixed(2)}%`, bx + bwB / 2, baseY - hBar - 7);
 
-        // Parameter bar
-        const maxBarW = pw - 44;
-        const pW = (s.params / 70.0) * maxBarW;
-        ctx.fillStyle = "#e9f0ec";
-        ctx.fillRect(rx0 + 20, by + 23, maxBarW, 8);
-        ctx.fillStyle = s.col;
-        ctx.fillRect(rx0 + 20, by + 23, pW, 8);
-
-        ctx.fillStyle = "#555";
-        ctx.font = "11px 'Source Sans 3', sans-serif";
-        ctx.fillText(s.detail, rx0 + 20, by + 46);
+        ctx.fillStyle = isSel ? "#111" : "#555";
+        ctx.font = isSel ? "700 11px 'Source Sans 3', sans-serif" : "600 11px 'Source Sans 3', sans-serif";
+        ctx.fillText(s.label, bx + bwB / 2, baseY + 18);
       });
+      ctx.textAlign = "left";
     }
 
     btns.forEach((b) => {
