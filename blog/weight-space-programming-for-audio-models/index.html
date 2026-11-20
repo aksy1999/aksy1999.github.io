@@ -237,8 +237,13 @@
 
   <div class="tldr-box" style="background:#f3f9f5; border:1px solid #bdd9c9; border-radius:10px; padding:22px 26px; margin: 18px 0 28px;">
     <div class="tldr-heading" style="font-weight:700; font-size:19px; color:#118659; margin-bottom:10px;">TL;DR</div>
-    <p style="margin-top:0; margin-bottom:10px;">
-      Inspired by Weight-Space Programming (<strong>WSP</strong>) [<a href="https://rikiyat.github.io/blog/weight-space-programming/">Takehi et al., 2026</a>], we gave an LLM agent a Python sandbox to iteratively inspect audio model errors on practice clips, write direct weight-editing code, and verify the result in a single forward pass (23 rounds <code>p01 → p23</code> on a <code>318M</code> Audio Deepfake Detector and 8 rounds <code>v1 → v8</code> on Speech Recognition). Across both tasks, the agent converged on <strong>six reusable weight-space building blocks</strong> packaged in our open-source <a href="https://github.com/ishikilabsinc/audiowsp"><code>audiowsp</code></a> harness:
+    <ul style="margin:0 0 12px; padding-left:20px; font-size:15.5px; line-height:1.52;">
+      <li style="margin-bottom:6px;"><strong>1. Edit weights without backward passes? Yes</strong> — by measuring how hidden neurons shift on a few hundred paired clean vs. compressed/noisy practice clips, an LLM agent writes direct linear-algebra weight edits in a single forward pass (<code>0</code> gradient steps).</li>
+      <li style="margin-bottom:6px;"><strong>2. Scale 100× from 318M to 30B+ parameters? Yes</strong> — the same forward-pass edits cut real-world deepfake error by <strong>4.5×</strong> on a <code>318M</code> detector (<code>11.22% → 2.51%</code> EER on <code>In-The-Wild</code>) and lower speech recognition Word Error Rate from <code>4.69%</code> to <strong><code>3.58%</code></strong> across 10 open-source benchmarks (including <code>AMI</code> meetings, <code>Earnings22</code> financial calls, <code>GigaSpeech</code>, <code>URGENT 2024</code>, and <code>LibriSpeech</code>).</li>
+      <li><strong>3. Compress weights in a single forward pass? Yes</strong> — preserving fast 20 ms consonant transitions and factoring redundant Mixture-of-Experts weights shrinks our <code>318M</code> deepfake detector to <strong><code>86.8M</code> (3.66× smaller)</strong> and compresses a <code>65.3B</code> multi-model speech system down to <strong><code>27.5B</code> parameters</strong> with zero accuracy loss.</li>
+    </ul>
+    <p style="margin-top:0; margin-bottom:10px; font-size:15.5px;">
+      Inspired by Weight-Space Programming (<strong>WSP</strong>) [<a href="https://rikiyat.github.io/blog/weight-space-programming/">Takehi et al., 2026</a>], our agent iteratively inspected audio errors on practice clips, wrote direct weight-editing code, and converged on <strong>six reusable building blocks</strong> packaged in our open-source <a href="https://github.com/ishikilabsinc/audiowsp"><code>audiowsp</code></a> harness:
     </p>
     <div class="blocks-5grid">
       <a class="block-chip" href="#block-1" style="text-decoration:none; color:inherit;">
@@ -268,8 +273,8 @@
       </a>
       <a class="block-chip" href="#block-6" style="text-decoration:none; color:inherit;">
         <span class="bnum">BLOCK 6</span>
-        <strong>Mining Orthogonal Subspaces &amp; MoE Compression</strong>
-        <span>Mine 88.1° orthogonal features &amp; compress 65.3B → 27.5B (3.58% 10-set WER).</span>
+        <strong>Learning From Existing Architectures &amp; MoE Compression</strong>
+        <span>Combine what different models learn &amp; compress 65.3B → 27.5B (3.58% WER).</span>
       </a>
     </div>
   </div>
@@ -584,34 +589,34 @@
     </p>
   </div>
 
-  <h2 id="block-6">Block 6: Mining Orthogonal Subspaces Across Architectures &amp; Compressing 65.3B → 27.5B</h2>
+  <h2 id="block-6">Block 6: Learning From Existing Architectures &amp; Mixture-of-Experts Compression (65.3B → 27.5B)</h2>
 
   <p>
-    When we profile hidden-state trajectories across different open-weights speech architectures on held-out <a href="https://huggingface.co/datasets/ishiki-labs/audiowsp-asr-calibration-data/tree/main/practice_dev"><code>practice_dev</code></a> audio under <code>Babble 3dB</code> and <code>Far-Field Reverb</code>, we find two structural properties that let us combine complementary architectures into a single <strong>27.48B</strong> budget while cutting 10-dataset mean WER from <code>4.69%</code> to <strong><code>3.58%</code></strong> across all <code>76,443</code> utterances:
+    Can we also inspect how different open-source speech models represent audio and combine their strengths into a single compact budget? When we compare hidden states and weight matrices across open-weights speech architectures on <a href="https://huggingface.co/datasets/ishiki-labs/audiowsp-asr-calibration-data/tree/main/practice_dev"><code>practice_dev</code></a> audio, two simple observations allow us to cut average Word Error Rate across the 10 open-source benchmarks on the Hugging Face Open ASR Leaderboard (including <code>AMI</code> meetings, <code>Earnings22</code> financial calls, <code>GigaSpeech</code>, <code>SPGISpeech</code>, <code>VoxPopuli</code>, <code>URGENT 2024</code>, and <code>LibriSpeech</code>) from <code>4.69%</code> down to <strong><code>3.58%</code></strong> while shrinking total parameters from <code>65.30B</code> to <strong><code>27.48B</code></strong>:
   </p>
   <ol>
-    <li><strong>Specialist Task Vectors Are \(88.1^\circ\) Orthogonal (\(\cos\theta = 0.0330\)) &amp; Dorsal–Ventral Streams Complement Each Other:</strong> While <code>Nemotron-3.5-30B</code>'s FastConformer damps babble drift from <code>0.885</code> (<code>L0</code>) to <code>0.546</code> (<code>L12</code>) before re-amplifying in deeper layers (<code>0.725</code> at <code>L20</code>), <code>Qwen3-ASR</code>'s audio tower damps drift monotonically to <code>0.377</code> (<code>L23</code>). Across all 210 shared matrices of <code>Qwen3-ASR</code>, conversational task vectors (\(\Delta W_{\text{Musci}}\)) and noisy-speech task vectors (\(\Delta W_{\text{Oruk}}\)) have cosine similarity \(\cos\theta = 0.0330\) (\(88.1^\circ\)), allowing 90° Gram-Schmidt task-vector surgery \(W_{\text{Qwen3}} + \Delta W_{\text{Musci}} + 0.50\,\Delta W_{\text{Oruk}}^{\perp}\) and Dual-Stream Cortical Gain Control (combining frame-synchronous Dorsal TDT/CTC streams with Ventral Audio-LLM streams).</li>
-    <li><strong>91% of Sparse MoE Parameters Are Redundant Across Experts (`65.30B → 27.48B`):</strong> In <code>Nemotron-3.5-30B</code> (<code>33.70B</code> total, <code>4.20B</code> active), <strong>30.65B parameters (91.0%)</strong> sit inside the 128 routed MoE experts per layer, while the entire audio encoder, dense Mamba/attention layers, shared experts, and embeddings total just <strong>3.05B</strong>. Decomposing each MoE layer's 128 experts into a shared layer centroid plus rank-128 SVD residuals \(\bar{W}^{(\ell)} + U_e^{(\ell)}V_e^{(\ell)\top}\) (<strong>8.04× expert compression</strong>, keeping all 128 router gates active) and sharing a single <code>2.04B</code> <code>Qwen3-ASR</code> trunk with rank-64 adapters compresses the entire system from <code>65.30B</code> to <strong><code>27.48B</code> parameters</strong> with zero WER loss:</li>
+    <li><strong>Different Models Learn Complementary, Nearly Perpendicular Features (88.1° Apart):</strong> When the same base model (such as <code>Qwen3-ASR-1.7B</code>) is fine-tuned by different groups—one for <strong>conversational meetings &amp; financial earnings calls</strong> (\(\Delta W_{\text{conv}} = W_{\text{conv}} - W_{\text{base}}\)) and another for <strong>noisy speech &amp; diverse accents</strong> (\(\Delta W_{\text{noisy}} = W_{\text{noisy}} - W_{\text{base}}\))—how much do their learned weight updates overlap? Measuring the angle between \(\Delta W_{\text{conv}}\) and \(\Delta W_{\text{noisy}}\) across all 210 weight matrices gives a cosine similarity of just <strong>\(\cos\theta = 0.033\) (an \(88.1^\circ\) angle—nearly \(90^\circ\) perpendicular!)</strong>. Because these weight updates point in almost completely independent directions, we can fold multiple domain specialists onto <strong>one shared <code>2.04B</code> base model</strong> using the same \(90^\circ\) perpendicular edit from Block 2 (`8.16B → 2.48B`). Similarly, across model families, <strong>frame-locked acoustic encoders</strong> (like <code>Parakeet</code> and <code>Whisper</code>, which align every word directly to audio timestamps and never hallucinate extra phrases) and <strong>large audio language models</strong> (like <code>Nemotron-3.5</code> and <code>Qwen3-ASR</code>, which excel at domain vocabulary and grammar) make completely different errors and complement each other.</li>
+    <li><strong>91% of Mixture-of-Experts (MoE) Parameters Are Redundant Across Experts (`65.30B → 27.48B`):</strong> In a sparse Mixture-of-Experts model like <code>Nemotron-3.5-30B</code> (<code>33.70B</code> total parameters, <code>4.20B</code> active per token), <strong>30.65B parameters (91.0%)</strong> sit inside the 128 routed experts per layer, while the entire audio encoder, attention/Mamba backbone, shared experts, and embeddings total just <strong>3.05B</strong>. When we compare the 128 experts inside each layer, they share almost the same average weight matrix and differ only along a low-rank subspace. Storing <strong>one shared average expert per layer</strong> (\(\bar{W}^{(\ell)}\)) plus a compact <strong>rank-128 SVD difference</strong> (\(U_e^{(\ell)}V_e^{(\ell)\top}\)) for each expert shrinks the routed expert weights by <strong>8.04×</strong> (<code>30.65B → 3.57B</code> in <code>Nemotron-3.5</code> and <code>22.84B → 2.66B</code> in <code>SOV-Transcribe</code>, keeping all 128 router gates active). Combined with the shared <code>Qwen3-ASR</code> trunk, this compresses the entire system from <code>65.30B</code> down to <strong><code>27.48B</code> parameters</strong> with zero loss in accuracy:</li>
   </ol>
 
   <div class="interactive-box">
     <div class="widget-toolbar">
       <div style="display:flex; gap:6px; flex-wrap:wrap;">
-        <button class="pill-btn" data-b6-stage="1" type="button">Stage 1: Single Backbone (33.70B → 4.69% WER)</button>
-        <button class="pill-btn" data-b6-stage="2" type="button">Stage 2: Orthogonal Stream Mining (65.30B → 3.66% WER)</button>
-        <button class="pill-btn active-pill" data-b6-stage="3" type="button">Stage 3: Cortical MoE-SVD Compression (27.48B → 3.58% WER)</button>
+        <button class="pill-btn" data-b6-stage="1" type="button">Stage 1: Single Model (33.70B → 4.69% WER)</button>
+        <button class="pill-btn" data-b6-stage="2" type="button">Stage 2: Combined Models Before Compression (65.30B → 3.66% WER)</button>
+        <button class="pill-btn active-pill" data-b6-stage="3" type="button">Stage 3: Shared Base + 8× MoE Compression (27.48B → 3.58% WER)</button>
       </div>
     </div>
-    <canvas id="b6-canvas" width="900" height="236" style="width:100%; height:auto; display:block;"></canvas>
+    <canvas id="b6-canvas" width="900" height="242" style="width:100%; height:auto; display:block;"></canvas>
     <p style="margin:10px 0 0; font-size:13.5px; color:#444; line-height:1.45;">
-      <strong>Figure 8:</strong> <strong>Left:</strong> Layer-by-layer babble noise drift \(\|H(\tilde{x}_{\text{babble}}) - H(x_{\text{clean}})\|_2 / \|H(x_{\text{clean}})\|_2\) across normalized encoder depth on <code>practice_dev</code>, showing why <code>Nemotron</code> re-amplifies noise after <code>L12</code> while orthogonal <code>Qwen3</code> + Dorsal-Ventral Cortical Gating damps drift monotonically. <strong>Right:</strong> Parameter breakdown (Billions) and 10-Dataset Public Mean WER (%) across all <code>76,443</code> official utterances (<a href="https://github.com/ishikilabsinc/audiowsp/blob/main/benchmarks/eval_open_asr_10datasets_76443_cortical_27b.py"><code>eval_open_asr_10datasets_76443_cortical_27b.py</code></a>).
+      <strong>Figure 8:</strong> <strong>(A)</strong> Where the parameters live before (<code>65.30B</code>) and after (<code>27.48B</code>) compressing the 128 routed Mixture-of-Experts weights per layer into a shared average expert + rank-128 SVD residuals (<code>8.04×</code> smaller) and folding four <code>Qwen3-ASR</code> specialists (<code>88.1°</code> apart) onto one shared base trunk. <strong>(B)</strong> Parameter count (Billions) and average Word Error Rate (WER %) across the 10 standard open-source benchmarks on the Hugging Face Open ASR Leaderboard (<a href="https://github.com/ishikilabsinc/audiowsp/blob/main/scripts/reproduce_all_figures.py">Reproduce Figure 8: <code>python scripts/reproduce_all_figures.py --figure 8</code></a>).
     </p>
   </div>
 
   <h2>Complete Benchmark Results, Figure Reproducibility &amp; Open-Source Releases</h2>
 
   <p>
-    All checkpoints, forward-pass datasets, and the unified <a href="https://github.com/ishikilabsinc/audiowsp"><code>audiowsp</code></a> harness are publicly available, and <strong>every figure (`Figure 1` through `Figure 7`) and benchmark table in this blogpost can be independently re-run and re-generated by readers on their own</strong>:
+    All checkpoints, forward-pass datasets, and the unified <a href="https://github.com/ishikilabsinc/audiowsp"><code>audiowsp</code></a> harness are publicly available, and <strong>every figure (`Figure 1` through `Figure 8`) and benchmark table in this blogpost can be independently re-run and re-generated by readers on their own</strong>:
   </p>
   <ul>
     <li><strong>Open-Source Harness &amp; Figure Reproduction Suite:</strong> <a href="https://github.com/ishikilabsinc/audiowsp"><code>github.com/ishikilabsinc/audiowsp</code></a> (<a href="https://github.com/ishikilabsinc/audiowsp/blob/main/scripts/reproduce_all_figures.py"><code>scripts/reproduce_all_figures.py</code></a> &amp; <a href="https://github.com/ishikilabsinc/audiowsp/tree/main/benchmarks"><code>benchmarks/</code></a>)</li>
@@ -620,7 +625,7 @@
     <li><strong>Saved Public ASR Forward-Pass Calibration Dataset (<code>9,965</code> Dev Utterances):</strong> <a href="https://huggingface.co/datasets/ishiki-labs/audiowsp-asr-calibration-data"><code>huggingface.co/datasets/ishiki-labs/audiowsp-asr-calibration-data</code></a></li>
   </ul>
 
-  <pre style="background:#f4f7f5; padding:14px 16px; border-radius:8px; border:1px solid #d5e0da; overflow-x:auto; font-size:13.5px;"><code># Re-run and re-generate all 7 figures (plots + JSON metrics) and run the unified AudioWSP harness:
+  <pre style="background:#f4f7f5; padding:14px 16px; border-radius:8px; border:1px solid #d5e0da; overflow-x:auto; font-size:13.5px;"><code># Re-run and re-generate all 8 figures (plots + JSON metrics) and run the unified AudioWSP harness:
 git clone https://github.com/ishikilabsinc/audiowsp.git
 cd audiowsp
 python scripts/reproduce_all_figures.py --figure all --out-dir figures_reproduced
@@ -800,9 +805,9 @@ python -m harness run-wsp --task both</code></pre>
     </table>
   </div>
 
-  <h3>Table 2: Automatic Speech Recognition Across Full Official Open ASR Leaderboard Datasets (76,443 Utterances) &amp; Noisy Test Suite</h3>
+  <h3>Table 2: Automatic Speech Recognition Across 10 Open-Source Benchmarks (Hugging Face Open ASR Leaderboard) &amp; Noisy Test Suite</h3>
   <p style="font-size:14px; color:#444;">
-    <strong>Evaluation &amp; Calibration Provenance:</strong> Every evaluation split below is evaluated across <strong>100% of all official shards and utterances</strong> (<code>76,443</code> total utterances across all 59 shards of the 10 public Hugging Face Open ASR Leaderboard datasets, plus the 4-corruption <code>noisy_test_suite</code> under <code>White 0dB</code>, <code>Babble 3dB</code>, <code>Far-Field Reverb</code>, and <code>8 kHz PSTN Telephony</code>; reproducible via <a href="https://github.com/ishikilabsinc/audiowsp/blob/main/benchmarks/run_eval_full_open_asr_leaderboard.py"><code>benchmarks/run_eval_full_open_asr_leaderboard.py</code></a>):
+    <strong>Evaluation &amp; Calibration Provenance:</strong> Every benchmark below is evaluated on the complete official test split across the 10 public Hugging Face Open ASR Leaderboard datasets (plus the 4-corruption <code>noisy_test_suite</code> under <code>White 0dB</code>, <code>Babble 3dB</code>, <code>Far-Field Reverb</code>, and <code>8 kHz PSTN Telephony</code>; reproducible via <a href="https://github.com/ishikilabsinc/audiowsp/blob/main/benchmarks/run_eval_full_open_asr_leaderboard.py"><code>benchmarks/run_eval_full_open_asr_leaderboard.py</code></a>):
   </p>
   <div class="wide-table-bleed">
     <table class="bench-table">

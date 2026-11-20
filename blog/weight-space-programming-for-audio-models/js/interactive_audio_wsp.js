@@ -992,7 +992,7 @@
   }
 
   // =========================================================================
-  // BLOCK 6: Orthogonal Subspace Mining & MoE-SVD Compression (65.3B -> 27.5B)
+  // BLOCK 6: Learning From Existing Architectures & MoE Compression (65.3B -> 27.5B)
   // =========================================================================
   function initBlock6Widget() {
     const canvas = document.getElementById("b6-canvas");
@@ -1000,10 +1000,36 @@
     const btns = document.querySelectorAll("[data-b6-stage]");
     let stage = "3";
 
-    const depthLabels = ["0%", "25%", "50%", "75%", "100%"];
-    const nemDrift = [0.885, 0.642, 0.546, 0.725, 0.581];
-    const qwenDrift = [0.861, 0.618, 0.492, 0.415, 0.377];
-    const cortDrift = [0.840, 0.585, 0.448, 0.362, 0.318];
+    const compRows = [
+      {
+        label: "1. Nemotron-3.5-30B (128 MoE Experts/Layer + Dense)",
+        before: 33.70,
+        after: 6.62,
+        note: "33.70B → 6.62B (30.65B MoE shrunk 8× via Shared Avg + SVD)",
+        col: "#118659",
+      },
+      {
+        label: "2. SOV-Transcribe-1 (MoE Experts + Dense Backbone)",
+        before: 26.63,
+        after: 6.45,
+        note: "26.63B → 6.45B (22.84B MoE shrunk 8.5× via Shared Avg + SVD)",
+        col: "#118659",
+      },
+      {
+        label: "3. Qwen3-ASR Specialists (88.1° Perpendicular Updates)",
+        before: 8.16,
+        after: 2.48,
+        note: "8.16B (4 copies) → 2.48B (1 Shared 2.04B Base + Adapters)",
+        col: "#1f77b4",
+      },
+      {
+        label: "4. Frame-Locked & Auxiliary Audio Encoders",
+        before: 11.93,
+        after: 11.93,
+        note: "11.93B kept intact (3.23B Frame-Locked + 8.70B Audio Encoders)",
+        col: "#5b7065",
+      },
+    ];
 
     function draw() {
       const { ctx, W, H } = getHiDPICtx(canvas);
@@ -1011,7 +1037,7 @@
 
       const pw = (W - 22) / 2;
 
-      // Left Panel: Layer-by-Layer Babble Drift Trajectory
+      // Left Panel: Where the Parameters Live & How They Compress
       ctx.fillStyle = "#fafcfb";
       ctx.strokeStyle = "#d5e0da";
       ctx.lineWidth = 1.2;
@@ -1020,73 +1046,34 @@
 
       ctx.fillStyle = "#1b3b2b";
       ctx.font = "700 13px 'Source Sans 3', sans-serif";
-      ctx.fillText("A. Layer-by-Layer Babble Noise Drift Across Depth", 14, 24);
+      ctx.fillText("A. How Redundant MoE & Specialist Weights Compress", 14, 24);
 
-      const x0 = 46;
-      const y0 = H - 34;
-      const wA = pw - 64;
-      const hA = H - 78;
+      const barX = 16;
+      const maxW = pw - 32;
 
-      [0.3, 0.5, 0.7, 0.9].forEach((gv) => {
-        const gy = y0 - ((gv - 0.2) / 0.75) * hA;
-        ctx.strokeStyle = "#e6efea";
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(x0, gy);
-        ctx.lineTo(x0 + wA, gy);
-        ctx.stroke();
-        ctx.fillStyle = "#666";
-        ctx.font = "10.5px 'JetBrains Mono', monospace";
-        ctx.fillText(gv.toFixed(1), 12, gy + 4);
-      });
+      compRows.forEach((r, idx) => {
+        const yTop = 42 + idx * 48;
+        ctx.fillStyle = "#111";
+        ctx.font = "700 11.5px 'Source Sans 3', sans-serif";
+        ctx.fillText(r.label, barX, yTop + 11);
 
-      function plotDrift(arr, col, dashed, alpha) {
-        ctx.save();
-        ctx.globalAlpha = alpha;
-        ctx.strokeStyle = col;
-        ctx.lineWidth = 2.8;
-        if (dashed) ctx.setLineDash([5, 3]);
-        ctx.beginPath();
-        arr.forEach((v, i) => {
-          const px = x0 + (i / (arr.length - 1)) * wA;
-          const py = y0 - ((v - 0.2) / 0.75) * hA;
-          if (i === 0) ctx.moveTo(px, py);
-          else ctx.lineTo(px, py);
-        });
-        ctx.stroke();
-        ctx.setLineDash([]);
-        arr.forEach((v, i) => {
-          const px = x0 + (i / (arr.length - 1)) * wA;
-          const py = y0 - ((v - 0.2) / 0.75) * hA;
-          ctx.fillStyle = "#fff";
-          ctx.beginPath();
-          ctx.arc(px, py, 3.8, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.stroke();
-        });
-        ctx.restore();
-      }
+        // Faint pink ghost bar for uncompressed size
+        const wBefore = (r.before / 32.0) * maxW;
+        const curVal = stage === "3" ? r.after : stage === "1" && idx > 0 ? (idx === 3 ? 3.05 : 0) : r.before;
+        const wAfter = (curVal / 32.0) * maxW;
 
-      plotDrift(nemDrift, "#d93a4b", true, 1.0);
-      plotDrift(qwenDrift, "#1f77b4", false, stage === "1" ? 0.25 : 1.0);
-      plotDrift(cortDrift, "#118659", false, stage === "3" ? 1.0 : 0.25);
+        ctx.fillStyle = "rgba(217, 58, 75, 0.16)";
+        ctx.fillRect(barX, yTop + 16, wBefore, 11);
 
-      ctx.font = "700 11px 'Source Sans 3', sans-serif";
-      ctx.fillStyle = "#d93a4b";
-      ctx.fillText("Nemotron FastConformer (Re-amplifies to 0.725 at L20)", x0 + 18, y0 - ((0.74 - 0.2) / 0.75) * hA - 8);
-      ctx.fillStyle = "#1f77b4";
-      ctx.fillText("90° Orthogonal Qwen3 (cos θ = 0.033 → 0.377)", x0 + 48, y0 - ((0.415 - 0.2) / 0.75) * hA - 10);
-      ctx.fillStyle = "#118659";
-      ctx.fillText("Cortical Dual-Stream Gate (0.318)", x0 + 140, y0 - ((0.318 - 0.2) / 0.75) * hA + 15);
+        ctx.fillStyle = stage === "3" ? r.col : "#e67e22";
+        ctx.fillRect(barX, yTop + 16, wAfter, 11);
 
-      depthLabels.forEach((lb, i) => {
-        const px = x0 + (i / (depthLabels.length - 1)) * wA;
-        ctx.fillStyle = "#333";
+        ctx.fillStyle = "#444";
         ctx.font = "600 10.5px 'JetBrains Mono', monospace";
-        ctx.fillText(lb, px - 10, y0 + 18);
+        ctx.fillText(r.note, barX, yTop + 40);
       });
 
-      // Right Panel: Parameter Footprint vs. 10-Dataset Mean WER (76,443 Utts)
+      // Right Panel: Total Parameters vs. 10-Benchmark Average WER
       const rx0 = pw + 22;
       ctx.fillStyle = "#fafcfb";
       ctx.strokeStyle = "#d5e0da";
@@ -1096,31 +1083,31 @@
 
       ctx.fillStyle = "#1b3b2b";
       ctx.font = "700 13px 'Source Sans 3', sans-serif";
-      ctx.fillText("B. Total Parameters (B) & 10-Set WER (76,443 Utts)", rx0 + 14, 24);
+      ctx.fillText("B. Total Parameters (B) & 10-Benchmark Average WER", rx0 + 14, 24);
 
       const specs = [
         {
           id: "1",
-          name: "Stage 1: Single Backbone (Nemotron-30B)",
+          name: "Stage 1: Single Model (Nemotron-3.5-30B)",
           params: 33.7,
           wer: 4.69,
-          detail: "30.65B Routed MoE + 3.05B Dense | URGENT24: 10.98% | AMI: 7.81%",
+          detail: "30.65B in 128 MoE Experts + 3.05B Dense | Noisy URGENT: 10.98% | AMI: 7.81%",
           col: "#d93a4b",
         },
         {
           id: "2",
-          name: "Stage 2: Uncompressed Multi-Tower",
+          name: "Stage 2: Combined Models (Before Compression)",
           params: 65.3,
           wer: 3.66,
-          detail: "Raw Checkpoints (65.30B) | URGENT24: 8.69% | AMI: 5.96%",
+          detail: "Separate Uncompressed Checkpoints (65.30B) | Noisy URGENT: 8.69% | AMI: 5.96%",
           col: "#e67e22",
         },
         {
           id: "3",
-          name: "Stage 3: Ishiki-ASR-0.5 (Cortical 27.48B)",
+          name: "Stage 3: Ishiki-ASR-0.5 (Shared Base + MoE-SVD)",
           params: 27.48,
           wer: 3.58,
-          detail: "8.04× SVD-MoE + Shared Qwen3 Trunk | URGENT24: 8.23% | AMI: 5.90%",
+          detail: "8× MoE Compression + 1 Shared Qwen3 Base | Noisy URGENT: 8.23% | AMI: 5.90%",
           col: "#118659",
         },
       ];
