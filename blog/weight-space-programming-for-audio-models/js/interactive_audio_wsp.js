@@ -241,11 +241,11 @@
       ctx.fillText("Task Direction v_task", ox + 75, oy + 20);
 
       // Raw augmentation direction v_aug
-      const rx = ox + 128;
-      const ry = oy - 118;
+      const rx = ox + 104;
+      const ry = oy - 114;
       drawArrow(ox, oy, rx, ry, "#d93a4b", 2.4);
       ctx.fillStyle = "#d93a4b";
-      ctx.fillText("Raw Augmentation v_aug (dot product = 0.47)", rx + 8, ry + 8);
+      ctx.fillText("Raw Augmentation v_aug (cos θ = 0.47)", rx + 6, ry + 8);
 
       if (step === "2") {
         drawArrow(ox, oy, ox + 195, oy, "#e67e22", 4);
@@ -991,6 +991,184 @@
     draw();
   }
 
+  // =========================================================================
+  // BLOCK 6: Orthogonal Subspace Mining & MoE-SVD Compression (65.3B -> 27.5B)
+  // =========================================================================
+  function initBlock6Widget() {
+    const canvas = document.getElementById("b6-canvas");
+    if (!canvas) return;
+    const btns = document.querySelectorAll("[data-b6-stage]");
+    let stage = "3";
+
+    const depthLabels = ["0%", "25%", "50%", "75%", "100%"];
+    const nemDrift = [0.885, 0.642, 0.546, 0.725, 0.581];
+    const qwenDrift = [0.861, 0.618, 0.492, 0.415, 0.377];
+    const cortDrift = [0.840, 0.585, 0.448, 0.362, 0.318];
+
+    function draw() {
+      const { ctx, W, H } = getHiDPICtx(canvas);
+      ctx.clearRect(0, 0, W, H);
+
+      const pw = (W - 22) / 2;
+
+      // Left Panel: Layer-by-Layer Babble Drift Trajectory
+      ctx.fillStyle = "#fafcfb";
+      ctx.strokeStyle = "#d5e0da";
+      ctx.lineWidth = 1.2;
+      ctx.fillRect(0, 0, pw, H);
+      ctx.strokeRect(0, 0, pw, H);
+
+      ctx.fillStyle = "#1b3b2b";
+      ctx.font = "700 13px 'Source Sans 3', sans-serif";
+      ctx.fillText("A. Layer-by-Layer Babble Noise Drift Across Depth", 14, 24);
+
+      const x0 = 46;
+      const y0 = H - 34;
+      const wA = pw - 64;
+      const hA = H - 78;
+
+      [0.3, 0.5, 0.7, 0.9].forEach((gv) => {
+        const gy = y0 - ((gv - 0.2) / 0.75) * hA;
+        ctx.strokeStyle = "#e6efea";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x0, gy);
+        ctx.lineTo(x0 + wA, gy);
+        ctx.stroke();
+        ctx.fillStyle = "#666";
+        ctx.font = "10.5px 'JetBrains Mono', monospace";
+        ctx.fillText(gv.toFixed(1), 12, gy + 4);
+      });
+
+      function plotDrift(arr, col, dashed, alpha) {
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.strokeStyle = col;
+        ctx.lineWidth = 2.8;
+        if (dashed) ctx.setLineDash([5, 3]);
+        ctx.beginPath();
+        arr.forEach((v, i) => {
+          const px = x0 + (i / (arr.length - 1)) * wA;
+          const py = y0 - ((v - 0.2) / 0.75) * hA;
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        });
+        ctx.stroke();
+        ctx.setLineDash([]);
+        arr.forEach((v, i) => {
+          const px = x0 + (i / (arr.length - 1)) * wA;
+          const py = y0 - ((v - 0.2) / 0.75) * hA;
+          ctx.fillStyle = "#fff";
+          ctx.beginPath();
+          ctx.arc(px, py, 3.8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+        });
+        ctx.restore();
+      }
+
+      plotDrift(nemDrift, "#d93a4b", true, 1.0);
+      plotDrift(qwenDrift, "#1f77b4", false, stage === "1" ? 0.25 : 1.0);
+      plotDrift(cortDrift, "#118659", false, stage === "3" ? 1.0 : 0.25);
+
+      ctx.font = "700 11px 'Source Sans 3', sans-serif";
+      ctx.fillStyle = "#d93a4b";
+      ctx.fillText("Nemotron FastConformer (Re-amplifies to 0.725 at L20)", x0 + 18, y0 - ((0.74 - 0.2) / 0.75) * hA - 8);
+      ctx.fillStyle = "#1f77b4";
+      ctx.fillText("90° Orthogonal Qwen3 (cos θ = 0.033 → 0.377)", x0 + 48, y0 - ((0.415 - 0.2) / 0.75) * hA - 10);
+      ctx.fillStyle = "#118659";
+      ctx.fillText("Cortical Dual-Stream Gate (0.318)", x0 + 140, y0 - ((0.318 - 0.2) / 0.75) * hA + 15);
+
+      depthLabels.forEach((lb, i) => {
+        const px = x0 + (i / (depthLabels.length - 1)) * wA;
+        ctx.fillStyle = "#333";
+        ctx.font = "600 10.5px 'JetBrains Mono', monospace";
+        ctx.fillText(lb, px - 10, y0 + 18);
+      });
+
+      // Right Panel: Parameter Footprint vs. 10-Dataset Mean WER (76,443 Utts)
+      const rx0 = pw + 22;
+      ctx.fillStyle = "#fafcfb";
+      ctx.strokeStyle = "#d5e0da";
+      ctx.lineWidth = 1.2;
+      ctx.fillRect(rx0, 0, pw, H);
+      ctx.strokeRect(rx0, 0, pw, H);
+
+      ctx.fillStyle = "#1b3b2b";
+      ctx.font = "700 13px 'Source Sans 3', sans-serif";
+      ctx.fillText("B. Total Parameters (B) & 10-Set WER (76,443 Utts)", rx0 + 14, 24);
+
+      const specs = [
+        {
+          id: "1",
+          name: "Stage 1: Single Backbone (Nemotron-30B)",
+          params: 33.7,
+          wer: 4.69,
+          detail: "30.65B Routed MoE + 3.05B Dense | URGENT24: 10.98% | AMI: 7.81%",
+          col: "#d93a4b",
+        },
+        {
+          id: "2",
+          name: "Stage 2: Uncompressed Multi-Tower",
+          params: 65.3,
+          wer: 3.66,
+          detail: "Raw Checkpoints (65.30B) | URGENT24: 8.69% | AMI: 5.96%",
+          col: "#e67e22",
+        },
+        {
+          id: "3",
+          name: "Stage 3: Ishiki-ASR-0.5 (Cortical 27.48B)",
+          params: 27.48,
+          wer: 3.58,
+          detail: "8.04× SVD-MoE + Shared Qwen3 Trunk | URGENT24: 8.23% | AMI: 5.90%",
+          col: "#118659",
+        },
+      ];
+
+      specs.forEach((s, idx) => {
+        const by = 42 + idx * 62;
+        const isSel = stage === s.id;
+        ctx.fillStyle = isSel ? "rgba(17, 134, 89, 0.08)" : "#ffffff";
+        ctx.strokeStyle = isSel ? s.col : "#e2ebe6";
+        ctx.lineWidth = isSel ? 1.8 : 1.0;
+        ctx.fillRect(rx0 + 12, by, pw - 24, 54);
+        ctx.strokeRect(rx0 + 12, by, pw - 24, 54);
+
+        ctx.fillStyle = "#111";
+        ctx.font = "700 12px 'Source Sans 3', sans-serif";
+        ctx.fillText(s.name, rx0 + 20, by + 17);
+
+        ctx.fillStyle = s.col;
+        ctx.font = "700 12px 'JetBrains Mono', monospace";
+        ctx.textAlign = "right";
+        ctx.fillText(`${s.params.toFixed(2)}B  |  ${s.wer.toFixed(2)}% WER`, rx0 + pw - 20, by + 17);
+        ctx.textAlign = "left";
+
+        // Parameter bar
+        const maxBarW = pw - 44;
+        const pW = (s.params / 70.0) * maxBarW;
+        ctx.fillStyle = "#e9f0ec";
+        ctx.fillRect(rx0 + 20, by + 23, maxBarW, 8);
+        ctx.fillStyle = s.col;
+        ctx.fillRect(rx0 + 20, by + 23, pW, 8);
+
+        ctx.fillStyle = "#555";
+        ctx.font = "11px 'Source Sans 3', sans-serif";
+        ctx.fillText(s.detail, rx0 + 20, by + 46);
+      });
+    }
+
+    btns.forEach((b) => {
+      b.addEventListener("click", () => {
+        btns.forEach((x) => x.classList.remove("active-pill"));
+        b.classList.add("active-pill");
+        stage = b.getAttribute("data-b6-stage");
+        draw();
+      });
+    });
+    draw();
+  }
+
   window.addEventListener("DOMContentLoaded", () => {
     initBlock1Widget();
     initBlock2AWidget();
@@ -998,5 +1176,6 @@
     initBlock3Circuit();
     initBlock4Scene();
     initBlock5Widget();
+    initBlock6Widget();
   });
 })();
