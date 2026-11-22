@@ -8,12 +8,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="/assets/site.css">
+  <link rel="stylesheet" href="/assets/site.css?v=2">
   <script>
     (() => {
       const root = document.documentElement;
       try {
-        const stored = localStorage.getItem('theme');
+        localStorage.removeItem('amit-theme');
+        localStorage.removeItem('theme');
+        const stored = sessionStorage.getItem('amit-theme-mode');
         const mode = stored === 'light' || stored === 'dark' ? stored : 'auto';
         const theme = mode === 'auto'
           ? matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
@@ -39,7 +41,7 @@
         <a aria-current="page" href="/blog/"><span>03</span> BLOG</a>
         <a href="/publications/"><span>04</span> PUBLICATIONS</a>
       </div>
-      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Choose color theme">
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Choose color theme (Auto, Light, Dark)">
         <span aria-hidden="true">◎</span>
         <span id="theme-label">AUTO</span>
       </button>
@@ -60,7 +62,7 @@
       <header class="group-header">
         <span>01 / RESEARCH</span>
         <h2 id="articles-heading">ARTICLES</h2>
-        <span>2026</span>
+        <span>DEEP DIVES</span>
       </header>
       <div class="project-index-list">
         <article class="project-row">
@@ -73,7 +75,7 @@
             </h3>
           </div>
           <div class="project-meta">
-            <span class="project-role">NOVEMBER 2026</span>
+            <span class="project-role">RESEARCH POST</span>
             <span>Audio Foundation Models · Weight-Space Surgery</span>
           </div>
           <div class="project-description-block">
@@ -95,27 +97,18 @@
   </main>
 
   <footer class="site-footer">
-    <span class="footer-statement">Seeking truth with minimal ego.</span>
-    <span class="footer-separator" aria-hidden="true">·</span>
-    <span class="footer-copyright">© 2026 AMIT KUMAR SINGH YADAV</span>
+    <span class="footer-copyright">© AMIT KUMAR SINGH YADAV</span>
     <span class="footer-separator" aria-hidden="true">·</span>
     <div class="footer-socials">
-      <a href="/about/">About</a>
-      <a href="/experience/">Experience</a>
-      <a href="/blog/">Blog</a>
-      <a href="/publications/">Publications</a>
-    </div>
-    <span class="footer-separator" aria-hidden="true">·</span>
-    <div class="footer-socials">
-      <a href="mailto:yadav48@purdue.edu">Email ↗</a>
-      <a href="https://x.com/aksy_99" target="_blank" rel="noreferrer">X ↗</a>
-      <a href="https://scholar.google.com/citations?hl=en&amp;user=-HZEXt0AAAAJ&amp;view_op=list_works&amp;sortby=pubdate" target="_blank" rel="noreferrer">Scholar ↗</a>
+      <a href="mailto:yadav48@purdue.edu">yadav48@purdue.edu ↗</a>
+      <a href="https://x.com/aksy_99" target="_blank" rel="noreferrer">X (@aksy_99) ↗</a>
+      <a href="https://scholar.google.com/citations?hl=en&amp;user=-HZEXt0AAAAJ&amp;view_op=list_works&amp;sortby=pubdate" target="_blank" rel="noreferrer">Google Scholar ↗</a>
       <a href="https://www.linkedin.com/in/amit-kumar-singh-yadav/" target="_blank" rel="noreferrer">LinkedIn ↗</a>
     </div>
     <span class="footer-separator" aria-hidden="true">·</span>
     <span class="footer-location">SF</span>
   </footer>
 
-  <script src="/assets/site.js"></script>
+  <script src="/assets/site.js?v=2"></script>
 </body>
 </html>

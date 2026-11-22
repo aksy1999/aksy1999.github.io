@@ -8,12 +8,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="/assets/site.css">
+  <link rel="stylesheet" href="/assets/site.css?v=2">
   <script>
     (() => {
       const root = document.documentElement;
       try {
-        const stored = localStorage.getItem('theme');
+        localStorage.removeItem('amit-theme');
+        localStorage.removeItem('theme');
+        const stored = sessionStorage.getItem('amit-theme-mode');
         const mode = stored === 'light' || stored === 'dark' ? stored : 'auto';
         const theme = mode === 'auto'
           ? matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
@@ -39,7 +41,7 @@
         <a href="/blog/"><span>03</span> BLOG</a>
         <a href="/publications/"><span>04</span> PUBLICATIONS</a>
       </div>
-      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Choose color theme">
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Choose color theme (Auto, Light, Dark)">
         <span aria-hidden="true">◎</span>
         <span id="theme-label">AUTO</span>
       </button>
@@ -60,7 +62,7 @@
       <header class="group-header">
         <span>01 / ACTIVE</span>
         <h2 id="now-heading">NOW</h2>
-        <span>2026—∞</span>
+        <span>SAN FRANCISCO</span>
       </header>
       <div class="project-index-list">
         <article class="project-row">
@@ -70,7 +72,7 @@
           </div>
           <div class="project-meta">
             <span class="project-role">CO-FOUNDER</span>
-            <span>Jan 2026 – Present · San Francisco, CA</span>
+            <span>San Francisco, CA</span>
           </div>
           <div class="project-description-block">
             <p class="project-description">Building Fern as part of YC W26 batch.</p>
@@ -86,7 +88,7 @@
       <header class="group-header">
         <span>02 / PRIOR</span>
         <h2 id="before-heading">BEFORE</h2>
-        <span>2018—2026</span>
+        <span>RESEARCH &amp; ENGINEERING</span>
       </header>
       <div class="project-index-list">
         <article class="project-row">
@@ -96,7 +98,7 @@
           </div>
           <div class="project-meta">
             <span class="project-role">RESEARCH SCIENTIST</span>
-            <span>May 2024 – Jan 2026 · California, US</span>
+            <span>California, US</span>
           </div>
           <div class="project-description-block">
             <p class="project-description">Speech-LLMs for ASR, Meta Superintelligence Lab and Multimodal LLMs for smartglasses, Reality Labs.</p>
@@ -110,7 +112,7 @@
           </div>
           <div class="project-meta">
             <span class="project-role">RESEARCH ASSISTANT · VIPER LAB</span>
-            <span>Aug 2021 – May 2024 · West Lafayette, IN</span>
+            <span>West Lafayette, IN</span>
           </div>
           <div class="project-description-block">
             <p class="project-description">Advisor: Prof. Edward J. Delp, Meissner Fellow, 20+ publications at ICASSP, CVPR, and Interspeech.</p>
@@ -124,7 +126,7 @@
           </div>
           <div class="project-meta">
             <span class="project-role">EMBEDDED SOFTWARE ENGINEER</span>
-            <span>Aug 2020 – Aug 2021 · Bengaluru, India</span>
+            <span>Bengaluru, India</span>
           </div>
           <div class="project-description-block">
             <p class="project-description">Excellence award for outstanding work.</p>
@@ -138,7 +140,7 @@
           </div>
           <div class="project-meta">
             <span class="project-role">RESEARCH INTERN</span>
-            <span>Jan 2020 – Jun 2020 · Bengaluru, India</span>
+            <span>Bengaluru, India</span>
           </div>
           <div class="project-description-block">
             <p class="project-description">Self-supervised machine learning applied to vision tasks.</p>
@@ -152,7 +154,7 @@
           </div>
           <div class="project-meta">
             <span class="project-role">RESEARCH INTERN</span>
-            <span>May 2019 – Aug 2019 · Ottawa, Canada</span>
+            <span>Ottawa, Canada</span>
           </div>
           <div class="project-description-block">
             <p class="project-description">HCI/Computer Vision; part of a competitive fully funded cohort selected from 10 countries to do research in Canada.</p>
@@ -166,7 +168,7 @@
           </div>
           <div class="project-meta">
             <span class="project-role">RESEARCH INTERN</span>
-            <span>May 2018 – Jun 2018 · Ishikawa, Japan</span>
+            <span>Ishikawa, Japan</span>
           </div>
           <div class="project-description-block">
             <p class="project-description">Computational chemistry on Cray XC-40 supercomputer; part of a competitive fully funded JASSO scholarship selected throughout India for research in Japan.</p>
@@ -177,27 +179,18 @@
   </main>
 
   <footer class="site-footer">
-    <span class="footer-statement">Seeking truth with minimal ego.</span>
-    <span class="footer-separator" aria-hidden="true">·</span>
-    <span class="footer-copyright">© 2026 AMIT KUMAR SINGH YADAV</span>
+    <span class="footer-copyright">© AMIT KUMAR SINGH YADAV</span>
     <span class="footer-separator" aria-hidden="true">·</span>
     <div class="footer-socials">
-      <a href="/about/">About</a>
-      <a href="/experience/">Experience</a>
-      <a href="/blog/">Blog</a>
-      <a href="/publications/">Publications</a>
-    </div>
-    <span class="footer-separator" aria-hidden="true">·</span>
-    <div class="footer-socials">
-      <a href="mailto:yadav48@purdue.edu">Email ↗</a>
-      <a href="https://x.com/aksy_99" target="_blank" rel="noreferrer">X ↗</a>
-      <a href="https://scholar.google.com/citations?hl=en&amp;user=-HZEXt0AAAAJ&amp;view_op=list_works&amp;sortby=pubdate" target="_blank" rel="noreferrer">Scholar ↗</a>
+      <a href="mailto:yadav48@purdue.edu">yadav48@purdue.edu ↗</a>
+      <a href="https://x.com/aksy_99" target="_blank" rel="noreferrer">X (@aksy_99) ↗</a>
+      <a href="https://scholar.google.com/citations?hl=en&amp;user=-HZEXt0AAAAJ&amp;view_op=list_works&amp;sortby=pubdate" target="_blank" rel="noreferrer">Google Scholar ↗</a>
       <a href="https://www.linkedin.com/in/amit-kumar-singh-yadav/" target="_blank" rel="noreferrer">LinkedIn ↗</a>
     </div>
     <span class="footer-separator" aria-hidden="true">·</span>
     <span class="footer-location">SF</span>
   </footer>
 
-  <script src="/assets/site.js"></script>
+  <script src="/assets/site.js?v=2"></script>
 </body>
 </html>

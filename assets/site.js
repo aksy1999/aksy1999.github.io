@@ -4,36 +4,42 @@
   var label = document.getElementById('theme-label');
   var mql = window.matchMedia('(prefers-color-scheme: dark)');
 
+  try {
+    localStorage.removeItem('amit-theme');
+    localStorage.removeItem('theme');
+  } catch (_) {}
+
   function resolveTheme(mode) {
     if (mode === 'light' || mode === 'dark') return mode;
     return mql.matches ? 'dark' : 'light';
   }
 
   function applyMode(mode) {
-    var theme = resolveTheme(mode);
+    var valid = (mode === 'light' || mode === 'dark') ? mode : 'auto';
+    var theme = resolveTheme(valid);
     root.dataset.theme = theme;
-    root.dataset.themeMode = mode;
+    root.dataset.themeMode = valid;
     root.style.colorScheme = theme;
     if (label) {
-      label.textContent = mode.toUpperCase();
+      label.textContent = valid.toUpperCase();
     }
     drawShaders();
   }
 
-  var stored = 'auto';
+  var initialMode = 'auto';
   try {
-    var s = localStorage.getItem('theme');
-    if (s === 'light' || s === 'dark' || s === 'auto') stored = s;
+    var s = sessionStorage.getItem('amit-theme-mode');
+    if (s === 'light' || s === 'dark' || s === 'auto') initialMode = s;
   } catch (_) {}
 
-  applyMode(stored);
+  applyMode(initialMode);
 
   if (btn) {
     btn.addEventListener('click', function () {
       var cur = root.dataset.themeMode || 'auto';
       var next = cur === 'auto' ? 'light' : cur === 'light' ? 'dark' : 'auto';
       try {
-        localStorage.setItem('theme', next);
+        sessionStorage.setItem('amit-theme-mode', next);
       } catch (_) {}
       applyMode(next);
     });
