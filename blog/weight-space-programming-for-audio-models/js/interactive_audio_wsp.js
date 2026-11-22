@@ -992,7 +992,7 @@
   }
 
   // =========================================================================
-  // BLOCK 6: Learning From Existing Architectures & MoE Compression (65.3B -> 27.5B)
+  // BLOCK 6: Consolidating Orthogonal Speech Pathways (13.31B, 3.79% WER, 323x RTFx)
   // =========================================================================
   function initBlock6Widget() {
     const canvas = document.getElementById("b6-canvas");
@@ -1001,16 +1001,16 @@
     let stage = "3";
 
     const compBars = [
-      { label: "Nemotron MoE", before: 33.7, after: 6.62 },
-      { label: "SOV MoE", before: 26.63, after: 6.45 },
-      { label: "Qwen3 (4→1)", before: 8.16, after: 2.48 },
-      { label: "Core Encoders", before: 11.93, after: 11.93 },
+      { label: "Nemotron MoE", before: 33.7, after: 0.0 },
+      { label: "Ventral×2", before: 4.70, after: 4.70 },
+      { label: "Spont+Meet", before: 5.04, after: 5.04 },
+      { label: "Dorsal+TDT+W", before: 3.57, after: 3.57 },
     ];
 
     const stageBars = [
       { id: "1", label: "Single (33.7B)", wer: 4.69 },
-      { id: "2", label: "Combined (65.3B)", wer: 3.66 },
-      { id: "3", label: "Compressed (27.5B)", wer: 3.58 },
+      { id: "2", label: "2B Soup (2.0B)", wer: 4.34 },
+      { id: "3", label: "Ishiki-1.0 (13.3B)", wer: 3.78 },
     ];
 
     function draw() {
@@ -1028,7 +1028,7 @@
 
       ctx.fillStyle = "#1b3b2b";
       ctx.font = "700 13px 'Source Sans 3', sans-serif";
-      ctx.fillText("A. Component Parameters (Billions) — Before vs. After", 14, 24);
+      ctx.fillText("A. Architecture Footprint (Billions) — Total: 13.31B", 14, 24);
 
       const chartH = H - 72;
       const baseY = H - 32;
@@ -1040,7 +1040,7 @@
         const bx = startXA + i * (bwA + gapA);
         const hBefore = (b.before / 38.0) * chartH;
         const curVal =
-          stage === "1" ? (i === 0 ? 33.7 : 0) : stage === "2" ? b.before : b.after;
+          stage === "1" ? (i === 0 ? 33.7 : 0) : stage === "2" ? (i === 1 ? 2.04 : 0) : b.after;
         const hCur = (curVal / 38.0) * chartH;
 
         // Ghost bar (uncompressed)

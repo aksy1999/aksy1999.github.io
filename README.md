@@ -2,7 +2,7 @@
 
 `audiowsp` (`harness/audiowsp.py`) is the open-source Python harness accompanying **"Weight-Space Programming for Audio Models: LLMs Can Directly Edit Audio Model Weights and Compress Them"** by **Amit Kumar Singh Yadav** and **Ishiki Labs Research**.
 
-It provides the 5 common first-principles building blocks (guarded by `firewall.py`'s `EvalFirewallViolation` anti-leakage checks) used across both **Audio Deepfake Detection (`ishiki-labs/ishiki-deepfake-0.5`, `318M -> 86.8M`)** and **Automatic Speech Recognition (`ishiki-labs/ishiki-asr-0.5`, `32.4B -> 26.2B`)**:
+It provides the 6 common first-principles building blocks (guarded by `firewall.py`'s `EvalFirewallViolation` anti-leakage checks) used across both **Audio Deepfake Detection (`ishiki-labs/ishiki-deepfake-0.5`, `318M -> 86.8M`)** and **Automatic Speech Recognition (`ishiki-labs/ishiki-asr-1.0`, `13.31B` single-file standalone model, `3.78%` 10-set WER at `323.4x` RTFx)**:
 
 1. **Block 1 — Acoustic Nuisance Profiler (`AcousticNuisanceProfiler`)**: Generates frame-aligned paired clean vs. corrupted probes (`.WAV` vs. `.MP3`, `Encodec`, `8kHz` PSTN $\mu$-law, RIR reverberation, AWGN) and extracts the task-orthogonal nuisance drift subspace $U_{\text{nuis}}$.
 2. **Block 2 — Task-Orthogonal Weight Surgery & Signal-to-Noise Eigen-Filtering (`SubspaceNullingSurgery` & `GEVDProjectionSurgery`)**: Applies $90^\circ$ Gram-Schmidt / QR task-orthogonal null-space projection ($0.0\%$ task signal loss) and solves the Generalized Eigenvalue Problem ($\Sigma_{\text{clean}} v_k = \lambda_k \Sigma_{\text{nuis}} v_k$) to filter residuals onto high-SNR channels ($r = 96$).
