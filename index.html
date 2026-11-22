@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Amit Kumar Singh Yadav — Co-founder at Fern (Ishiki Labs) | AI Researcher</title>
-  <meta name="description" content="Amit Kumar Singh Yadav — Co-founder at Fern (Ishiki Labs Inc., YC-backed), Ex-Meta Research Scientist, Ph.D. in ECE from Purdue University, B.Tech. from IIT Gandhinagar (Director's Medal).">
+  <title>Amit Kumar Singh Yadav — Co-founder at Fern | AI Researcher</title>
+  <meta name="description" content="Amit Kumar Singh Yadav — Co-founder at Fern (YC W26), Ex-Meta Research Scientist, Ph.D. in ECE from Purdue University, B.Tech. from IIT Gandhinagar (Director's Medal).">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Sans+3:ital,wght@0,300..700;1,300..700&display=swap">
@@ -77,40 +77,19 @@
       color: var(--green);
       text-decoration: none;
     }
-    .nav-links a.nav-pill {
-      background: var(--accent-bg);
-      border: 1px solid var(--border);
-      color: var(--green);
-    }
 
     .container { max-width: 920px; margin: 0 auto; padding: 36px 24px 80px; }
     section { scroll-margin-top: 72px; }
 
-    /* Hero with Profile Photo */
+    /* Hero */
     .hero {
       padding: 32px;
       background: var(--accent-bg);
       border: 1px solid var(--border);
       border-radius: 12px;
       margin-bottom: 40px;
-      display: flex;
-      gap: 28px;
-      align-items: flex-start;
     }
-    .hero-photo-wrap {
-      flex-shrink: 0;
-      text-align: center;
-    }
-    .hero-photo {
-      width: 176px;
-      height: 176px;
-      border-radius: 14px;
-      object-fit: cover;
-      border: 3px solid #ffffff;
-      box-shadow: 0 6px 18px rgba(17, 134, 89, 0.14);
-      display: block;
-    }
-    .hero-content { flex: 1; min-width: 0; }
+    .hero-content { min-width: 0; }
     .hero h1 { margin: 0 0 6px; font-size: 32px; font-weight: 700; letter-spacing: -0.01em; }
     .hero .subtitle { margin: 0 0 14px; font-size: 17.5px; color: var(--muted); font-weight: 600; }
     .philosophy-box {
@@ -153,13 +132,13 @@
     .exp-list {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 12px;
       margin: 18px 0 32px;
     }
     .exp-card {
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 18px 20px;
+      padding: 15px 18px;
       background: #ffffff;
     }
     .exp-header {
@@ -168,27 +147,31 @@
       align-items: baseline;
       flex-wrap: wrap;
       gap: 8px;
-      margin-bottom: 6px;
+      margin-bottom: 2px;
     }
     .exp-role {
-      font-size: 18px;
-      font-weight: 700;
+      font-size: 17px;
+      font-weight: 600;
       color: #111;
     }
     .exp-company {
       color: var(--green);
-      font-weight: 700;
+      font-weight: 600;
     }
     .exp-date {
       font-family: var(--font-mono);
       font-size: 13px;
       color: var(--muted);
-      font-weight: 600;
     }
     .exp-loc {
       font-size: 14px;
       color: var(--muted);
-      margin-bottom: 8px;
+      margin-bottom: 4px;
+    }
+    .exp-desc {
+      margin: 4px 0 0;
+      color: #333;
+      font-size: 15.5px;
     }
     .exp-card ul {
       margin: 6px 0 0;
@@ -199,8 +182,8 @@
     .exp-card li { margin-bottom: 4px; }
 
     .pub-group-title {
-      font-size: 17px;
-      font-weight: 700;
+      font-size: 16.5px;
+      font-weight: 600;
       color: var(--green);
       background: var(--accent-bg);
       border-left: 4px solid var(--green);
@@ -209,54 +192,35 @@
       border-radius: 0 6px 6px 0;
     }
     .featured-blog {
-      border: 2px solid var(--accent);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
       background: #fbfdfc;
       border-radius: 10px;
-      padding: 24px 26px;
+      padding: 20px 24px;
       margin: 16px 0 32px;
     }
-    .badge {
-      display: inline-block;
-      padding: 2px 8px;
+    .blog-date {
       font-family: var(--font-mono);
-      font-size: 12px;
-      font-weight: 600;
-      background: #dbece2;
-      color: var(--green);
-      border-radius: 4px;
-      margin-bottom: 8px;
+      font-size: 12.5px;
+      color: var(--muted);
+      margin-bottom: 6px;
     }
-    .venue-tag {
-      display: inline-block;
-      padding: 1px 7px;
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      font-weight: 600;
-      background: #eaf4ee;
-      color: var(--green);
-      border: 1px solid #cce3d5;
-      border-radius: 4px;
-      margin-right: 6px;
-      vertical-align: middle;
-    }
-    .featured-blog h3 { margin: 4px 0 8px; font-size: 23px; line-height: 1.3; }
+    .featured-blog h3 { margin: 0 0 8px; font-size: 21px; line-height: 1.35; }
     .pub-list { list-style: none; padding: 0; margin: 0; }
-    .pub-list li { padding: 13px 0; border-bottom: 1px solid #eef3f0; }
+    .pub-list li { padding: 12px 0; border-bottom: 1px solid #eef3f0; }
     .pub-list li:last-child { border-bottom: none; }
-    .pub-title { font-weight: 600; color: #111; font-size: 16.5px; line-height: 1.4; }
+    .pub-title { font-weight: 600; color: #111; font-size: 16px; line-height: 1.4; }
     .pub-meta { font-size: 14.5px; color: var(--muted); margin-top: 3px; }
 
     @media (max-width: 680px) {
-      .hero { flex-direction: column; align-items: center; text-align: center; padding: 24px 20px; }
-      .philosophy-box { text-align: left; }
-      .links-row { justify-content: center; }
+      .hero { padding: 24px 20px; }
       .top-nav-inner { justify-content: center; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Navigation Bar with Direct Section Headings -->
+  <!-- Top Navigation Bar -->
   <nav class="top-nav" aria-label="Primary Navigation">
     <div class="top-nav-inner">
       <a class="nav-brand" href="#top">Amit Kumar Singh Yadav</a>
@@ -265,7 +229,6 @@
         <a href="#experience">Experience</a>
         <a href="#blog">Blog</a>
         <a href="#publications">Publications</a>
-        <a class="nav-pill" href="hobbies/">Hobbies &amp; Photos</a>
       </div>
     </div>
   </nav>
@@ -275,31 +238,27 @@
     <!-- ABOUT / HERO SECTION -->
     <section id="about">
       <div class="hero">
-        <div class="hero-photo-wrap">
-          <img class="hero-photo" src="images/profile.jpg" alt="Amit Kumar Singh Yadav">
-        </div>
         <div class="hero-content">
           <h1>Amit Kumar Singh Yadav</h1>
           <p class="subtitle">
-            Co-founder at <a href="https://www.fern.bot">Fern</a> (<a href="https://ishikilabs.ai">Ishiki Labs Inc.</a>, YC) &nbsp;·&nbsp; Ex-Meta Research Scientist &nbsp;·&nbsp; Ph.D. in ECE, Purdue University
+            Co-founder at <a href="https://www.fern.bot">Fern</a> (YC W26) &nbsp;·&nbsp; Ex-Meta Research Scientist &nbsp;·&nbsp; Ph.D. in ECE, Purdue University
           </p>
 
           <div class="philosophy-box">
-            I believe in creating value using tech, and <a href="https://www.ycombinator.com/library/8g-how-to-get-startup-ideas"><strong>making something that people want</strong></a>. I believe every ambition is achievable if <strong>1)</strong> you enjoy doing it day to day, <strong>2)</strong> find it fulfilling, <strong>3)</strong> focus on seeking truth with minimal ego, and <strong>4)</strong> as a consequence of 1–3, put sincere hustle for it.
+            I believe in creating value using tech, and <a href="https://www.ycombinator.com/library/8g-how-to-get-startup-ideas">making something that people want</a>. I believe every ambition is achievable if 1) you enjoy doing it day to day, 2) find it fulfilling, 3) focus on seeking truth with minimal ego, and 4) as a consequence of 1–3, put sincere hustle for it.
           </div>
 
           <p style="margin: 12px 0 0; text-align: left;">
-            <strong>Amit Kumar Singh Yadav</strong> received his B.Tech. in Electrical Engineering and Computer Science from the <strong>Indian Institute of Technology Gandhinagar</strong>, India, graduating with the Director’s Medal. During his undergraduate studies, he was awarded international scholarships including JASSO and Mitacs to conduct research in Japan and Canada, respectively. He went on to receive his Ph.D. in Electrical and Computer Engineering from <strong>Purdue University</strong>, USA, where his doctoral research focused on self-supervised methods for speech forensics and on building interpretable, demographically unbiased forensic detectors for the <a href="https://www.darpa.mil/research/programs/semantic-forensics">DARPA SemaFor program</a>. After his Ph.D., Amit worked as a Research Scientist at <strong>Meta</strong>, USA, where he worked on <a href="https://doi.org/10.1109/icassp49660.2025.10890743">SpeechLLMs for speech recognition</a> at Meta Superintelligence Lab and on post-training 400B-parameter multimodal LLMs at Meta Reality Labs. In 2026, he co-founded <a href="https://www.fern.bot">Fern</a> aka <a href="https://ishikilabs.ai">Ishiki Labs Inc.</a>, a <a href="https://www.ycombinator.com">Y Combinator</a>-backed startup. He has published more than 20 papers at international conferences, with research interests spanning media forensics, speech recognition, and multimodal LLMs.
+            Amit Kumar Singh Yadav received his B.Tech. in Electrical Engineering and Computer Science from the Indian Institute of Technology Gandhinagar, India, graduating with the Director’s Medal. During his undergraduate studies, he was awarded international scholarships including JASSO and Mitacs to conduct research in Japan and Canada, respectively. He went on to receive his Ph.D. in Electrical and Computer Engineering from Purdue University, USA, where his doctoral research focused on self-supervised methods for speech forensics and on building interpretable, demographically unbiased forensic detectors for the <a href="https://www.darpa.mil/research/programs/semantic-forensics">DARPA SemaFor program</a>. After his Ph.D., Amit worked as a Research Scientist at Meta, USA, where he worked on <a href="https://doi.org/10.1109/icassp49660.2025.10890743">SpeechLLMs for speech recognition</a> at Meta Superintelligence Lab and on post-training 400B-parameter multimodal LLMs at Meta Reality Labs. In 2026, he co-founded <a href="https://www.fern.bot">Fern</a> (Ishiki Labs Inc.), a <a href="https://www.ycombinator.com">Y Combinator</a>-backed startup. He has published more than 20 papers at international conferences, with research interests spanning media forensics, speech recognition, and multimodal LLMs.
           </p>
 
           <div class="links-row">
             <a class="pill-link primary" href="mailto:yadav48@purdue.edu">yadav48@purdue.edu</a>
-            <a class="pill-link" href="https://x.com/moltfinds">Twitter / X (@moltfinds)</a>
+            <a class="pill-link" href="https://x.com/aksy_99">Twitter / X (@aksy_99)</a>
             <a class="pill-link" href="https://scholar.google.com/citations?user=8vfd1pAAAAAJ&amp;hl=en">Google Scholar</a>
             <a class="pill-link" href="https://www.linkedin.com/in/amit-kumar-singh-yadav/">LinkedIn</a>
             <a class="pill-link" href="#experience">Experience</a>
             <a class="pill-link" href="#blog">Research Blog</a>
-            <a class="pill-link" href="hobbies/">Hobbies &amp; Photos →</a>
           </div>
         </div>
       </div>
@@ -312,50 +271,29 @@
 
         <div class="exp-card">
           <div class="exp-header">
-            <div class="exp-role">Co-founder · <span class="exp-company"><a href="https://www.fern.bot">Fern</a> (Ishiki Labs Inc., Y Combinator)</span></div>
+            <div class="exp-role">Co-founder · <span class="exp-company">Fern (Ishiki Labs Inc.)</span></div>
             <div class="exp-date">Jan 2026 – Present</div>
           </div>
-          <div class="exp-loc">San Francisco Bay Area, California, United States</div>
-          <ul>
-            <li>Building foundation models for speech/audio, multimodal turn-taking, and high-fidelity robotics world models (<a href="https://www.fern.bot">Fern</a>).</li>
-            <li>Leading research and engineering on Weight-Space Programming (<a href="blog/weight-space-programming-for-audio-models/">AudioWSP</a>), post-training, and reinforcement learning strategies for multimodal and audio foundation models.</li>
-          </ul>
+          <div class="exp-loc">San Francisco, California, United States</div>
+          <p class="exp-desc">Building Fern as part of YC W26 batch.</p>
         </div>
 
         <div class="exp-card">
           <div class="exp-header">
-            <div class="exp-role">Research Scientist · <span class="exp-company">Meta (Reality Labs)</span></div>
-            <div class="exp-date">Oct 2024 – Jan 2026</div>
+            <div class="exp-role">Research Scientist · <span class="exp-company">Meta</span></div>
+            <div class="exp-date">May 2024 – Jan 2026</div>
           </div>
-          <div class="exp-loc">Burlingame, California, United States</div>
-          <ul>
-            <li>Led post-training (SFT, DPO/ARPG, and reward modeling) of 400B-parameter foundational multimodal video &amp; audio LLMs for AI-powered smart glasses.</li>
-            <li>Designed novel post-training recipes, modeling strategies, and evaluation benchmarks enabling <a href="https://arxiv.org/abs/2609.21183">proactive audio and real-time video assistance</a> (shipped in LiveAI and demoed at Meta Connect).</li>
-          </ul>
+          <div class="exp-loc">California, United States</div>
+          <p class="exp-desc">Speech-LLMs for ASR, Meta Superintelligence Lab and Multimodal LLMs for smartglasses, Reality Labs.</p>
         </div>
 
         <div class="exp-card">
           <div class="exp-header">
-            <div class="exp-role">Research Scientist Intern · <span class="exp-company">Meta (Superintelligence Lab / LLaMA Speech)</span></div>
-            <div class="exp-date">May 2024 – Aug 2024</div>
+            <div class="exp-role">Research Assistant, VIPER Lab · <span class="exp-company">Purdue University</span></div>
+            <div class="exp-date">Aug 2021 – May 2024</div>
           </div>
-          <div class="exp-loc">Menlo Park, California, United States</div>
-          <ul>
-            <li>Researched post-training of SpeechLLMs for automatic speech recognition with the LLaMA Speech team.</li>
-            <li>Proposed <a href="https://doi.org/10.1109/icassp49660.2025.10890743">Speech-N-LlaMA</a> to mitigate exposure bias and leverage the error-correction capability of LLMs, reducing WER by 15% compared to Speech-LLaMA on LibriSpeech.</li>
-          </ul>
-        </div>
-
-        <div class="exp-card">
-          <div class="exp-header">
-            <div class="exp-role">Research Assistant &amp; Ph.D. Candidate · <span class="exp-company">VIPER Lab, Purdue University</span></div>
-            <div class="exp-date">Aug 2021 – Oct 2024</div>
-          </div>
-          <div class="exp-loc">West Lafayette, Indiana, United States · Advised by Prof. Edward J. Delp</div>
-          <ul>
-            <li>Conducted doctoral research under the <a href="https://www.darpa.mil/research/programs/semantic-forensics">DARPA SemaFor program</a> on self-supervised transformers, diffusion models, and graph neural networks for speech and video forensics (20+ peer-reviewed papers at CVPR, ICASSP, ICMLA, WIFS, and IH&amp;MMSec).</li>
-            <li>Built multi-domain synthetic speech detection and localization methods (<a href="https://arxiv.org/abs/2309.08090">MDRT</a>, <a href="https://doi.org/10.1109/ICASSP49357.2023.10095957">ASSD</a>, <a href="https://arxiv.org/abs/2409.13049">DiffSSD</a>) and led the first systematic study quantifying demographic age, gender, and accent bias in speech deepfake detectors (<a href="https://openaccess.thecvf.com/content/CVPR2024W/WMF/html/Yadav_FairSSD_Understanding_Bias_in_Synthetic_Speech_Detectors_CVPRW_2024_paper.html">FairSSD, CVPR 2024</a>).</li>
-          </ul>
+          <div class="exp-loc">West Lafayette, Indiana, United States</div>
+          <p class="exp-desc">Advisor: Prof. Edward J. Delp, Meissner Fellow, 20+ publications at ICASSP, CVPR, and Interspeech.</p>
         </div>
 
         <div class="exp-card">
@@ -363,45 +301,35 @@
             <div class="exp-role">Embedded Software Engineer · <span class="exp-company">Enphase Energy</span></div>
             <div class="exp-date">Aug 2020 – Aug 2021</div>
           </div>
-          <div class="exp-loc">Bengaluru, India · SBU Global Excellence Award Winner (Q4 2020)</div>
-          <ul>
-            <li>Developed embedded firmware and calibration algorithms for 3-phase energy metering chips and REST/Protobuf APIs for cloud-gateway data transfer.</li>
-            <li>Enabled new commercial 3-phase high-current energy products and remote cloud diagnostics that resolved 15% of field metering issues without site visits.</li>
-          </ul>
+          <div class="exp-loc">Bengaluru, India</div>
+          <p class="exp-desc">Excellence award for outstanding work.</p>
         </div>
 
         <div class="exp-card">
           <div class="exp-header">
-            <div class="exp-role">Research Intern · <span class="exp-company">Rakuten (Rakuten Institute of Technology)</span></div>
-            <div class="exp-date">Jan 2020 – Aug 2020</div>
+            <div class="exp-role">Research Intern · <span class="exp-company">Rakuten Institute of Technology</span></div>
+            <div class="exp-date">Jan 2020 – Jun 2020</div>
           </div>
-          <div class="exp-loc">Bengaluru, India · Received Pre-Placement Offer as Applied Researcher</div>
-          <ul>
-            <li>Developed computer vision and deep learning models for cross-domain outfit recommendation, size-chart extraction, and medical nuclei segmentation, increasing e-commerce traffic by 5%.</li>
-            <li>Co-created and demoed <em>PathoAI</em>, an interactive VR-based AI assistant for 3D tumor visualization, receiving executive incubation funding.</li>
-          </ul>
+          <div class="exp-loc">Bengaluru, India</div>
+          <p class="exp-desc">Self-supervised machine learning applied to vision tasks; offered a full-time research position, an exception to the team’s PhD-only hiring policy.</p>
         </div>
 
         <div class="exp-card">
           <div class="exp-header">
-            <div class="exp-role">MITACS Globalink Research Intern · <span class="exp-company">Creative Interactions Lab, Carleton University</span></div>
+            <div class="exp-role">Research Intern · <span class="exp-company">Mitacs (Carleton University)</span></div>
             <div class="exp-date">May 2019 – Aug 2019</div>
           </div>
           <div class="exp-loc">Ottawa, Ontario, Canada</div>
-          <ul>
-            <li>Designed, fabricated, and user-studied tangible back-of-device smartphone interactions (<a href="https://doi.org/10.1145/3343055.3360749">JoyHolder, ACM ISS 2019</a>; <em>PhonePic, ACM CoDS-COMAD 2021</em>).</li>
-          </ul>
+          <p class="exp-desc">HCI/Computer Vision; part of a competitive fully funded cohort selected from 10 countries to do research in Canada.</p>
         </div>
 
         <div class="exp-card">
           <div class="exp-header">
-            <div class="exp-role">JASSO Research Intern · <span class="exp-company">Japan Advanced Institute of Science and Technology (JAIST)</span></div>
+            <div class="exp-role">Research Intern · <span class="exp-company">JAIST</span></div>
             <div class="exp-date">May 2018 – Jun 2018</div>
           </div>
-          <div class="exp-loc">Nomi, Ishikawa, Japan</div>
-          <ul>
-            <li>Performed distributed Quantum Diffusion Monte Carlo calculations on the Cray XC40 supercomputer to evaluate the linearization barrier of disiloxane (<a href="https://doi.org/10.1021/acs.jpca.0c01552">published in ACS Journal of Physical Chemistry A</a>).</li>
-          </ul>
+          <div class="exp-loc">Ishikawa, Japan</div>
+          <p class="exp-desc">Computational chemistry on Cray XC-40 supercomputer; part of a competitive fully funded JASSO scholarship selected throughout India for research in Japan.</p>
         </div>
 
         <div class="exp-card">
@@ -410,8 +338,8 @@
             <div class="exp-date">2016 – 2024</div>
           </div>
           <ul>
-            <li><strong>Ph.D. in Electrical and Computer Engineering, Purdue University</strong> (2021–2024) — Advised by Prof. Edward J. Delp; Meissner Fellowship Recipient; Straight A/A+ GPA.</li>
-            <li><strong>B.Tech. in Electrical Engineering with Minor in Computer Science &amp; Engineering, IIT Gandhinagar</strong> (2016–2020) — Early graduated in 3.5 years; awarded the <strong>Director’s Medal</strong> for overall outstanding academic performance.</li>
+            <li>Ph.D. in Electrical and Computer Engineering, Purdue University (2021–2024) — Advised by Prof. Edward J. Delp, Meissner Fellowship Recipient, straight A/A+ GPA.</li>
+            <li>B.Tech. in Electrical Engineering with Minor in Computer Science &amp; Engineering, IIT Gandhinagar (2016–2020) — Early graduated in 3.5 years, awarded the Director’s Medal for overall outstanding academic performance.</li>
           </ul>
         </div>
 
@@ -422,19 +350,15 @@
     <section id="blog">
       <h2>Research Blog</h2>
       <div class="featured-blog">
-        <span class="badge">INTERACTIVE DISTILL.PUB RESEARCH BLOG · NOVEMBER 2026</span>
+        <div class="blog-date">November 2026</div>
         <h3>
           <a href="blog/weight-space-programming-for-audio-models/">
             Weight-Space Programming for Audio Models: LLMs Can Directly Edit Audio Model Weights and Compress Them
           </a>
         </h3>
-        <p style="margin: 8px 0 14px; color: #333;">
-          Can a general-purpose LLM directly read, edit, and compress the weights of real-world audio models without running gradient descent? We show that a single unified Weight-Space Programming harness scales from a <strong>318M-parameter Audio Deepfake Detector</strong> (compressed 3.66× to <strong>86.8M</strong> while cutting In-The-Wild EER from 11.22% to 2.51%) to a standalone <strong>13.31B-parameter Speech Recognition model</strong> (<a href="https://huggingface.co/ishiki-labs/ishiki-asr-1.0"><code>ishiki-labs/ishiki-asr-1.0</code></a>, achieving <strong>3.75% average WER at 302.3× RTFx</strong> across all <strong>76,443 utterances</strong> of the 10 public Hugging Face Open ASR Leaderboard benchmarks and cutting 4-corruption noisy WER from <strong>8.09% to 6.87%</strong>).
+        <p style="margin: 6px 0 0; color: #333; font-size: 16px;">
+          Can a general-purpose LLM directly read, edit, and compress the weights of real-world audio models without gradient descent? Explored on audio deepfake detection and automatic speech recognition, producing an 86.8M-parameter audio deepfake detector (2.51% In-The-Wild EER) and the best-performing open-weights standalone 13.31B-parameter ASR model (3.75% average WER at 302.3× RTFx on the Open ASR Leaderboard).
         </p>
-        <div class="links-row" style="margin-top:10px;">
-          <a class="pill-link primary" href="blog/weight-space-programming-for-audio-models/">Read Interactive Blogpost →</a>
-          <a class="pill-link" href="https://github.com/ishikilabsinc/audiowsp">Reproducible Code (audiowsp)</a>
-        </div>
       </div>
     </section>
 
@@ -442,50 +366,37 @@
     <section id="publications">
       <h2>Publications &amp; Preprints</h2>
 
-      <!-- GROUP 1: LLMs, Multimodal & Proactive AI, Multi-Turn LLM Turn-Taking & Speech LLMs -->
+      <!-- GROUP 1: LLMs, Multimodal & Proactive AI, Multi-Turn Turn-Taking & Speech LLMs -->
       <div class="pub-group-title">
         LLMs, Multimodal &amp; Proactive AI, Multi-Turn Turn-Taking &amp; Speech LLMs
       </div>
       <ul class="pub-list">
         <li>
           <div class="pub-title">
-            <span class="venue-tag">Ishiki Labs 2026</span>
-            <a href="blog/weight-space-programming-for-audio-models/">Weight-Space Programming for Audio Models: LLMs Can Directly Edit Audio Model Weights and Compress Them</a>
-          </div>
-          <div class="pub-meta">
-            <strong>Amit Kumar Singh Yadav</strong>, Robert Xu · <em>Ishiki Labs Research Technical Report &amp; Interactive Blog</em>, Nov 2026 · [<a href="blog/weight-space-programming-for-audio-models/">Interactive Blog</a>] [<a href="https://github.com/ishikilabsinc/audiowsp">Code</a>]
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            <span class="venue-tag">Meta AI · Proactive AudioLLM</span>
             <a href="https://arxiv.org/abs/2609.21183">I'll Keep an Ear Out: Teaching AudioLLMs Proactive Audio Assistance</a>
           </div>
           <div class="pub-meta">
-            <strong>Amit Kumar Singh Yadav</strong>, Ritvik Shrivastava, Xuan Zhang, Seungwhan Moon, Shashank Jain, Pinar Donmez, Babak Damavandi · <em>Meta AI (arXiv:2609.21183)</em>, 2026 · [<a href="https://arxiv.org/abs/2609.21183">arXiv</a>] [<a href="https://arxiv.org/pdf/2609.21183.pdf">PDF</a>]
+            <strong>Amit Kumar Singh Yadav</strong>, Ritvik Shrivastava, Xuan Zhang, Seungwhan Moon, Shashank Jain, Pinar Donmez, Babak Damavandi · <em>Interspeech</em>, 2026 · [<a href="https://arxiv.org/abs/2609.21183">arXiv</a>] [<a href="https://arxiv.org/pdf/2609.21183.pdf">PDF</a>]
           </div>
         </li>
         <li>
           <div class="pub-title">
-            <span class="venue-tag">Turn-Taking · Interspeech 2026</span>
             <a href="https://arxiv.org/abs/2603.11409">Speak or Stay Silent: Context-Aware Turn-Taking in Multi-Party Dialogue</a>
           </div>
           <div class="pub-meta">
-            Kratika Bhagtani, Mrinal Anand, Yu Chen Xu, <strong>Amit Kumar Singh Yadav</strong> · <em>Interspeech 2026 / arXiv:2603.11409</em>, 2026 · [<a href="https://arxiv.org/abs/2603.11409">arXiv</a>] [<a href="https://arxiv.org/pdf/2603.11409.pdf">PDF</a>]
+            Kratika Bhagtani, Mrinal Anand, Yu Chen Xu, <strong>Amit Kumar Singh Yadav</strong> · <em>Interspeech</em>, 2026 · [<a href="https://arxiv.org/abs/2603.11409">arXiv</a>] [<a href="https://arxiv.org/pdf/2603.11409.pdf">PDF</a>]
           </div>
         </li>
         <li>
           <div class="pub-title">
-            <span class="venue-tag">NeurIPS 2025 · Oral / Spotlight</span>
             <a href="https://neurips.cc/virtual/2025/loc/san-diego/workshop/109539">Quantifying Information Gain and Redundancy in Multi-Turn LLM Conversations</a>
           </div>
           <div class="pub-meta">
-            Abhiram Rao Gorle, <strong>Amit Kumar Singh Yadav</strong>, Tsachy Weissman · <em>NeurIPS 2025 Workshop on Multi-Turn Interactions in Large Language Models (Spotlight / Oral Talk)</em>, 2025 · [<a href="https://neurips.cc/virtual/2025/loc/san-diego/workshop/109539">NeurIPS</a>] [<a href="https://openreview.net/pdf?id=UpbdnCkUFA">Paper PDF</a>]
+            Abhiram Rao Gorle, <strong>Amit Kumar Singh Yadav</strong>, Tsachy Weissman · <em>NeurIPS Workshop on Multi-Turn Interactions in Large Language Models</em>, 2025 · [<a href="https://neurips.cc/virtual/2025/loc/san-diego/workshop/109539">NeurIPS</a>] [<a href="https://openreview.net/pdf?id=UpbdnCkUFA">PDF</a>]
           </div>
         </li>
         <li>
           <div class="pub-title">
-            <span class="venue-tag">NeurIPS 2025</span>
             <a href="https://papers.nips.cc/paper_files/paper/2025/file/1021014b8c5a9008fc245736a1b73d7e-Paper-Conference.pdf">ItDPDM: Information-Theoretic Discrete Poisson Diffusion Model</a>
           </div>
           <div class="pub-meta">
@@ -494,7 +405,6 @@
         </li>
         <li>
           <div class="pub-title">
-            <span class="venue-tag">Meta AI · IEEE ICASSP 2025</span>
             <a href="https://doi.org/10.1109/icassp49660.2025.10890743">Speech-N-LlaMA: Improving Speech LLMs with Multi-Pass Training</a>
           </div>
           <div class="pub-meta">
@@ -510,7 +420,6 @@
       <ul class="pub-list">
         <li>
           <div class="pub-title">
-            <span class="venue-tag">IEEE/CVF CVPR 2024</span>
             <a href="https://openaccess.thecvf.com/content/CVPR2024W/WMF/html/Yadav_FairSSD_Understanding_Bias_in_Synthetic_Speech_Detectors_CVPRW_2024_paper.html">FairSSD: Understanding Bias in Synthetic Speech Detectors</a>
           </div>
           <div class="pub-meta">
@@ -519,7 +428,6 @@
         </li>
         <li>
           <div class="pub-title">
-            <span class="venue-tag">IEEE/CVF CVPR 2023</span>
             <a href="https://openaccess.thecvf.com/content/CVPR2023W/WMF/html/Xiang_MTN_Forensic_Analysis_of_MP4_Video_Files_Using_Graph_Neural_CVPRW_2023_paper.html">MTN: Forensic Analysis of MP4 Video Files Using Graph Neural Networks</a>
           </div>
           <div class="pub-meta">
@@ -528,16 +436,14 @@
         </li>
         <li>
           <div class="pub-title">
-            <span class="venue-tag">IEEE ICASSP 2026</span>
             <a href="https://arxiv.org/abs/2509.09155">HISPASpoof: A New Dataset For Spanish Speech Forensics</a>
           </div>
           <div class="pub-meta">
-            Maria Risques, Kratika Bhagtani, <strong>Amit Kumar Singh Yadav</strong>, Edward J. Delp · <em>IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) / arXiv:2509.09155</em> · [<a href="https://arxiv.org/abs/2509.09155">arXiv</a>]
+            Maria Risques, Kratika Bhagtani, <strong>Amit Kumar Singh Yadav</strong>, Edward J. Delp · <em>IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)</em>, 2026 · [<a href="https://arxiv.org/abs/2509.09155">arXiv</a>]
           </div>
         </li>
         <li>
           <div class="pub-title">
-            <span class="venue-tag">IEEE ICASSP 2025</span>
             <a href="https://arxiv.org/abs/2409.13049">DiffSSD: A Diffusion-Based Dataset For Speech Forensics</a>
           </div>
           <div class="pub-meta">
@@ -546,7 +452,6 @@
         </li>
         <li>
           <div class="pub-title">
-            <span class="venue-tag">IEEE ICASSP 2024</span>
             <a href="https://arxiv.org/abs/2309.08090">MDRT: Multi-Domain Synthetic Speech Localization</a>
           </div>
           <div class="pub-meta">
@@ -555,7 +460,6 @@
         </li>
         <li>
           <div class="pub-title">
-            <span class="venue-tag">IEEE ICASSP 2023</span>
             <a href="https://doi.org/10.1109/ICASSP49357.2023.10095957">ASSD: Synthetic Speech Detection in the AAC Compressed Domain</a>
           </div>
           <div class="pub-meta">
