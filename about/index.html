@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300..700;1,300..700&display=swap">
-  <link rel="stylesheet" href="/assets/site.css?v=4">
+  <link rel="stylesheet" href="/assets/site.css?v=5">
   <script>
     (() => {
       const root = document.documentElement;
@@ -47,74 +47,48 @@
       </button>
     </nav>
 
-    <section class="page-intro">
-      <div class="page-intro-copy technical-panel">
-        <span class="micro-label">ABOUT · PHILOSOPHY &amp; EDUCATION</span>
-        <h1>About.</h1>
+    <div class="page-wrap">
+      <header class="page-header">
+        <h1>About</h1>
         <p>
           I believe in creating value using tech, and <a href="https://www.ycombinator.com/library/8g-how-to-get-startup-ideas" target="_blank" rel="noreferrer">making something that people want</a>. I believe every ambition is achievable if 1) you enjoy doing it day to day, 2) find it fulfilling, 3) focus on seeking truth with minimal ego, and 4) as a consequence of 1–3, put sincere hustle for it.
         </p>
-      </div>
-      <div class="shader-panel technical-panel" data-seed="1" aria-hidden="true"></div>
-    </section>
 
-    <section class="content-group" aria-labelledby="bio-heading">
-      <header class="group-header">
-        <span>01 / BIO</span>
-        <h2 id="bio-heading">INTRODUCTION</h2>
-        <span>3RD PERSON</span>
+        <details class="bio-dropdown">
+          <summary>3rd person Intro of Amit</summary>
+          <p>
+            Amit Kumar Singh Yadav received his B.Tech. in Electrical Engineering and Computer Science from the Indian Institute of Technology Gandhinagar, India, graduating with the Director’s Medal. During his undergraduate studies, he was awarded international scholarships including JASSO and Mitacs to conduct research in Japan and Canada, respectively. He went on to receive his Ph.D. in Electrical and Computer Engineering from Purdue University, USA, where his doctoral research focused on self-supervised methods for speech forensics and on building interpretable, demographically unbiased forensic detectors for the <a href="https://www.darpa.mil/research/programs/semantic-forensics" target="_blank" rel="noreferrer">DARPA SemaFor program</a>. After his Ph.D., Amit worked as a Research Scientist at Meta, USA, where he worked on <a href="https://doi.org/10.1109/icassp49660.2025.10890743" target="_blank" rel="noreferrer">SpeechLLMs for speech recognition</a> at Meta Superintelligence Lab and on post-training 400B-parameter multimodal LLMs at Meta Reality Labs. He is a co-founder of <a href="https://www.fern.bot" target="_blank" rel="noreferrer">Fern</a> (Ishiki Labs Inc.), a <a href="https://www.ycombinator.com" target="_blank" rel="noreferrer">Y Combinator</a>-backed startup. He has published more than 20 papers at international conferences, with research interests spanning media forensics, speech recognition, and multimodal LLMs.
+          </p>
+        </details>
       </header>
-      <div class="project-index-list">
-        <article class="project-row project-row-single">
-          <span class="project-number">01</span>
-          <div class="project-title">
-            <h3>Amit Kumar Singh Yadav</h3>
-          </div>
-          <div class="project-description-block">
-            <p class="project-description">
-              Amit Kumar Singh Yadav received his B.Tech. in Electrical Engineering and Computer Science from the Indian Institute of Technology Gandhinagar, India, graduating with the Director’s Medal. During his undergraduate studies, he was awarded international scholarships including JASSO and Mitacs to conduct research in Japan and Canada, respectively. He went on to receive his Ph.D. in Electrical and Computer Engineering from Purdue University, USA, where his doctoral research focused on self-supervised methods for speech forensics and on building interpretable, demographically unbiased forensic detectors for the <a href="https://www.darpa.mil/research/programs/semantic-forensics" target="_blank" rel="noreferrer">DARPA SemaFor program</a>. After his Ph.D., Amit worked as a Research Scientist at Meta, USA, where he worked on <a href="https://doi.org/10.1109/icassp49660.2025.10890743" target="_blank" rel="noreferrer">SpeechLLMs for speech recognition</a> at Meta Superintelligence Lab and on post-training 400B-parameter multimodal LLMs at Meta Reality Labs. He is a co-founder of <a href="https://www.fern.bot" target="_blank" rel="noreferrer">Fern</a> (Ishiki Labs Inc.), a <a href="https://www.ycombinator.com" target="_blank" rel="noreferrer">Y Combinator</a>-backed startup. He has published more than 20 papers at international conferences, with research interests spanning media forensics, speech recognition, and multimodal LLMs.
-            </p>
-          </div>
-        </article>
-      </div>
-    </section>
 
-    <section id="education" class="content-group" aria-labelledby="edu-heading">
-      <header class="group-header">
-        <span>02 / ACADEMICS</span>
-        <h2 id="edu-heading">EDUCATION</h2>
-        <span>DEGREES</span>
-      </header>
-      <div class="project-index-list">
-        <article class="project-row">
-          <span class="project-number">01</span>
-          <div class="project-title">
-            <h3>Purdue University</h3>
-          </div>
-          <div class="project-meta">
-            <span class="project-role">PH.D. IN ECE</span>
-            <span>West Lafayette, IN</span>
-          </div>
-          <div class="project-description-block">
-            <p class="project-description">Advised by Prof. Edward J. Delp, Meissner Fellowship Recipient, straight A/A+ GPA.</p>
-          </div>
-        </article>
+      <section id="education" class="sub-section" aria-labelledby="edu-heading">
+        <h2 id="edu-heading">Education</h2>
+        <div class="clean-list">
+          <article class="clean-row">
+            <span class="row-num">01</span>
+            <div>
+              <div class="row-top">
+                <h3 class="row-heading">Ph.D. in Electrical and Computer Engineering · Purdue University</h3>
+                <span class="row-location">West Lafayette, IN</span>
+              </div>
+              <p class="row-desc">Advised by Prof. Edward J. Delp, Meissner Fellowship Recipient, straight A/A+ GPA.</p>
+            </div>
+          </article>
 
-        <article class="project-row">
-          <span class="project-number">02</span>
-          <div class="project-title">
-            <h3>IIT Gandhinagar</h3>
-          </div>
-          <div class="project-meta">
-            <span class="project-role">B.TECH. IN EE (MINOR IN CSE)</span>
-            <span>Gandhinagar, India</span>
-          </div>
-          <div class="project-description-block">
-            <p class="project-description">Early graduated in 3.5 years, awarded the Director’s Medal for overall outstanding academic performance.</p>
-          </div>
-        </article>
-      </div>
-    </section>
+          <article class="clean-row">
+            <span class="row-num">02</span>
+            <div>
+              <div class="row-top">
+                <h3 class="row-heading">B.Tech. in Electrical Engineering (Minor in CSE) · IIT Gandhinagar</h3>
+                <span class="row-location">Gandhinagar, India</span>
+              </div>
+              <p class="row-desc">Early graduated in 3.5 years, awarded the Director’s Medal for overall outstanding academic performance.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
   </main>
 
   <footer class="site-footer">
@@ -132,6 +106,6 @@
     <span class="footer-location">SF</span>
   </footer>
 
-  <script src="/assets/site.js?v=2"></script>
+  <script src="/assets/site.js?v=5"></script>
 </body>
 </html>
