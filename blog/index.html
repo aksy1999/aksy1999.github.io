@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blog — Amit Kumar Singh Yadav</title>
+  <meta name="description" content="Technical deep dives and research notes by Amit Kumar Singh Yadav.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/assets/site.css">
+  <script>
+    (() => {
+      const root = document.documentElement;
+      try {
+        const stored = localStorage.getItem('theme');
+        const mode = stored === 'light' || stored === 'dark' ? stored : 'auto';
+        const theme = mode === 'auto'
+          ? matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+          : mode;
+        root.dataset.theme = theme;
+        root.dataset.themeMode = mode;
+        root.style.colorScheme = theme;
+      } catch (_) {}
+    })();
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <main id="main-content" class="inner-page">
+    <nav class="in-page-nav" aria-label="Primary navigation">
+      <div class="nav-index-slot">
+        <a href="/">00 INDEX</a>
+      </div>
+      <div class="in-page-links">
+        <a href="/about/"><span>01</span> ABOUT</a>
+        <a href="/experience/"><span>02</span> EXPERIENCE</a>
+        <a aria-current="page" href="/blog/"><span>03</span> BLOG</a>
+        <a href="/publications/"><span>04</span> PUBLICATIONS</a>
+      </div>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Choose color theme">
+        <span aria-hidden="true">◎</span>
+        <span id="theme-label">AUTO</span>
+      </button>
+    </nav>
+
+    <section class="page-intro">
+      <div class="page-intro-copy technical-panel">
+        <span class="micro-label">BLOG · RESEARCH &amp; NOTES</span>
+        <h1>Writing.</h1>
+        <p>
+          Technical deep dives and notes on weight-space programming, audio &amp; speech foundation models, and building systems end to end.
+        </p>
+      </div>
+      <div class="shader-panel technical-panel" data-seed="3" aria-hidden="true"></div>
+    </section>
+
+    <section class="content-group" aria-labelledby="articles-heading">
+      <header class="group-header">
+        <span>01 / RESEARCH</span>
+        <h2 id="articles-heading">ARTICLES</h2>
+        <span>2026</span>
+      </header>
+      <div class="project-index-list">
+        <article class="project-row">
+          <span class="project-number">01</span>
+          <div class="project-title">
+            <h3>
+              <a href="/blog/weight-space-programming-for-audio-models/">
+                Weight-Space Programming for Audio Models: LLMs Can Directly Edit Audio Model Weights and Compress Them
+              </a>
+            </h3>
+          </div>
+          <div class="project-meta">
+            <span class="project-role">NOVEMBER 2026</span>
+            <span>Audio Foundation Models · Weight-Space Surgery</span>
+          </div>
+          <div class="project-description-block">
+            <p class="project-description">
+              Can a general-purpose LLM directly read, edit, and compress the weights of real-world audio models without gradient descent? Explored on audio deepfake detection and automatic speech recognition, producing an 86.8M-parameter audio deepfake detector (2.51% In-The-Wild EER) and the best-performing open-weights standalone 13.31B-parameter ASR model (3.75% average WER at 302.3× RTFx on the Open ASR Leaderboard).
+            </p>
+            <div class="project-links">
+              <a href="/blog/weight-space-programming-for-audio-models/">READ ARTICLE →</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="articles-coming technical-panel">
+      <p>MORE WRITTEN PIECES · COMING SOON</p>
+      <span class="coming-mark" aria-hidden="true">—</span>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span class="footer-statement">Seeking truth with minimal ego.</span>
+    <span class="footer-separator" aria-hidden="true">·</span>
+    <span class="footer-copyright">© 2026 AMIT KUMAR SINGH YADAV</span>
+    <span class="footer-separator" aria-hidden="true">·</span>
+    <div class="footer-socials">
+      <a href="/about/">About</a>
+      <a href="/experience/">Experience</a>
+      <a href="/blog/">Blog</a>
+      <a href="/publications/">Publications</a>
+    </div>
+    <span class="footer-separator" aria-hidden="true">·</span>
+    <div class="footer-socials">
+      <a href="mailto:yadav48@purdue.edu">Email ↗</a>
+      <a href="https://x.com/aksy_99" target="_blank" rel="noreferrer">X ↗</a>
+      <a href="https://scholar.google.com/citations?hl=en&amp;user=-HZEXt0AAAAJ&amp;view_op=list_works&amp;sortby=pubdate" target="_blank" rel="noreferrer">Scholar ↗</a>
+      <a href="https://www.linkedin.com/in/amit-kumar-singh-yadav/" target="_blank" rel="noreferrer">LinkedIn ↗</a>
+    </div>
+    <span class="footer-separator" aria-hidden="true">·</span>
+    <span class="footer-location">SF</span>
+  </footer>
+
+  <script src="/assets/site.js"></script>
+</body>
+</html>
