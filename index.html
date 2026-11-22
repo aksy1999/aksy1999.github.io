@@ -3,670 +3,1249 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Amit Kumar Singh Yadav — Co-founder at Fern | AI Researcher</title>
+  <title>Amit Kumar Singh Yadav</title>
   <meta name="description" content="Amit Kumar Singh Yadav — Co-founder at Fern (YC W26), Ex-Meta Research Scientist, Ph.D. in ECE from Purdue University, B.Tech. from IIT Gandhinagar (Director's Medal).">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Sans+3:ital,wght@0,300..700;1,300..700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
   <style>
     :root {
-      --text: #1f2421;
-      --muted: #525d57;
-      --green: #118659;
-      --accent: #2e996a;
-      --accent-bg: #f3f9f5;
-      --border: #dfe7e2;
-      --font-sans: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      --surface: #f2f5f2;
+      --surface-raised: #e5ece7;
+      --surface-glass: rgba(242, 245, 242, 0.92);
+      --text: #0b1912;
+      --muted: #4b5e53;
+      --muted-soft: #7c9084;
+      --line: rgba(13, 40, 26, 0.20);
+      --line-strong: #102a1c;
+      --grid-line: rgba(15, 122, 80, 0.065);
+      --link: #0f7a50;
+      --link-hover: #085436;
+      --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
     }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      font-family: var(--font-sans);
-      color: var(--text);
-      background: #ffffff;
-      line-height: 1.62;
-      font-size: 17px;
-    }
-    a { color: var(--green); text-decoration: none; }
-    a:hover { text-decoration: underline; }
 
-    /* Sticky Top Navigation Bar */
-    .top-nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(8px);
-      border-bottom: 1px solid var(--border);
+    [data-theme="dark"] {
+      --surface: #08110c;
+      --surface-raised: #102017;
+      --surface-glass: rgba(8, 17, 12, 0.92);
+      --text: #e7efe9;
+      --muted: #98afa1;
+      --muted-soft: #5f7768;
+      --line: rgba(231, 239, 233, 0.18);
+      --line-strong: rgba(214, 230, 220, 0.55);
+      --grid-line: rgba(94, 214, 160, 0.055);
+      --link: #5ed6a0;
+      --link-hover: #8ce8be;
     }
-    .top-nav-inner {
-      max-width: 920px;
-      margin: 0 auto;
-      padding: 12px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      border-radius: 0 !important;
+      margin: 0;
+      padding: 0;
     }
-    .nav-brand {
-      font-weight: 700;
-      font-size: 18px;
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--surface);
+      min-width: 20rem;
+    }
+
+    body {
+      background: var(--surface);
       color: var(--text);
-      letter-spacing: -0.01em;
-    }
-    .nav-brand:hover { text-decoration: none; color: var(--green); }
-    .nav-links {
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.6;
+      min-height: 100svh;
       display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
+      flex-direction: column;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.18s ease, color 0.18s ease;
+      overflow-x: hidden;
     }
-    .nav-links a {
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 15px;
-      font-weight: 600;
-      color: #333;
-      transition: background 0.15s, color 0.15s;
+
+    ::selection {
+      background: var(--surface-raised);
+      color: var(--text);
     }
-    .nav-links a:hover {
-      background: var(--accent-bg);
-      color: var(--green);
+
+    a {
+      color: inherit;
       text-decoration: none;
     }
 
-    .container { max-width: 920px; margin: 0 auto; padding: 36px 24px 80px; }
-    section { scroll-margin-top: 72px; }
+    :focus-visible {
+      outline: 2px solid var(--link);
+      outline-offset: 3px;
+    }
 
-    /* Hero */
-    .hero {
-      padding: 32px;
-      background: var(--accent-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      margin-bottom: 40px;
+    section {
+      scroll-margin-top: 3.5rem;
     }
-    .hero-content { min-width: 0; }
-    .hero h1 { margin: 0 0 12px; font-size: 32px; font-weight: 700; letter-spacing: -0.01em; }
-    .philosophy-box {
-      margin: 14px 0;
-      padding: 13px 16px;
-      background: #ffffff;
-      border-left: 4px solid var(--green);
-      border-radius: 0 8px 8px 0;
-      font-size: 16px;
-      color: #222;
+
+    /* Mono Micro-Typography */
+    .micro-label,
+    .in-page-nav,
+    .row-index,
+    .row-meta,
+    .group-header,
+    .ext-links a,
+    .hero-socials a,
+    .site-footer {
+      font-family: var(--font-mono);
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      font-size: clamp(0.64rem, 0.68vw, 0.72rem);
+      font-weight: 500;
+      line-height: 1.4;
     }
+
+    .micro-label,
+    .row-index,
+    .row-meta {
+      color: var(--muted);
+    }
+
+    /* Sticky Architectural Top Grid Bar */
+    .in-page-nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line-strong);
+      display: grid;
+      grid-template-columns: minmax(11rem, 1fr) auto 6.5rem;
+      min-height: 3.4rem;
+    }
+
+    .nav-brand-slot {
+      display: flex;
+      align-items: center;
+      padding: 0 1.25rem;
+      border-right: 1px solid var(--line-strong);
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .nav-brand-slot a {
+      display: flex;
+      align-items: center;
+      min-height: 3.4rem;
+      width: 100%;
+    }
+
+    .in-page-links {
+      display: flex;
+      align-items: stretch;
+    }
+
+    .in-page-links a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      min-width: 7.6rem;
+      padding: 0 0.95rem;
+      border-right: 1px solid var(--line-strong);
+      color: var(--text);
+      text-underline-offset: 0.28rem;
+      text-decoration-color: transparent;
+      text-decoration-thickness: 1px;
+      transition: background-color 0.15s ease, color 0.15s ease, text-decoration-color 0.15s ease;
+    }
+
+    .in-page-links a span {
+      color: var(--muted-soft);
+    }
+
+    .in-page-links a:hover,
+    .in-page-links a:focus-visible {
+      background: var(--surface-raised);
+      color: var(--link);
+      text-decoration-line: underline;
+      text-decoration-color: currentColor;
+    }
+
+    .in-page-links a:hover span {
+      color: var(--link);
+    }
+
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      background: var(--surface);
+      border: 0;
+      cursor: pointer;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.64rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .theme-toggle:hover {
+      background: var(--surface-raised);
+      color: var(--link);
+    }
+
+    .theme-dot {
+      color: var(--link);
+      font-size: 0.9rem;
+      line-height: 1;
+    }
+
+    /* Corner Crosshair Ticks (Technical Panel) */
+    .technical-panel {
+      position: relative;
+    }
+
+    .technical-panel::before,
+    .technical-panel::after {
+      content: "";
+      position: absolute;
+      width: 0.65rem;
+      height: 0.65rem;
+      color: var(--muted-soft);
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .technical-panel::before {
+      top: 0.65rem;
+      left: 0.65rem;
+      border-top: 1px solid;
+      border-left: 1px solid;
+    }
+
+    .technical-panel::after {
+      bottom: 0.65rem;
+      right: 0.65rem;
+      border-bottom: 1px solid;
+      border-right: 1px solid;
+    }
+
+    main {
+      flex: 1 0 auto;
+      width: 100%;
+    }
+
+    .frame {
+      max-width: 68rem;
+      margin: 0 auto;
+      border-left: 1px solid var(--line-strong);
+      border-right: 1px solid var(--line-strong);
+    }
+
+    /* Hero Section with Blueprint Grid */
+    .home-hero {
+      border-bottom: 1px solid var(--line-strong);
+      background:
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+        var(--surface);
+      background-size: 6rem 6rem;
+    }
+
+    .home-hero-inner {
+      background: var(--surface-glass);
+      padding: clamp(2.2rem, 4.5vw, 4rem) clamp(1.4rem, 3.5vw, 3.2rem);
+    }
+
+    .home-hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.35rem, 4.2vw, 3.55rem);
+      font-weight: 600;
+      letter-spacing: -0.045em;
+      line-height: 0.98;
+      margin-top: 0.9rem;
+      color: var(--text);
+    }
+
+    .hero-statement {
+      max-width: 66ch;
+      margin-top: 1.35rem;
+      font-size: clamp(0.98rem, 1.06vw, 1.08rem);
+      line-height: 1.65;
+      color: var(--text);
+    }
+
+    .hero-statement a,
+    .bio-dropdown p a {
+      color: var(--link);
+      border-bottom: 1px solid currentColor;
+      transition: color 0.15s ease;
+    }
+
+    .hero-statement a:hover,
+    .bio-dropdown p a:hover {
+      color: var(--link-hover);
+    }
+
+    /* Collapsible 3rd-Person Intro Row */
     .bio-dropdown {
-      margin: 12px 0 0;
-      background: #ffffff;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 14px;
+      margin-top: 1.4rem;
+      max-width: 66ch;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
     }
+
     .bio-dropdown summary {
       cursor: pointer;
-      font-size: 15.5px;
-      font-weight: 600;
-      color: var(--green);
       list-style: none;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 0.55rem;
+      padding: 0.7rem 0;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--link);
       user-select: none;
     }
-    .bio-dropdown summary::-webkit-details-marker { display: none; }
+
+    .bio-dropdown summary::-webkit-details-marker {
+      display: none;
+    }
+
     .bio-dropdown summary::before {
       content: "▸";
       display: inline-block;
-      font-size: 14px;
+      font-size: 0.8rem;
       transition: transform 0.15s ease;
     }
+
     .bio-dropdown[open] summary::before {
       transform: rotate(90deg);
     }
+
+    .bio-dropdown summary:hover {
+      color: var(--link-hover);
+    }
+
     .bio-dropdown p {
-      margin: 10px 0 2px;
-      font-size: 16px;
-      color: var(--text);
-      text-align: left;
-    }
-    .links-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
-    .pill-link {
-      display: inline-block;
-      padding: 6px 14px;
-      border-radius: 6px;
-      background: #ffffff;
-      border: 1px solid var(--border);
-      font-size: 14.5px;
-      font-weight: 600;
-      color: var(--green);
-    }
-    .pill-link:hover {
-      background: #eef7f2;
-      text-decoration: none;
-    }
-    .pill-link.primary { background: var(--green); color: #ffffff; border-color: var(--green); }
-    .pill-link.primary:hover { background: #0e6f49; }
-
-    h2 {
-      font-size: 24px;
-      border-bottom: 2px solid var(--border);
-      padding-bottom: 8px;
-      margin-top: 44px;
-      margin-bottom: 18px;
-      letter-spacing: -0.01em;
+      padding: 0.15rem 0 0.95rem;
+      font-size: 0.96rem;
+      line-height: 1.64;
+      color: var(--muted);
     }
 
-    /* Experience Timeline */
-    .exp-list {
+    /* Hero External Links Bar */
+    .hero-socials {
       display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin: 18px 0 32px;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      margin-top: 1.5rem;
     }
-    .exp-card {
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 15px 18px;
-      background: #ffffff;
+
+    .hero-socials a {
+      color: var(--link);
+      border-bottom: 1px solid transparent;
+      padding-bottom: 1px;
+      transition: color 0.15s ease, border-color 0.15s ease;
     }
-    .exp-header {
+
+    .hero-socials a:hover {
+      color: var(--link-hover);
+      border-bottom-color: currentColor;
+    }
+
+    /* Architectural Sections */
+    .arch-section {
+      border-bottom: 1px solid var(--line-strong);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      padding: 1.5rem clamp(1.4rem, 3.5vw, 3.2rem) 1.2rem;
+      border-bottom: 1px solid var(--line-strong);
+      background: var(--surface);
+    }
+
+    .section-head h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.45rem, 2.2vw, 1.85rem);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+
+    /* Numbered Hairline Rows (Experience & Education) */
+    .item-row {
+      display: grid;
+      grid-template-columns: 3.2rem minmax(0, 1fr);
+      gap: 0.75rem;
+      padding: 1.15rem clamp(1.4rem, 3.5vw, 3.2rem);
+      border-bottom: 1px solid var(--line);
+      transition: background-color 0.15s ease;
+    }
+
+    .item-row:last-child {
+      border-bottom: 0;
+    }
+
+    .item-row:hover {
+      background: var(--surface-raised);
+    }
+
+    .row-index {
+      padding-top: 0.22rem;
+      color: var(--muted-soft);
+    }
+
+    .row-top {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 2px;
+      gap: 0.5rem 1rem;
     }
-    .exp-role {
-      font-size: 17px;
-      font-weight: 600;
-      color: #111;
-    }
-    .exp-company {
-      color: var(--green);
-      font-weight: 600;
-    }
-    .exp-date {
-      font-family: var(--font-mono);
-      font-size: 13px;
-      color: var(--muted);
-    }
-    .exp-loc {
-      font-size: 14px;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-    .exp-desc {
-      margin: 4px 0 0;
-      color: #333;
-      font-size: 15.5px;
-    }
-    .exp-card ul {
-      margin: 6px 0 0;
-      padding-left: 20px;
-      color: #333;
-      font-size: 15.5px;
-    }
-    .exp-card li { margin-bottom: 4px; }
 
-    .pub-group-title {
-      font-size: 16.5px;
+    .row-title {
+      font-family: var(--font-display);
+      font-size: 1.08rem;
       font-weight: 600;
-      color: var(--green);
-      background: var(--accent-bg);
-      border-left: 4px solid var(--green);
-      padding: 8px 14px;
-      margin: 26px 0 10px;
-      border-radius: 0 6px 6px 0;
+      letter-spacing: -0.015em;
+      color: var(--text);
     }
-    .featured-blog {
-      border: 1px solid var(--border);
-      border-left: 4px solid var(--accent);
-      background: #fbfdfc;
-      border-radius: 10px;
-      padding: 20px 24px;
-      margin: 16px 0 32px;
-    }
-    .blog-date {
-      font-family: var(--font-mono);
-      font-size: 12.5px;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-    .featured-blog h3 { margin: 0 0 8px; font-size: 21px; line-height: 1.35; }
-    .pub-list { list-style: none; padding: 0; margin: 0; }
-    .pub-list li { padding: 12px 0; border-bottom: 1px solid #eef3f0; }
-    .pub-list li:last-child { border-bottom: none; }
-    .pub-title { font-weight: 600; color: #111; font-size: 16px; line-height: 1.4; }
-    .pub-meta { font-size: 14.5px; color: var(--muted); margin-top: 3px; }
 
-    @media (max-width: 680px) {
-      .hero { padding: 24px 20px; }
-      .top-nav-inner { justify-content: center; }
+    .row-org {
+      color: var(--link);
+    }
+
+    .row-desc {
+      margin-top: 0.28rem;
+      font-size: 0.95rem;
+      color: var(--muted);
+      max-width: 70ch;
+    }
+
+    /* Research Blog Panel */
+    .blog-panel {
+      padding: 1.5rem clamp(1.4rem, 3.5vw, 3.2rem) 1.7rem;
+      transition: background-color 0.15s ease;
+    }
+
+    .blog-panel:hover {
+      background: var(--surface-raised);
+    }
+
+    .blog-panel h3 {
+      font-family: var(--font-display);
+      font-size: clamp(1.2rem, 1.7vw, 1.45rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+      margin-top: 0.45rem;
+    }
+
+    .blog-panel h3 a {
+      color: var(--text);
+      border-bottom: 1px solid var(--line-strong);
+      transition: color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .blog-panel h3 a:hover {
+      color: var(--link);
+      border-bottom-color: var(--link);
+    }
+
+    .blog-panel p {
+      margin-top: 0.7rem;
+      font-size: 0.96rem;
+      line-height: 1.64;
+      color: var(--muted);
+      max-width: 72ch;
+    }
+
+    /* Publications */
+    .group-header {
+      padding: 0.7rem clamp(1.4rem, 3.5vw, 3.2rem);
+      background: var(--surface-raised);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      color: var(--link);
+    }
+
+    .group-header:first-of-type {
+      border-top: 0;
+    }
+
+    .pub-list {
+      list-style: none;
+    }
+
+    .pub-row {
+      display: grid;
+      grid-template-columns: 3.2rem minmax(0, 1fr) auto;
+      gap: 0.75rem 1.25rem;
+      align-items: baseline;
+      padding: 0.95rem clamp(1.4rem, 3.5vw, 3.2rem);
+      border-bottom: 1px solid var(--line);
+      transition: background-color 0.15s ease;
+    }
+
+    .pub-row:last-child {
+      border-bottom: 0;
+    }
+
+    .pub-row:hover {
+      background: var(--surface-raised);
+    }
+
+    .pub-title {
+      font-size: 0.98rem;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.42;
+    }
+
+    .pub-title a:hover {
+      color: var(--link);
+      text-decoration: underline;
+      text-underline-offset: 0.2rem;
+    }
+
+    .pub-authors {
+      margin-top: 0.22rem;
+      font-size: 0.87rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .ext-links {
+      display: flex;
+      gap: 0.75rem;
+      white-space: nowrap;
+    }
+
+    .ext-links a {
+      color: var(--link);
+      border-bottom: 1px solid transparent;
+    }
+
+    .ext-links a:hover {
+      color: var(--link-hover);
+      border-bottom-color: currentColor;
+    }
+
+    /* Minimal Site Footer */
+    .site-footer {
+      min-height: 4rem;
+      padding: 1rem 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem 1.25rem;
+      color: var(--muted);
+    }
+
+    .site-footer a {
+      color: var(--link);
+    }
+
+    .site-footer a:hover {
+      color: var(--link-hover);
+      text-decoration: underline;
+      text-underline-offset: 0.2rem;
+    }
+
+    .sep {
+      color: var(--muted-soft);
+    }
+
+    @media (max-width: 860px) {
+      .frame {
+        border-left: 0;
+        border-right: 0;
+      }
+      .in-page-nav {
+        grid-template-columns: 1fr auto;
+      }
+      .nav-brand-slot {
+        border-bottom: 1px solid var(--line);
+      }
+      .in-page-links {
+        grid-column: 1 / -1;
+        order: 3;
+        overflow-x: auto;
+        border-top: 1px solid var(--line);
+      }
+      .in-page-links a {
+        min-width: auto;
+        flex: 1 0 auto;
+        min-height: 2.75rem;
+        padding: 0 0.75rem;
+      }
+      .theme-toggle {
+        padding: 0 1rem;
+      }
+      .pub-row {
+        grid-template-columns: 2.4rem minmax(0, 1fr);
+      }
+      .ext-links {
+        grid-column: 2;
+        margin-top: 0.15rem;
+      }
+      .item-row {
+        grid-template-columns: 2.4rem minmax(0, 1fr);
+      }
     }
   </style>
+  <script>
+    (function () {
+      var saved = localStorage.getItem('amit-theme');
+      if (saved === 'dark' || saved === 'light') {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
+  </script>
 </head>
 <body>
 
-  <!-- Top Navigation Bar -->
-  <nav class="top-nav" aria-label="Primary Navigation">
-    <div class="top-nav-inner">
-      <a class="nav-brand" href="#top">Amit Kumar Singh Yadav</a>
-      <div class="nav-links">
-        <a href="#about">About</a>
-        <a href="#experience">Experience</a>
-        <a href="#education">Education</a>
-        <a href="#blog">Blog</a>
-        <a href="#publications">Publications</a>
-      </div>
+  <!-- Architectural Top Navigation Bar -->
+  <nav class="in-page-nav" aria-label="Primary Navigation">
+    <div class="nav-brand-slot">
+      <a href="#top">AMIT KUMAR SINGH YADAV</a>
     </div>
+    <div class="in-page-links">
+      <a href="#about"><span>01</span> ABOUT</a>
+      <a href="#experience"><span>02</span> EXPERIENCE</a>
+      <a href="#education"><span>03</span> EDUCATION</a>
+      <a href="#blog"><span>04</span> BLOG</a>
+      <a href="#publications"><span>05</span> PUBLICATIONS</a>
+    </div>
+    <button class="theme-toggle" id="theme-btn" type="button" aria-label="Toggle color theme">
+      <span class="theme-dot" aria-hidden="true">◎</span>
+      <span id="theme-label">LIGHT</span>
+    </button>
   </nav>
 
-  <div class="container">
+  <main id="main-content">
+    <div class="frame">
 
-    <!-- ABOUT / HERO SECTION -->
-    <section id="about">
-      <div class="hero">
-        <div class="hero-content">
+      <!-- 01 / HERO -->
+      <section id="about" class="home-hero">
+        <div class="home-hero-inner technical-panel">
+          <span class="micro-label">INDIA · WEST LAFAYETTE · SAN FRANCISCO</span>
           <h1>Amit Kumar Singh Yadav</h1>
 
-          <div class="philosophy-box">
-            I believe in creating value using tech, and <a href="https://www.ycombinator.com/library/8g-how-to-get-startup-ideas">making something that people want</a>. I believe every ambition is achievable if 1) you enjoy doing it day to day, 2) find it fulfilling, 3) focus on seeking truth with minimal ego, and 4) as a consequence of 1–3, put sincere hustle for it.
-          </div>
+          <p class="hero-statement">
+            I believe in creating value using tech, and <a href="https://www.ycombinator.com/library/8g-how-to-get-startup-ideas" target="_blank" rel="noreferrer">making something that people want</a>. I believe every ambition is achievable if 1) you enjoy doing it day to day, 2) find it fulfilling, 3) focus on seeking truth with minimal ego, and 4) as a consequence of 1–3, put sincere hustle for it.
+          </p>
 
           <details class="bio-dropdown">
             <summary>3rd person Intro of Amit</summary>
             <p>
-              Amit Kumar Singh Yadav received his B.Tech. in Electrical Engineering and Computer Science from the Indian Institute of Technology Gandhinagar, India, graduating with the Director’s Medal. During his undergraduate studies, he was awarded international scholarships including JASSO and Mitacs to conduct research in Japan and Canada, respectively. He went on to receive his Ph.D. in Electrical and Computer Engineering from Purdue University, USA, where his doctoral research focused on self-supervised methods for speech forensics and on building interpretable, demographically unbiased forensic detectors for the <a href="https://www.darpa.mil/research/programs/semantic-forensics">DARPA SemaFor program</a>. After his Ph.D., Amit worked as a Research Scientist at Meta, USA, where he worked on <a href="https://doi.org/10.1109/icassp49660.2025.10890743">SpeechLLMs for speech recognition</a> at Meta Superintelligence Lab and on post-training 400B-parameter multimodal LLMs at Meta Reality Labs. In 2026, he co-founded <a href="https://www.fern.bot">Fern</a> (Ishiki Labs Inc.), a <a href="https://www.ycombinator.com">Y Combinator</a>-backed startup. He has published more than 20 papers at international conferences, with research interests spanning media forensics, speech recognition, and multimodal LLMs.
+              Amit Kumar Singh Yadav received his B.Tech. in Electrical Engineering and Computer Science from the Indian Institute of Technology Gandhinagar, India, graduating with the Director’s Medal. During his undergraduate studies, he was awarded international scholarships including JASSO and Mitacs to conduct research in Japan and Canada, respectively. He went on to receive his Ph.D. in Electrical and Computer Engineering from Purdue University, USA, where his doctoral research focused on self-supervised methods for speech forensics and on building interpretable, demographically unbiased forensic detectors for the <a href="https://www.darpa.mil/research/programs/semantic-forensics" target="_blank" rel="noreferrer">DARPA SemaFor program</a>. After his Ph.D., Amit worked as a Research Scientist at Meta, USA, where he worked on <a href="https://doi.org/10.1109/icassp49660.2025.10890743" target="_blank" rel="noreferrer">SpeechLLMs for speech recognition</a> at Meta Superintelligence Lab and on post-training 400B-parameter multimodal LLMs at Meta Reality Labs. In 2026, he co-founded <a href="https://www.fern.bot" target="_blank" rel="noreferrer">Fern</a> (Ishiki Labs Inc.), a <a href="https://www.ycombinator.com" target="_blank" rel="noreferrer">Y Combinator</a>-backed startup. He has published more than 20 papers at international conferences, with research interests spanning media forensics, speech recognition, and multimodal LLMs.
             </p>
           </details>
 
-          <div class="links-row">
-            <a class="pill-link primary" href="mailto:yadav48@purdue.edu">yadav48@purdue.edu</a>
-            <a class="pill-link" href="https://x.com/aksy_99">Twitter / X (@aksy_99)</a>
-            <a class="pill-link" href="https://scholar.google.com/citations?hl=en&amp;user=-HZEXt0AAAAJ&amp;view_op=list_works&amp;sortby=pubdate">Google Scholar</a>
-            <a class="pill-link" href="https://www.linkedin.com/in/amit-kumar-singh-yadav/">LinkedIn</a>
+          <div class="hero-socials">
+            <a href="mailto:yadav48@purdue.edu">yadav48@purdue.edu ↗</a>
+            <a href="https://x.com/aksy_99" target="_blank" rel="noreferrer">X (@aksy_99) ↗</a>
+            <a href="https://scholar.google.com/citations?hl=en&amp;user=-HZEXt0AAAAJ&amp;view_op=list_works&amp;sortby=pubdate" target="_blank" rel="noreferrer">Google Scholar ↗</a>
+            <a href="https://www.linkedin.com/in/amit-kumar-singh-yadav/" target="_blank" rel="noreferrer">LinkedIn ↗</a>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- EXPERIENCE SECTION -->
-    <section id="experience">
-      <h2>Experience</h2>
-      <div class="exp-list">
-
-        <div class="exp-card">
-          <div class="exp-header">
-            <div class="exp-role">Co-founder · <span class="exp-company">Fern (Ishiki Labs Inc.)</span></div>
-            <div class="exp-date">Jan 2026 – Present</div>
-          </div>
-          <div class="exp-loc">San Francisco, California, United States</div>
-          <p class="exp-desc">Building Fern as part of YC W26 batch.</p>
+      <!-- 02 / EXPERIENCE -->
+      <section id="experience" class="arch-section">
+        <div class="section-head">
+          <h2>Experience</h2>
+          <span class="micro-label">02 / CAREER</span>
         </div>
 
-        <div class="exp-card">
-          <div class="exp-header">
-            <div class="exp-role">Research Scientist · <span class="exp-company">Meta</span></div>
-            <div class="exp-date">May 2024 – Jan 2026</div>
+        <div class="item-row">
+          <div class="row-index">01</div>
+          <div>
+            <div class="row-top">
+              <div class="row-title">Co-founder · <span class="row-org">Fern (Ishiki Labs Inc.)</span></div>
+              <div class="row-meta">Jan 2026 – Present · San Francisco, CA</div>
+            </div>
+            <p class="row-desc">Building Fern as part of YC W26 batch.</p>
           </div>
-          <div class="exp-loc">California, United States</div>
-          <p class="exp-desc">Speech-LLMs for ASR, Meta Superintelligence Lab and Multimodal LLMs for smartglasses, Reality Labs.</p>
         </div>
 
-        <div class="exp-card">
-          <div class="exp-header">
-            <div class="exp-role">Research Assistant, VIPER Lab · <span class="exp-company">Purdue University</span></div>
-            <div class="exp-date">Aug 2021 – May 2024</div>
+        <div class="item-row">
+          <div class="row-index">02</div>
+          <div>
+            <div class="row-top">
+              <div class="row-title">Research Scientist · <span class="row-org">Meta</span></div>
+              <div class="row-meta">May 2024 – Jan 2026 · California, US</div>
+            </div>
+            <p class="row-desc">Speech-LLMs for ASR, Meta Superintelligence Lab and Multimodal LLMs for smartglasses, Reality Labs.</p>
           </div>
-          <div class="exp-loc">West Lafayette, Indiana, United States</div>
-          <p class="exp-desc">Advisor: Prof. Edward J. Delp, Meissner Fellow, 20+ publications at ICASSP, CVPR, and Interspeech.</p>
         </div>
 
-        <div class="exp-card">
-          <div class="exp-header">
-            <div class="exp-role">Embedded Software Engineer · <span class="exp-company">Enphase Energy</span></div>
-            <div class="exp-date">Aug 2020 – Aug 2021</div>
+        <div class="item-row">
+          <div class="row-index">03</div>
+          <div>
+            <div class="row-top">
+              <div class="row-title">Research Assistant, VIPER Lab · <span class="row-org">Purdue University</span></div>
+              <div class="row-meta">Aug 2021 – May 2024 · West Lafayette, IN</div>
+            </div>
+            <p class="row-desc">Advisor: Prof. Edward J. Delp, Meissner Fellow, 20+ publications at ICASSP, CVPR, and Interspeech.</p>
           </div>
-          <div class="exp-loc">Bengaluru, India</div>
-          <p class="exp-desc">Excellence award for outstanding work.</p>
         </div>
 
-        <div class="exp-card">
-          <div class="exp-header">
-            <div class="exp-role">Research Intern · <span class="exp-company">Rakuten Institute of Technology</span></div>
-            <div class="exp-date">Jan 2020 – Jun 2020</div>
+        <div class="item-row">
+          <div class="row-index">04</div>
+          <div>
+            <div class="row-top">
+              <div class="row-title">Embedded Software Engineer · <span class="row-org">Enphase Energy</span></div>
+              <div class="row-meta">Aug 2020 – Aug 2021 · Bengaluru, India</div>
+            </div>
+            <p class="row-desc">Excellence award for outstanding work.</p>
           </div>
-          <div class="exp-loc">Bengaluru, India</div>
-          <p class="exp-desc">Self-supervised machine learning applied to vision tasks.</p>
         </div>
 
-        <div class="exp-card">
-          <div class="exp-header">
-            <div class="exp-role">Research Intern · <span class="exp-company">Mitacs (Carleton University)</span></div>
-            <div class="exp-date">May 2019 – Aug 2019</div>
+        <div class="item-row">
+          <div class="row-index">05</div>
+          <div>
+            <div class="row-top">
+              <div class="row-title">Research Intern · <span class="row-org">Rakuten Institute of Technology</span></div>
+              <div class="row-meta">Jan 2020 – Jun 2020 · Bengaluru, India</div>
+            </div>
+            <p class="row-desc">Self-supervised machine learning applied to vision tasks.</p>
           </div>
-          <div class="exp-loc">Ottawa, Ontario, Canada</div>
-          <p class="exp-desc">HCI/Computer Vision; part of a competitive fully funded cohort selected from 10 countries to do research in Canada.</p>
         </div>
 
-        <div class="exp-card">
-          <div class="exp-header">
-            <div class="exp-role">Research Intern · <span class="exp-company">JAIST</span></div>
-            <div class="exp-date">May 2018 – Jun 2018</div>
+        <div class="item-row">
+          <div class="row-index">06</div>
+          <div>
+            <div class="row-top">
+              <div class="row-title">Research Intern · <span class="row-org">Mitacs (Carleton University)</span></div>
+              <div class="row-meta">May 2019 – Aug 2019 · Ottawa, Canada</div>
+            </div>
+            <p class="row-desc">HCI/Computer Vision; part of a competitive fully funded cohort selected from 10 countries to do research in Canada.</p>
           </div>
-          <div class="exp-loc">Ishikawa, Japan</div>
-          <p class="exp-desc">Computational chemistry on Cray XC-40 supercomputer; part of a competitive fully funded JASSO scholarship selected throughout India for research in Japan.</p>
         </div>
 
-      </div>
-    </section>
-
-    <!-- EDUCATION SECTION -->
-    <section id="education">
-      <h2>Education</h2>
-      <div class="exp-list">
-
-        <div class="exp-card">
-          <div class="exp-header">
-            <div class="exp-role">Ph.D. in Electrical and Computer Engineering · <span class="exp-company">Purdue University</span></div>
-            <div class="exp-date">2021 – 2024</div>
+        <div class="item-row">
+          <div class="row-index">07</div>
+          <div>
+            <div class="row-top">
+              <div class="row-title">Research Intern · <span class="row-org">JAIST</span></div>
+              <div class="row-meta">May 2018 – Jun 2018 · Ishikawa, Japan</div>
+            </div>
+            <p class="row-desc">Computational chemistry on Cray XC-40 supercomputer; part of a competitive fully funded JASSO scholarship selected throughout India for research in Japan.</p>
           </div>
-          <div class="exp-loc">West Lafayette, Indiana, United States</div>
-          <p class="exp-desc">Advised by Prof. Edward J. Delp, Meissner Fellowship Recipient, straight A/A+ GPA.</p>
+        </div>
+      </section>
+
+      <!-- 03 / EDUCATION -->
+      <section id="education" class="arch-section">
+        <div class="section-head">
+          <h2>Education</h2>
+          <span class="micro-label">03 / ACADEMICS</span>
         </div>
 
-        <div class="exp-card">
-          <div class="exp-header">
-            <div class="exp-role">B.Tech. in Electrical Engineering (Minor in CSE) · <span class="exp-company">IIT Gandhinagar</span></div>
-            <div class="exp-date">2016 – 2020</div>
+        <div class="item-row">
+          <div class="row-index">01</div>
+          <div>
+            <div class="row-top">
+              <div class="row-title">Ph.D. in Electrical and Computer Engineering · <span class="row-org">Purdue University</span></div>
+              <div class="row-meta">2021 – 2024 · West Lafayette, IN</div>
+            </div>
+            <p class="row-desc">Advised by Prof. Edward J. Delp, Meissner Fellowship Recipient, straight A/A+ GPA.</p>
           </div>
-          <div class="exp-loc">Gandhinagar, Gujarat, India</div>
-          <p class="exp-desc">Early graduated in 3.5 years, awarded the Director’s Medal for overall outstanding academic performance.</p>
         </div>
 
-      </div>
-    </section>
+        <div class="item-row">
+          <div class="row-index">02</div>
+          <div>
+            <div class="row-top">
+              <div class="row-title">B.Tech. in Electrical Engineering (Minor in CSE) · <span class="row-org">IIT Gandhinagar</span></div>
+              <div class="row-meta">2016 – 2020 · Gandhinagar, India</div>
+            </div>
+            <p class="row-desc">Early graduated in 3.5 years, awarded the Director’s Medal for overall outstanding academic performance.</p>
+          </div>
+        </div>
+      </section>
 
-    <!-- BLOG SECTION -->
-    <section id="blog">
-      <h2>Research Blog</h2>
-      <div class="featured-blog">
-        <div class="blog-date">November 2026</div>
-        <h3>
-          <a href="blog/weight-space-programming-for-audio-models/">
-            Weight-Space Programming for Audio Models: LLMs Can Directly Edit Audio Model Weights and Compress Them
-          </a>
-        </h3>
-        <p style="margin: 6px 0 0; color: #333; font-size: 16px;">
-          Can a general-purpose LLM directly read, edit, and compress the weights of real-world audio models without gradient descent? Explored on audio deepfake detection and automatic speech recognition, producing an 86.8M-parameter audio deepfake detector (2.51% In-The-Wild EER) and the best-performing open-weights standalone 13.31B-parameter ASR model (3.75% average WER at 302.3× RTFx on the Open ASR Leaderboard).
-        </p>
-      </div>
-    </section>
+      <!-- 04 / RESEARCH BLOG -->
+      <section id="blog" class="arch-section">
+        <div class="section-head">
+          <h2>Research Blog</h2>
+          <span class="micro-label">04 / WRITING</span>
+        </div>
 
-    <!-- PUBLICATIONS SECTION -->
-    <section id="publications">
-      <h2>Publications &amp; Preprints</h2>
+        <div class="blog-panel technical-panel">
+          <div class="micro-label">NOVEMBER 2026</div>
+          <h3>
+            <a href="blog/weight-space-programming-for-audio-models/">
+              Weight-Space Programming for Audio Models: LLMs Can Directly Edit Audio Model Weights and Compress Them ↗
+            </a>
+          </h3>
+          <p>
+            Can a general-purpose LLM directly read, edit, and compress the weights of real-world audio models without gradient descent? Explored on audio deepfake detection and automatic speech recognition, producing an 86.8M-parameter audio deepfake detector (2.51% In-The-Wild EER) and the best-performing open-weights standalone 13.31B-parameter ASR model (3.75% average WER at 302.3× RTFx on the Open ASR Leaderboard).
+          </p>
+        </div>
+      </section>
 
-      <!-- GROUP 1: LLMs, Multimodal & Proactive AI, Multi-Turn Turn-Taking & Speech LLMs -->
-      <div class="pub-group-title">
-        LLMs, Multimodal &amp; Proactive AI, Multi-Turn Turn-Taking &amp; Speech LLMs
-      </div>
-      <ul class="pub-list">
-        <li>
-          <div class="pub-title">
-            <a href="https://arxiv.org/abs/2609.21183">I'll Keep an Ear Out: Teaching AudioLLMs Proactive Audio Assistance</a>
-          </div>
-          <div class="pub-meta">
-            <strong>Amit Kumar Singh Yadav</strong>, Ritvik Shrivastava, Xuan Zhang, Seungwhan Moon, Shashank Jain, Pinar Donmez, Babak Damavandi · <em>Interspeech</em>, 2026 · [<a href="https://arxiv.org/abs/2609.21183">arXiv</a>] [<a href="https://arxiv.org/pdf/2609.21183.pdf">PDF</a>]
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            <a href="https://arxiv.org/abs/2603.11409">Speak or Stay Silent: Context-Aware Turn-Taking in Multi-Party Dialogue</a>
-          </div>
-          <div class="pub-meta">
-            Kratika Bhagtani, Mrinal Anand, Yu Chen Xu, <strong>Amit Kumar Singh Yadav</strong> · <em>Interspeech</em>, 2026 · [<a href="https://arxiv.org/abs/2603.11409">arXiv</a>] [<a href="https://arxiv.org/pdf/2603.11409.pdf">PDF</a>]
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            <a href="https://neurips.cc/virtual/2025/loc/san-diego/workshop/109539">Quantifying Information Gain and Redundancy in Multi-Turn LLM Conversations</a>
-          </div>
-          <div class="pub-meta">
-            Abhiram Rao Gorle, <strong>Amit Kumar Singh Yadav</strong>, Tsachy Weissman · <em>NeurIPS Workshop on Multi-Turn Interactions in Large Language Models</em>, 2025 · [<a href="https://neurips.cc/virtual/2025/loc/san-diego/workshop/109539">NeurIPS</a>] [<a href="https://openreview.net/pdf?id=UpbdnCkUFA">PDF</a>]
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            <a href="https://papers.nips.cc/paper_files/paper/2025/file/1021014b8c5a9008fc245736a1b73d7e-Paper-Conference.pdf">ItDPDM: Information-Theoretic Discrete Poisson Diffusion Model</a>
-          </div>
-          <div class="pub-meta">
-            Sagnik Bhattacharya, Abhiram Rao Gorle, Ahsan Bilal, Connor Ding, <strong>Amit Kumar Singh Yadav</strong>, Tsachy Weissman · <em>Advances in Neural Information Processing Systems (NeurIPS)</em>, 2025 · [<a href="https://papers.nips.cc/paper_files/paper/2025/file/1021014b8c5a9008fc245736a1b73d7e-Paper-Conference.pdf">NeurIPS PDF</a>] [<a href="https://arxiv.org/abs/2506.03639">arXiv</a>]
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            <a href="https://doi.org/10.1109/icassp49660.2025.10890743">Speech-N-LlaMA: Improving Speech LLMs with Multi-Pass Training</a>
-          </div>
-          <div class="pub-meta">
-            <strong>Amit Kumar Singh Yadav</strong>, Gil Keren, Desh Raj, Wei Jia Zhou, Junteng Jia, Ke Li, Ying Xu, Chunyang Wu, Jay Mahadeokar, Ozlem Kalinli · <em>IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)</em>, 2025 · [<a href="https://doi.org/10.1109/icassp49660.2025.10890743">IEEE Xplore</a>]
-          </div>
-        </li>
-      </ul>
+      <!-- 05 / PUBLICATIONS -->
+      <section id="publications" class="arch-section">
+        <div class="section-head">
+          <h2>Publications &amp; Preprints</h2>
+          <span class="micro-label">05 / RESEARCH</span>
+        </div>
 
-      <!-- GROUP 2: IEEE/CVF CVPR & IEEE ICASSP Papers -->
-      <div class="pub-group-title">
-        IEEE/CVF CVPR &amp; IEEE ICASSP Publications
-      </div>
-      <ul class="pub-list">
-        <li>
-          <div class="pub-title">
-            <a href="https://openaccess.thecvf.com/content/CVPR2024W/WMF/html/Yadav_FairSSD_Understanding_Bias_in_Synthetic_Speech_Detectors_CVPRW_2024_paper.html">FairSSD: Understanding Bias in Synthetic Speech Detectors</a>
-          </div>
-          <div class="pub-meta">
-            <strong>Amit Kumar Singh Yadav</strong>, Kratika Bhagtani, Davide Salvi, Paolo Bestagini, Edward J. Delp · <em>IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)</em>, 2024 · [<a href="https://openaccess.thecvf.com/content/CVPR2024W/WMF/html/Yadav_FairSSD_Understanding_Bias_in_Synthetic_Speech_Detectors_CVPRW_2024_paper.html">CVF Open Access</a>] [<a href="https://arxiv.org/abs/2404.14605">arXiv</a>]
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            <a href="https://openaccess.thecvf.com/content/CVPR2023W/WMF/html/Xiang_MTN_Forensic_Analysis_of_MP4_Video_Files_Using_Graph_Neural_CVPRW_2023_paper.html">MTN: Forensic Analysis of MP4 Video Files Using Graph Neural Networks</a>
-          </div>
-          <div class="pub-meta">
-            Ziyue Xiang, <strong>Amit Kumar Singh Yadav</strong>, Paolo Bestagini, Stefano Tubaro, Edward J. Delp · <em>IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)</em>, 2023 · [<a href="https://openaccess.thecvf.com/content/CVPR2023W/WMF/html/Xiang_MTN_Forensic_Analysis_of_MP4_Video_Files_Using_Graph_Neural_CVPRW_2023_paper.html">CVF Open Access</a>]
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            <a href="https://arxiv.org/abs/2509.09155">HISPASpoof: A New Dataset For Spanish Speech Forensics</a>
-          </div>
-          <div class="pub-meta">
-            Maria Risques, Kratika Bhagtani, <strong>Amit Kumar Singh Yadav</strong>, Edward J. Delp · <em>IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)</em>, 2026 · [<a href="https://arxiv.org/abs/2509.09155">arXiv</a>]
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            <a href="https://arxiv.org/abs/2409.13049">DiffSSD: A Diffusion-Based Dataset For Speech Forensics</a>
-          </div>
-          <div class="pub-meta">
-            Kratika Bhagtani, <strong>Amit Kumar Singh Yadav</strong>, Paolo Bestagini, Edward J. Delp · <em>IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)</em>, 2025 · [<a href="https://arxiv.org/abs/2409.13049">arXiv</a>]
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            <a href="https://arxiv.org/abs/2309.08090">MDRT: Multi-Domain Synthetic Speech Localization</a>
-          </div>
-          <div class="pub-meta">
-            <strong>Amit Kumar Singh Yadav</strong>, Kratika Bhagtani, Sriram Baireddy, Paolo Bestagini, Stefano Tubaro, Edward J. Delp · <em>IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)</em>, 2024 · [<a href="https://arxiv.org/abs/2309.08090">arXiv</a>]
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            <a href="https://doi.org/10.1109/ICASSP49357.2023.10095957">ASSD: Synthetic Speech Detection in the AAC Compressed Domain</a>
-          </div>
-          <div class="pub-meta">
-            <strong>Amit Kumar Singh Yadav</strong>, Ziyue Xiang, Emily R. Bartusiak, Paolo Bestagini, Stefano Tubaro, Edward J. Delp · <em>IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)</em>, 2023 · [<a href="https://doi.org/10.1109/ICASSP49357.2023.10095957">IEEE Xplore</a>]
-          </div>
-        </li>
-      </ul>
+        <div class="group-header">
+          LLMs, Multimodal &amp; Proactive AI, Multi-Turn Turn-Taking &amp; Speech LLMs
+        </div>
+        <ul class="pub-list">
+          <li class="pub-row">
+            <div class="row-index">01</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://arxiv.org/abs/2609.21183" target="_blank" rel="noreferrer">I'll Keep an Ear Out: Teaching AudioLLMs Proactive Audio Assistance</a>
+              </div>
+              <div class="pub-authors">
+                Amit Kumar Singh Yadav, Ritvik Shrivastava, Xuan Zhang, Seungwhan Moon, Shashank Jain, Pinar Donmez, Babak Damavandi · <em>Interspeech</em>, 2026
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://arxiv.org/abs/2609.21183" target="_blank" rel="noreferrer">arXiv ↗</a>
+              <a href="https://arxiv.org/pdf/2609.21183.pdf" target="_blank" rel="noreferrer">PDF ↗</a>
+            </div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">02</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://arxiv.org/abs/2603.11409" target="_blank" rel="noreferrer">Speak or Stay Silent: Context-Aware Turn-Taking in Multi-Party Dialogue</a>
+              </div>
+              <div class="pub-authors">
+                Kratika Bhagtani, Mrinal Anand, Yu Chen Xu, Amit Kumar Singh Yadav · <em>Interspeech</em>, 2026
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://arxiv.org/abs/2603.11409" target="_blank" rel="noreferrer">arXiv ↗</a>
+              <a href="https://arxiv.org/pdf/2603.11409.pdf" target="_blank" rel="noreferrer">PDF ↗</a>
+            </div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">03</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://neurips.cc/virtual/2025/loc/san-diego/workshop/109539" target="_blank" rel="noreferrer">Quantifying Information Gain and Redundancy in Multi-Turn LLM Conversations</a>
+              </div>
+              <div class="pub-authors">
+                Abhiram Rao Gorle, Amit Kumar Singh Yadav, Tsachy Weissman · <em>NeurIPS Workshop on Multi-Turn Interactions in Large Language Models</em>, 2025
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://neurips.cc/virtual/2025/loc/san-diego/workshop/109539" target="_blank" rel="noreferrer">NeurIPS ↗</a>
+              <a href="https://openreview.net/pdf?id=UpbdnCkUFA" target="_blank" rel="noreferrer">PDF ↗</a>
+            </div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">04</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://papers.nips.cc/paper_files/paper/2025/file/1021014b8c5a9008fc245736a1b73d7e-Paper-Conference.pdf" target="_blank" rel="noreferrer">ItDPDM: Information-Theoretic Discrete Poisson Diffusion Model</a>
+              </div>
+              <div class="pub-authors">
+                Sagnik Bhattacharya, Abhiram Rao Gorle, Ahsan Bilal, Connor Ding, Amit Kumar Singh Yadav, Tsachy Weissman · <em>NeurIPS</em>, 2025
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://papers.nips.cc/paper_files/paper/2025/file/1021014b8c5a9008fc245736a1b73d7e-Paper-Conference.pdf" target="_blank" rel="noreferrer">PDF ↗</a>
+              <a href="https://arxiv.org/abs/2506.03639" target="_blank" rel="noreferrer">arXiv ↗</a>
+            </div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">05</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://doi.org/10.1109/icassp49660.2025.10890743" target="_blank" rel="noreferrer">Speech-N-LlaMA: Improving Speech LLMs with Multi-Pass Training</a>
+              </div>
+              <div class="pub-authors">
+                Amit Kumar Singh Yadav, Gil Keren, Desh Raj, Wei Jia Zhou, Junteng Jia, Ke Li, Ying Xu, Chunyang Wu, Jay Mahadeokar, Ozlem Kalinli · <em>IEEE ICASSP</em>, 2025
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://doi.org/10.1109/icassp49660.2025.10890743" target="_blank" rel="noreferrer">IEEE ↗</a>
+            </div>
+          </li>
+        </ul>
 
-      <!-- GROUP 3: All Other Peer-Reviewed Publications & Preprints -->
-      <div class="pub-group-title">
-        All Other Peer-Reviewed Publications &amp; Preprints (2019–2024)
-      </div>
-      <ul class="pub-list">
-        <li>
-          <div class="pub-title">
-            <a href="https://arxiv.org/abs/2409.06959">Compression Robust Synthetic Speech Detection Using Patched Spectrogram Transformer</a>
-          </div>
-          <div class="pub-meta">
-            <strong>Amit Kumar Singh Yadav</strong>, Kratika Bhagtani, Paolo Bestagini, Edward J. Delp · <em>arXiv:2409.06959</em>, 2024 · [<a href="https://arxiv.org/abs/2409.06959">arXiv</a>]
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            <a href="https://arxiv.org/abs/2409.13063">Attribution of Diffusion Based Deepfake Speech Generators</a>
-          </div>
-          <div class="pub-meta">
-            Kratika Bhagtani, <strong>Amit Kumar Singh Yadav</strong>, Paolo Bestagini, Edward J. Delp · <em>IEEE International Workshop on Information Forensics and Security (WIFS)</em>, 2024 · [<a href="https://arxiv.org/abs/2409.13063">arXiv</a>]
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            Improving Fairness in Synthetic Speech Detectors
-          </div>
-          <div class="pub-meta">
-            <strong>Amit Kumar Singh Yadav</strong>, Kratika Bhagtani, Davide Salvi, Paolo Bestagini, Edward J. Delp · <em>IEEE Asilomar Conference on Signals, Systems, and Computers</em>, 2024
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            Comparative Analysis of Automatic Speech Recognition Methods for Speech Deepfake Detection
-          </div>
-          <div class="pub-meta">
-            Kratika Bhagtani, <strong>Amit Kumar Singh Yadav</strong>, Paolo Bestagini, Edward J. Delp · <em>IEEE Asilomar Conference on Signals, Systems, and Computers</em>, 2024
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            <a href="https://arxiv.org/abs/2405.00270">SSLCT: A Convolutional Transformer for Synthetic Speech Localization</a>
-          </div>
-          <div class="pub-meta">
-            Kratika Bhagtani, <strong>Amit Kumar Singh Yadav</strong>, Paolo Bestagini, Edward J. Delp · <em>IEEE International Conference on Multimedia Information Processing and Retrieval (MIPR)</em>, 2024 · [<a href="https://arxiv.org/abs/2405.00270">arXiv</a>]
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            <a href="https://arxiv.org/abs/2404.14603">Are Recent Deepfake Speech Generators Detectable?</a>
-          </div>
-          <div class="pub-meta">
-            Kratika Bhagtani, <strong>Amit Kumar Singh Yadav</strong>, Paolo Bestagini, Edward J. Delp · <em>ACM Workshop on Information Hiding and Multimedia Security (IH&amp;MMSec)</em>, 2024 · [<a href="https://arxiv.org/abs/2404.14603">arXiv</a>]
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            <a href="https://arxiv.org/abs/2402.07855">Generation of Synthetic Echocardiograms Using Video Diffusion Models</a>
-          </div>
-          <div class="pub-meta">
-            <strong>Amit Kumar Singh Yadav</strong>, Kratika Bhagtani, Sriram Baireddy, Edward J. Delp · <em>IEEE Southwest Symposium on Image Analysis and Interpretation (SSIAI)</em>, 2024 · [<a href="https://arxiv.org/abs/2402.07855">arXiv</a>]
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            <a href="https://arxiv.org/abs/2304.03323">DSVAE: Interpretable Disentangled Representation for Synthetic Speech Detection</a>
-          </div>
-          <div class="pub-meta">
-            <strong>Amit Kumar Singh Yadav</strong>, Kratika Bhagtani, Ziyue Xiang, Paolo Bestagini, Stefano Tubaro, Edward J. Delp · <em>IEEE International Conference on Machine Learning and Applications (ICMLA)</em>, 2023 · [<a href="https://arxiv.org/abs/2304.03323">arXiv</a>]
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            <a href="https://arxiv.org/abs/2304.03319">PS3DT: Patched Spectrogram Synthetic Speech Detection Transformer</a>
-          </div>
-          <div class="pub-meta">
-            <strong>Amit Kumar Singh Yadav</strong>, Kratika Bhagtani, Ziyue Xiang, Paolo Bestagini, Stefano Tubaro, Edward J. Delp · <em>IEEE International Conference on Machine Learning and Applications (ICMLA)</em>, 2023 · [<a href="https://arxiv.org/abs/2304.03319">arXiv</a>]
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            Synthetic Speech Attribution Using Self-Supervised Audio Spectrogram Transformer
-          </div>
-          <div class="pub-meta">
-            <strong>Amit Kumar Singh Yadav</strong>, Emily R. Bartusiak, Kratika Bhagtani, Edward J. Delp · <em>IS&amp;T International Symposium on Electronic Imaging (Media Watermarking, Security, and Forensics)</em>, 2023
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            <a href="https://doi.org/10.1145/3577163.3595112">Extracting Efficient Spectrograms From MP3 Compressed Speech Signals for Synthetic Speech Detection</a>
-          </div>
-          <div class="pub-meta">
-            Kratika Bhagtani, <strong>Amit Kumar Singh Yadav</strong>, Paolo Bestagini, Edward J. Delp · <em>ACM Workshop on Information Hiding and Multimedia Security (IH&amp;MMSec)</em>, 2023 · [<a href="https://doi.org/10.1145/3577163.3595112">ACM DL</a>]
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            <a href="https://doi.org/10.1145/3577163.3595104">Synthesized Speech Attribution Using The Patchout Spectrogram Attribution Transformer</a>
-          </div>
-          <div class="pub-meta">
-            Kratika Bhagtani, <strong>Amit Kumar Singh Yadav</strong>, Paolo Bestagini, Edward J. Delp · <em>ACM Workshop on Information Hiding and Multimedia Security (IH&amp;MMSec)</em>, 2023 · [<a href="https://doi.org/10.1145/3577163.3595104">ACM DL</a>]
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            FGSSAT: Fine-Grained Synthetic Speech Attribution Transformer
-          </div>
-          <div class="pub-meta">
-            Kratika Bhagtani, <strong>Amit Kumar Singh Yadav</strong>, Paolo Bestagini, Edward J. Delp · <em>IEEE Asilomar Conference on Signals, Systems, and Computers</em>, 2023
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            <a href="https://arxiv.org/abs/2204.12067">An Overview of Recent Work in Media Forensics: Methods and Threats</a>
-          </div>
-          <div class="pub-meta">
-            Kratika Bhagtani, <strong>Amit Kumar Singh Yadav</strong>, Emily R. Bartusiak, Ziyue Xiang, Ruiting Shao, Sriram Baireddy, Edward J. Delp · <em>arXiv:2204.12067</em>, 2022 · [<a href="https://arxiv.org/abs/2204.12067">arXiv</a>]
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            PhonePic: Camera-Based Back-of-Device Sensing on Smartphones
-          </div>
-          <div class="pub-meta">
-            <strong>Amit Kumar Singh Yadav</strong>, Alexander K. Eady, Audrey Girouard · <em>ACM IKDD CoDS and COMAD</em>, 2021
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            <a href="https://aclanthology.org/2021.hackashop-1.15/">SentEmojiBot: Empathising Conversations Generator</a>
-          </div>
-          <div class="pub-meta">
-            Jainish Chauhan, Jatin Dholakia, Akhilesh Ravi, <strong>Amit Kumar Singh Yadav</strong>, Naman Jain, Mayank Singh · <em>EACL 2021 / ACM CoDS-COMAD 2020</em> · [<a href="https://aclanthology.org/2021.hackashop-1.15/">ACL Anthology</a>]
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            <a href="https://doi.org/10.1021/acs.jpca.0c01552">Diffusion Monte Carlo Evaluation of Disiloxane Linearization Barrier</a>
-          </div>
-          <div class="pub-meta">
-            <strong>Amit Kumar Singh Yadav</strong>, Kousuke Nakano, Ryo Maezono · <em>The Journal of Physical Chemistry A (ACS)</em>, 2020 · [<a href="https://doi.org/10.1021/acs.jpca.0c01552">ACS Publication</a>]
-          </div>
-        </li>
-        <li>
-          <div class="pub-title">
-            <a href="https://doi.org/10.1145/3343055.3360749">JoyHolder: Tangible Back-of-Device Mobile Interactions</a>
-          </div>
-          <div class="pub-meta">
-            <strong>Amit Kumar Singh Yadav</strong>, Alexander K. Eady, Sara Nabil, Audrey Girouard · <em>ACM International Conference on Interactive Surfaces and Spaces (ISS)</em>, Daejeon, South Korea, 2019 · [<a href="https://doi.org/10.1145/3343055.3360749">ACM DL</a>]
-          </div>
-        </li>
-      </ul>
-    </section>
+        <div class="group-header">
+          IEEE/CVF CVPR &amp; IEEE ICASSP Publications
+        </div>
+        <ul class="pub-list">
+          <li class="pub-row">
+            <div class="row-index">06</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://openaccess.thecvf.com/content/CVPR2024W/WMF/html/Yadav_FairSSD_Understanding_Bias_in_Synthetic_Speech_Detectors_CVPRW_2024_paper.html" target="_blank" rel="noreferrer">FairSSD: Understanding Bias in Synthetic Speech Detectors</a>
+              </div>
+              <div class="pub-authors">
+                Amit Kumar Singh Yadav, Kratika Bhagtani, Davide Salvi, Paolo Bestagini, Edward J. Delp · <em>IEEE/CVF CVPRW</em>, 2024
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://openaccess.thecvf.com/content/CVPR2024W/WMF/html/Yadav_FairSSD_Understanding_Bias_in_Synthetic_Speech_Detectors_CVPRW_2024_paper.html" target="_blank" rel="noreferrer">CVF ↗</a>
+              <a href="https://arxiv.org/abs/2404.14605" target="_blank" rel="noreferrer">arXiv ↗</a>
+            </div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">07</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://openaccess.thecvf.com/content/CVPR2023W/WMF/html/Xiang_MTN_Forensic_Analysis_of_MP4_Video_Files_Using_Graph_Neural_CVPRW_2023_paper.html" target="_blank" rel="noreferrer">MTN: Forensic Analysis of MP4 Video Files Using Graph Neural Networks</a>
+              </div>
+              <div class="pub-authors">
+                Ziyue Xiang, Amit Kumar Singh Yadav, Paolo Bestagini, Stefano Tubaro, Edward J. Delp · <em>IEEE/CVF CVPRW</em>, 2023
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://openaccess.thecvf.com/content/CVPR2023W/WMF/html/Xiang_MTN_Forensic_Analysis_of_MP4_Video_Files_Using_Graph_Neural_CVPRW_2023_paper.html" target="_blank" rel="noreferrer">CVF ↗</a>
+            </div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">08</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://arxiv.org/abs/2509.09155" target="_blank" rel="noreferrer">HISPASpoof: A New Dataset For Spanish Speech Forensics</a>
+              </div>
+              <div class="pub-authors">
+                Maria Risques, Kratika Bhagtani, Amit Kumar Singh Yadav, Edward J. Delp · <em>IEEE ICASSP</em>, 2026
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://arxiv.org/abs/2509.09155" target="_blank" rel="noreferrer">arXiv ↗</a>
+            </div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">09</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://arxiv.org/abs/2409.13049" target="_blank" rel="noreferrer">DiffSSD: A Diffusion-Based Dataset For Speech Forensics</a>
+              </div>
+              <div class="pub-authors">
+                Kratika Bhagtani, Amit Kumar Singh Yadav, Paolo Bestagini, Edward J. Delp · <em>IEEE ICASSP</em>, 2025
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://arxiv.org/abs/2409.13049" target="_blank" rel="noreferrer">arXiv ↗</a>
+            </div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">10</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://arxiv.org/abs/2309.08090" target="_blank" rel="noreferrer">MDRT: Multi-Domain Synthetic Speech Localization</a>
+              </div>
+              <div class="pub-authors">
+                Amit Kumar Singh Yadav, Kratika Bhagtani, Sriram Baireddy, Paolo Bestagini, Stefano Tubaro, Edward J. Delp · <em>IEEE ICASSP</em>, 2024
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://arxiv.org/abs/2309.08090" target="_blank" rel="noreferrer">arXiv ↗</a>
+            </div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">11</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://doi.org/10.1109/ICASSP49357.2023.10095957" target="_blank" rel="noreferrer">ASSD: Synthetic Speech Detection in the AAC Compressed Domain</a>
+              </div>
+              <div class="pub-authors">
+                Amit Kumar Singh Yadav, Ziyue Xiang, Emily R. Bartusiak, Paolo Bestagini, Stefano Tubaro, Edward J. Delp · <em>IEEE ICASSP</em>, 2023
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://doi.org/10.1109/ICASSP49357.2023.10095957" target="_blank" rel="noreferrer">IEEE ↗</a>
+            </div>
+          </li>
+        </ul>
 
-  </div>
+        <div class="group-header">
+          All Other Peer-Reviewed Publications &amp; Preprints (2019–2024)
+        </div>
+        <ul class="pub-list">
+          <li class="pub-row">
+            <div class="row-index">12</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://arxiv.org/abs/2409.06959" target="_blank" rel="noreferrer">Compression Robust Synthetic Speech Detection Using Patched Spectrogram Transformer</a>
+              </div>
+              <div class="pub-authors">
+                Amit Kumar Singh Yadav, Kratika Bhagtani, Paolo Bestagini, Edward J. Delp · <em>arXiv:2409.06959</em>, 2024
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://arxiv.org/abs/2409.06959" target="_blank" rel="noreferrer">arXiv ↗</a>
+            </div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">13</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://arxiv.org/abs/2409.13063" target="_blank" rel="noreferrer">Attribution of Diffusion Based Deepfake Speech Generators</a>
+              </div>
+              <div class="pub-authors">
+                Kratika Bhagtani, Amit Kumar Singh Yadav, Paolo Bestagini, Edward J. Delp · <em>IEEE WIFS</em>, 2024
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://arxiv.org/abs/2409.13063" target="_blank" rel="noreferrer">arXiv ↗</a>
+            </div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">14</div>
+            <div>
+              <div class="pub-title">Improving Fairness in Synthetic Speech Detectors</div>
+              <div class="pub-authors">
+                Amit Kumar Singh Yadav, Kratika Bhagtani, Davide Salvi, Paolo Bestagini, Edward J. Delp · <em>IEEE Asilomar</em>, 2024
+              </div>
+            </div>
+            <div class="ext-links"></div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">15</div>
+            <div>
+              <div class="pub-title">Comparative Analysis of Automatic Speech Recognition Methods for Speech Deepfake Detection</div>
+              <div class="pub-authors">
+                Kratika Bhagtani, Amit Kumar Singh Yadav, Paolo Bestagini, Edward J. Delp · <em>IEEE Asilomar</em>, 2024
+              </div>
+            </div>
+            <div class="ext-links"></div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">16</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://arxiv.org/abs/2405.00270" target="_blank" rel="noreferrer">SSLCT: A Convolutional Transformer for Synthetic Speech Localization</a>
+              </div>
+              <div class="pub-authors">
+                Kratika Bhagtani, Amit Kumar Singh Yadav, Paolo Bestagini, Edward J. Delp · <em>IEEE MIPR</em>, 2024
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://arxiv.org/abs/2405.00270" target="_blank" rel="noreferrer">arXiv ↗</a>
+            </div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">17</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://arxiv.org/abs/2404.14603" target="_blank" rel="noreferrer">Are Recent Deepfake Speech Generators Detectable?</a>
+              </div>
+              <div class="pub-authors">
+                Kratika Bhagtani, Amit Kumar Singh Yadav, Paolo Bestagini, Edward J. Delp · <em>ACM IH&amp;MMSec</em>, 2024
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://arxiv.org/abs/2404.14603" target="_blank" rel="noreferrer">arXiv ↗</a>
+            </div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">18</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://arxiv.org/abs/2402.07855" target="_blank" rel="noreferrer">Generation of Synthetic Echocardiograms Using Video Diffusion Models</a>
+              </div>
+              <div class="pub-authors">
+                Amit Kumar Singh Yadav, Kratika Bhagtani, Sriram Baireddy, Edward J. Delp · <em>IEEE SSIAI</em>, 2024
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://arxiv.org/abs/2402.07855" target="_blank" rel="noreferrer">arXiv ↗</a>
+            </div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">19</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://arxiv.org/abs/2304.03323" target="_blank" rel="noreferrer">DSVAE: Interpretable Disentangled Representation for Synthetic Speech Detection</a>
+              </div>
+              <div class="pub-authors">
+                Amit Kumar Singh Yadav, Kratika Bhagtani, Ziyue Xiang, Paolo Bestagini, Stefano Tubaro, Edward J. Delp · <em>IEEE ICMLA</em>, 2023
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://arxiv.org/abs/2304.03323" target="_blank" rel="noreferrer">arXiv ↗</a>
+            </div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">20</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://arxiv.org/abs/2304.03319" target="_blank" rel="noreferrer">PS3DT: Patched Spectrogram Synthetic Speech Detection Transformer</a>
+              </div>
+              <div class="pub-authors">
+                Amit Kumar Singh Yadav, Kratika Bhagtani, Ziyue Xiang, Paolo Bestagini, Stefano Tubaro, Edward J. Delp · <em>IEEE ICMLA</em>, 2023
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://arxiv.org/abs/2304.03319" target="_blank" rel="noreferrer">arXiv ↗</a>
+            </div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">21</div>
+            <div>
+              <div class="pub-title">Synthetic Speech Attribution Using Self-Supervised Audio Spectrogram Transformer</div>
+              <div class="pub-authors">
+                Amit Kumar Singh Yadav, Emily R. Bartusiak, Kratika Bhagtani, Edward J. Delp · <em>IS&amp;T Electronic Imaging</em>, 2023
+              </div>
+            </div>
+            <div class="ext-links"></div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">22</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://doi.org/10.1145/3577163.3595112" target="_blank" rel="noreferrer">Extracting Efficient Spectrograms From MP3 Compressed Speech Signals for Synthetic Speech Detection</a>
+              </div>
+              <div class="pub-authors">
+                Kratika Bhagtani, Amit Kumar Singh Yadav, Paolo Bestagini, Edward J. Delp · <em>ACM IH&amp;MMSec</em>, 2023
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://doi.org/10.1145/3577163.3595112" target="_blank" rel="noreferrer">ACM ↗</a>
+            </div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">23</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://doi.org/10.1145/3577163.3595104" target="_blank" rel="noreferrer">Synthesized Speech Attribution Using The Patchout Spectrogram Attribution Transformer</a>
+              </div>
+              <div class="pub-authors">
+                Kratika Bhagtani, Amit Kumar Singh Yadav, Paolo Bestagini, Edward J. Delp · <em>ACM IH&amp;MMSec</em>, 2023
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://doi.org/10.1145/3577163.3595104" target="_blank" rel="noreferrer">ACM ↗</a>
+            </div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">24</div>
+            <div>
+              <div class="pub-title">FGSSAT: Fine-Grained Synthetic Speech Attribution Transformer</div>
+              <div class="pub-authors">
+                Kratika Bhagtani, Amit Kumar Singh Yadav, Paolo Bestagini, Edward J. Delp · <em>IEEE Asilomar</em>, 2023
+              </div>
+            </div>
+            <div class="ext-links"></div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">25</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://arxiv.org/abs/2204.12067" target="_blank" rel="noreferrer">An Overview of Recent Work in Media Forensics: Methods and Threats</a>
+              </div>
+              <div class="pub-authors">
+                Kratika Bhagtani, Amit Kumar Singh Yadav, Emily R. Bartusiak, Ziyue Xiang, Ruiting Shao, Sriram Baireddy, Edward J. Delp · <em>arXiv:2204.12067</em>, 2022
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://arxiv.org/abs/2204.12067" target="_blank" rel="noreferrer">arXiv ↗</a>
+            </div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">26</div>
+            <div>
+              <div class="pub-title">PhonePic: Camera-Based Back-of-Device Sensing on Smartphones</div>
+              <div class="pub-authors">
+                Amit Kumar Singh Yadav, Alexander K. Eady, Audrey Girouard · <em>ACM IKDD CoDS-COMAD</em>, 2021
+              </div>
+            </div>
+            <div class="ext-links"></div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">27</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://aclanthology.org/2021.hackashop-1.15/" target="_blank" rel="noreferrer">SentEmojiBot: Empathising Conversations Generator</a>
+              </div>
+              <div class="pub-authors">
+                Jainish Chauhan, Jatin Dholakia, Akhilesh Ravi, Amit Kumar Singh Yadav, Naman Jain, Mayank Singh · <em>EACL / ACM CoDS-COMAD</em>, 2021
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://aclanthology.org/2021.hackashop-1.15/" target="_blank" rel="noreferrer">ACL ↗</a>
+            </div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">28</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://doi.org/10.1021/acs.jpca.0c01552" target="_blank" rel="noreferrer">Diffusion Monte Carlo Evaluation of Disiloxane Linearization Barrier</a>
+              </div>
+              <div class="pub-authors">
+                Amit Kumar Singh Yadav, Kousuke Nakano, Ryo Maezono · <em>ACS Journal of Physical Chemistry A</em>, 2020
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://doi.org/10.1021/acs.jpca.0c01552" target="_blank" rel="noreferrer">ACS ↗</a>
+            </div>
+          </li>
+          <li class="pub-row">
+            <div class="row-index">29</div>
+            <div>
+              <div class="pub-title">
+                <a href="https://doi.org/10.1145/3343055.3360749" target="_blank" rel="noreferrer">JoyHolder: Tangible Back-of-Device Mobile Interactions</a>
+              </div>
+              <div class="pub-authors">
+                Amit Kumar Singh Yadav, Alexander K. Eady, Sara Nabil, Audrey Girouard · <em>ACM ISS</em>, 2019
+              </div>
+            </div>
+            <div class="ext-links">
+              <a href="https://doi.org/10.1145/3343055.3360749" target="_blank" rel="noreferrer">ACM ↗</a>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <span>© 2026 AMIT KUMAR SINGH YADAV</span>
+    <span class="sep" aria-hidden="true">·</span>
+    <a href="mailto:yadav48@purdue.edu">Email ↗</a>
+    <a href="https://x.com/aksy_99" target="_blank" rel="noreferrer">X ↗</a>
+    <a href="https://scholar.google.com/citations?hl=en&amp;user=-HZEXt0AAAAJ&amp;view_op=list_works&amp;sortby=pubdate" target="_blank" rel="noreferrer">Scholar ↗</a>
+    <a href="https://www.linkedin.com/in/amit-kumar-singh-yadav/" target="_blank" rel="noreferrer">LinkedIn ↗</a>
+    <span class="sep" aria-hidden="true">·</span>
+    <span>SAN FRANCISCO, CA</span>
+  </footer>
+
+  <script>
+    (function () {
+      var btn = document.getElementById('theme-btn');
+      var lbl = document.getElementById('theme-label');
+      function syncLabel() {
+        var cur = document.documentElement.getAttribute('data-theme') || 'light';
+        lbl.textContent = cur === 'dark' ? 'DARK' : 'LIGHT';
+      }
+      syncLabel();
+      btn.addEventListener('click', function () {
+        var cur = document.documentElement.getAttribute('data-theme') || 'light';
+        var next = cur === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('amit-theme', next);
+        syncLabel();
+      });
+    })();
+  </script>
 </body>
 </html>
