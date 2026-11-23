@@ -249,28 +249,43 @@ button {
 .home-hero-copy {
   width: min(100%, 58rem);
   margin: 0 auto;
-  padding: clamp(2.2rem, 4.5vw, 3.8rem) clamp(1.5rem, 3.5vw, 2.5rem);
+  padding: clamp(2rem, 4vw, 3.4rem) clamp(1.5rem, 3.5vw, 2.5rem);
 }
 
-.home-hero-copy h1 {
+.home-hero-top {
+  display: grid;
+  grid-template-columns: 12rem minmax(0, 1fr);
+  gap: clamp(1.5rem, 3vw, 2.4rem);
+  align-items: center;
+}
+
+.home-portrait {
+  width: 12rem;
+  height: 12rem;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  display: block;
+}
+
+.home-hero-intro h1 {
   font-family: var(--font-sans);
-  font-size: clamp(2.35rem, 3.4vw, 3.15rem);
+  font-size: clamp(2.25rem, 3.2vw, 2.95rem);
   font-weight: 600;
   letter-spacing: -0.015em;
-  line-height: 1.1;
-  margin-top: 0.65rem;
+  line-height: 1.08;
 }
 
-.home-hero-copy > p {
-  max-width: 64ch;
-  margin-top: 1.1rem;
-  font-size: clamp(1.04rem, 1.12vw, 1.14rem);
+.home-hero-intro > p {
+  max-width: 62ch;
+  margin-top: 0.85rem;
+  font-size: clamp(1.02rem, 1.08vw, 1.1rem);
   font-weight: 400;
-  line-height: 1.62;
+  line-height: 1.6;
   color: var(--text);
 }
 
-.home-hero-copy > p a,
+.home-hero-intro > p a,
 .prose-link {
   color: var(--link);
   text-decoration: underline 1px rgba(17, 134, 89, 0.45);
@@ -278,12 +293,12 @@ button {
   transition: color 0.15s ease;
 }
 
-[data-theme="dark"] .home-hero-copy > p a,
+[data-theme="dark"] .home-hero-intro > p a,
 [data-theme="dark"] .prose-link {
   text-decoration-color: rgba(86, 207, 150, 0.45);
 }
 
-.home-hero-copy > p a:hover,
+.home-hero-intro > p a:hover,
 .prose-link:hover {
   color: var(--link-hover);
 }
@@ -713,6 +728,16 @@ button {
 }
 
 @media (max-width: 52rem) {
+  .home-hero-top {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .home-portrait {
+    width: 9.5rem;
+    height: 9.5rem;
+  }
+
   .pub-row {
     grid-template-columns: 2.2rem minmax(0, 1fr);
   }
