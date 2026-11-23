@@ -258,12 +258,71 @@
       margin-top: 14px;
     }
     .giscus-setup-note {
-      padding: 14px 16px;
+      margin-top: 12px;
+      padding: 12px 15px;
       border-radius: 8px;
       border: 1px solid #d5e0da;
       background: #f8fbf9;
-      font-size: 14.5px;
+      font-size: 14px;
       color: #4b5a52;
+    }
+    .wsp-like-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 11px;
+      border-radius: 999px;
+      border: 1px solid #bdd9c9;
+      background: #f5faf7;
+      color: #118659;
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+    .wsp-like-btn:hover {
+      background: #e6f4ec;
+      border-color: #118659;
+    }
+    .wsp-like-btn.is-liked {
+      background: #118659;
+      color: #ffffff;
+      border-color: #118659;
+    }
+    .wsp-discuss-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin: 14px 0 16px;
+    }
+    .wsp-discuss-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid #bdd9c9;
+      background: #ffffff;
+      color: #118659 !important;
+      text-decoration: none !important;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .wsp-discuss-link:hover {
+      background: #f3f9f5;
+      border-color: #118659;
+    }
+    .byline-actions {
+      margin-top: 8px !important;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 10px;
     }
   </style>
   <script src="js/cites.js"></script>
@@ -309,6 +368,14 @@
         <a href="https://huggingface.co/ishiki-labs/ishiki-deepfake-0.5">Deepfake-0.5</a> ·
         <a href="https://huggingface.co/ishiki-labs/ishiki-asr-1.0">ASR-1.0</a> ·
         <a href="https://github.com/ishikilabsinc/audiowsp">Harness</a>
+      </p>
+      <p class="byline-actions">
+        <button type="button" class="wsp-like-btn" data-like-btn aria-pressed="false" aria-label="Like this blog post">
+          <span data-like-icon>♡</span>
+          <span data-like-text>Like</span>
+          <span data-like-count></span>
+        </button>
+        <a href="#discussion">Discuss ↓</a>
       </p>
     </div>
   </div>
@@ -1029,7 +1096,17 @@ python -m harness run-wsp --task both</code></pre>
   note         = {Blog post}
 }</code></pre>
 
-  <h2>Discussion</h2>
+  <h2 id="discussion">Reactions &amp; Discussion</h2>
+  <div class="wsp-discuss-bar">
+    <button type="button" class="wsp-like-btn" data-like-btn aria-pressed="false" aria-label="Like this blog post" style="padding:6px 14px; font-size:14px;">
+      <span data-like-icon>♡</span>
+      <span data-like-text>Like</span>
+      <span data-like-count></span>
+    </button>
+    <a class="wsp-discuss-link" href="https://huggingface.co/spaces/ishiki-labs/weight-space-programming-for-audio-models/discussions" target="_blank" rel="noreferrer">
+      Join Community Discussion on Hugging Face ↗
+    </a>
+  </div>
   <div id="giscus-container" class="giscus-wrap"></div>
 
 </d-article>
@@ -1045,7 +1122,80 @@ python -m harness run-wsp --task both</code></pre>
       }).catch(function () {});
     } catch (_) {}
 
-    // Mount Giscus (reactions/likes + comments) automatically once GitHub Discussions + Giscus app are enabled
+    // Live 1-click Like / Unlike button (synced across top byline & bottom section)
+    var likeBtns = document.querySelectorAll('[data-like-btn]');
+    var storageKey = 'wsp-audio-blog-liked-v1';
+    var upCount = 0;
+    var downCount = 0;
+    var isLiked = false;
+    var busy = false;
+    try {
+      isLiked = localStorage.getItem(storageKey) === '1';
+    } catch (_) {}
+
+    function netLikes() {
+      return Math.max(0, upCount - downCount);
+    }
+
+    function renderLikes() {
+      var n = netLikes();
+      likeBtns.forEach(function (btn) {
+        btn.classList.toggle('is-liked', isLiked);
+        btn.setAttribute('aria-pressed', isLiked ? 'true' : 'false');
+        var icon = btn.querySelector('[data-like-icon]');
+        var txt = btn.querySelector('[data-like-text]');
+        var cnt = btn.querySelector('[data-like-count]');
+        if (icon) icon.textContent = isLiked ? '♥' : '♡';
+        if (txt) txt.textContent = isLiked ? 'Liked' : 'Like';
+        if (cnt) cnt.textContent = n > 0 ? '· ' + n : '';
+      });
+    }
+
+    renderLikes();
+
+    Promise.all([
+      fetch('https://abacus.jasoncameron.dev/get/aksy1999.github.io/wsp-likes-up').then(function (r) { return r.ok ? r.json() : { value: 0 }; }),
+      fetch('https://abacus.jasoncameron.dev/get/aksy1999.github.io/wsp-likes-down').then(function (r) { return r.ok ? r.json() : { value: 0 }; })
+    ])
+      .then(function (vals) {
+        upCount = (vals[0] && typeof vals[0].value === 'number') ? vals[0].value : 0;
+        downCount = (vals[1] && typeof vals[1].value === 'number') ? vals[1].value : 0;
+        renderLikes();
+      })
+      .catch(function () {});
+
+    likeBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (busy) return;
+        busy = true;
+        var nextLiked = !isLiked;
+        isLiked = nextLiked;
+        if (nextLiked) upCount += 1;
+        else downCount += 1;
+        try {
+          if (nextLiked) localStorage.setItem(storageKey, '1');
+          else localStorage.removeItem(storageKey);
+        } catch (_) {}
+        renderLikes();
+
+        var endpoint = nextLiked
+          ? 'https://abacus.jasoncameron.dev/hit/aksy1999.github.io/wsp-likes-up'
+          : 'https://abacus.jasoncameron.dev/hit/aksy1999.github.io/wsp-likes-down';
+        fetch(endpoint)
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (d) {
+            if (d && typeof d.value === 'number') {
+              if (nextLiked) upCount = d.value;
+              else downCount = d.value;
+              renderLikes();
+            }
+          })
+          .catch(function () {})
+          .finally(function () { busy = false; });
+      });
+    });
+
+    // Mount inline Giscus comments automatically once GitHub Discussions + Giscus app are enabled
     var container = document.getElementById('giscus-container');
     if (!container) return;
     var repo = 'aksy1999/aksy1999.github.io';
@@ -1055,11 +1205,7 @@ python -m harness run-wsp --task both</code></pre>
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (data) {
         var cats = data && Array.isArray(data.categories) ? data.categories : [];
-        if (!cats.length) {
-          container.innerHTML =
-            '<div class="giscus-setup-note">Reactions &amp; comments are powered by <a href="https://giscus.app" target="_blank" rel="noreferrer">Giscus</a> (GitHub Discussions). Enable <strong>Discussions</strong> in <a href="https://github.com/aksy1999/aksy1999.github.io/settings" target="_blank" rel="noreferrer">repository settings</a> and install the <a href="https://github.com/apps/giscus" target="_blank" rel="noreferrer">Giscus GitHub App</a> to activate live likes &amp; comments here automatically.</div>';
-          return;
-        }
+        if (!cats.length) return;
         var chosen =
           cats.find(function (c) { return c.name === 'General'; }) ||
           cats.find(function (c) { return c.name === 'Announcements'; }) ||
