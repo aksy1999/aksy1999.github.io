@@ -701,6 +701,151 @@ button {
   text-underline-offset: 3px;
 }
 
+.footer-visits {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: var(--muted);
+  font-family: var(--font-sans);
+  font-size: clamp(0.8rem, 0.84vw, 0.88rem);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  transition: color 0.15s ease;
+}
+
+.footer-visits:hover,
+.footer-visits:focus-visible {
+  color: var(--link);
+}
+
+.visits-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--link);
+  display: inline-block;
+  opacity: 0.85;
+}
+
+/* Visitor Map Modal */
+.vmap-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.46);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+}
+
+.vmap-backdrop[hidden] {
+  display: none !important;
+}
+
+.vmap-dialog {
+  width: min(100%, 44rem);
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  padding: 1.25rem 1.4rem 1.35rem;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+}
+
+.vmap-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.vmap-head h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.vmap-close {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 1.35rem;
+  line-height: 1;
+  padding: 0.15rem 0.4rem;
+}
+
+.vmap-close:hover {
+  color: var(--text);
+}
+
+.vmap-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.95rem;
+}
+
+.vmap-stat {
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface-subtle);
+}
+
+.vmap-stat-label {
+  display: block;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.vmap-stat-val {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.vmap-canvas-wrap {
+  margin-top: 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface-subtle);
+  overflow: hidden;
+  position: relative;
+}
+
+.vmap-canvas-wrap canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 1;
+}
+
+.vmap-caption {
+  margin-top: 0.7rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.4rem 1rem;
+  font-size: 0.84rem;
+  color: var(--muted);
+}
+
 .footer-socials {
   display: flex;
   align-items: center;

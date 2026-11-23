@@ -194,11 +194,59 @@
       color: #0b6640;
       font-weight: 700;
     }
+    .blog-back-bar {
+      background-color: #f3f9f5;
+      padding: 18px 24px 0;
+    }
+    @media (min-width: 768px) {
+      .blog-back-bar {
+        display: grid;
+        padding: 20px 0 0;
+      }
+      .blog-back-bar .blog-back-inner {
+        grid-column: text;
+      }
+    }
+    .blog-back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-sans);
+      font-size: 14.5px;
+      font-weight: 600;
+      color: #118659;
+      text-decoration: none;
+    }
+    .blog-back-link:hover {
+      color: #0b6341;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    d-title {
+      padding-top: 22px !important;
+    }
+    .giscus-wrap {
+      margin-top: 14px;
+    }
+    .giscus-setup-note {
+      padding: 14px 16px;
+      border-radius: 8px;
+      border: 1px solid #d5e0da;
+      background: #f8fbf9;
+      font-size: 14.5px;
+      color: #4b5a52;
+    }
   </style>
   <script src="js/cites.js"></script>
   <script src="js/interactive_audio_wsp.js"></script>
 </head>
 <body>
+
+<div class="blog-back-bar base-grid">
+  <div class="blog-back-inner">
+    <a class="blog-back-link" href="/">← Amit Kumar Singh Yadav</a>
+  </div>
+</div>
 
 <d-title>
   <h1>
@@ -948,6 +996,60 @@ python -m harness run-wsp --task both</code></pre>
   note         = {Blog post}
 }</code></pre>
 
+  <h2>Discussion</h2>
+  <div id="giscus-container" class="giscus-wrap"></div>
+
 </d-article>
+
+<script>
+  (function () {
+    // Count blog post views in site-wide Vercount analytics
+    try {
+      fetch('https://events.vercount.one/api/v2/log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: window.location.href })
+      }).catch(function () {});
+    } catch (_) {}
+
+    // Mount Giscus (reactions/likes + comments) automatically once GitHub Discussions + Giscus app are enabled
+    var container = document.getElementById('giscus-container');
+    if (!container) return;
+    var repo = 'aksy1999/aksy1999.github.io';
+    var repoId = 'R_kgDOMY_RHw';
+
+    fetch('https://giscus.app/api/discussions/categories?repo=' + encodeURIComponent(repo))
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        var cats = data && Array.isArray(data.categories) ? data.categories : [];
+        if (!cats.length) {
+          container.innerHTML =
+            '<div class="giscus-setup-note">Reactions &amp; comments are powered by <a href="https://giscus.app" target="_blank" rel="noreferrer">Giscus</a> (GitHub Discussions). Enable <strong>Discussions</strong> in <a href="https://github.com/aksy1999/aksy1999.github.io/settings" target="_blank" rel="noreferrer">repository settings</a> and install the <a href="https://github.com/apps/giscus" target="_blank" rel="noreferrer">Giscus GitHub App</a> to activate live likes &amp; comments here automatically.</div>';
+          return;
+        }
+        var chosen =
+          cats.find(function (c) { return c.name === 'General'; }) ||
+          cats.find(function (c) { return c.name === 'Announcements'; }) ||
+          cats[0];
+        var s = document.createElement('script');
+        s.src = 'https://giscus.app/client.js';
+        s.async = true;
+        s.crossOrigin = 'anonymous';
+        s.setAttribute('data-repo', repo);
+        s.setAttribute('data-repo-id', repoId);
+        s.setAttribute('data-category', chosen.name);
+        s.setAttribute('data-category-id', chosen.id);
+        s.setAttribute('data-mapping', 'pathname');
+        s.setAttribute('data-strict', '0');
+        s.setAttribute('data-reactions-enabled', '1');
+        s.setAttribute('data-emit-metadata', '0');
+        s.setAttribute('data-input-position', 'top');
+        s.setAttribute('data-theme', 'light');
+        s.setAttribute('data-lang', 'en');
+        container.appendChild(s);
+      })
+      .catch(function () {});
+  })();
+</script>
 </body>
 </html>
