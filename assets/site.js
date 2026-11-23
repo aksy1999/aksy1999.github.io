@@ -51,4 +51,17 @@
       }
     });
   }
+
+  document.querySelectorAll('.home-link-row[data-href]').forEach(function (row) {
+    row.addEventListener('click', function (e) {
+      if (e.target.closest('a')) return;
+      window.location.href = row.getAttribute('data-href');
+    });
+    row.addEventListener('keydown', function (e) {
+      if (e.target === row && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault();
+        window.location.href = row.getAttribute('data-href');
+      }
+    });
+  });
 })();
