@@ -194,36 +194,65 @@
       color: #0b6640;
       font-weight: 700;
     }
-    .blog-back-bar {
-      background-color: #f3f9f5;
-      padding: 18px 24px 0;
-    }
-    @media (min-width: 768px) {
-      .blog-back-bar {
-        display: grid;
-        padding: 20px 0 0;
-      }
-      .blog-back-bar .blog-back-inner {
-        grid-column: text;
-      }
-    }
-    .blog-back-link {
-      display: inline-flex;
+    .wsp-site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #ffffff;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+      display: flex;
       align-items: center;
-      gap: 6px;
+      justify-content: space-between;
+      min-height: 54px;
+      padding: 0 24px;
       font-family: var(--font-sans);
-      font-size: 14.5px;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 13px;
       font-weight: 600;
-      color: #118659;
+    }
+    .wsp-site-nav a {
+      color: #5a645f;
       text-decoration: none;
+      transition: color 0.15s ease;
     }
-    .blog-back-link:hover {
-      color: #0b6341;
+    .wsp-site-nav a.wsp-nav-home {
+      color: #222624;
+    }
+    .wsp-site-nav a.wsp-nav-active {
+      color: #222624;
+      font-weight: 700;
+    }
+    .wsp-site-nav a:hover {
+      color: #118659;
       text-decoration: underline;
-      text-underline-offset: 3px;
+      text-underline-offset: 4px;
     }
-    d-title {
-      padding-top: 22px !important;
+    .wsp-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .wsp-nav-links a span {
+      color: #8a948f;
+      font-weight: 500;
+      margin-right: 4px;
+    }
+    .wsp-nav-links a.wsp-nav-active span,
+    .wsp-nav-links a:hover span {
+      color: inherit;
+    }
+    @media (max-width: 680px) {
+      .wsp-site-nav {
+        padding: 8px 14px;
+        flex-wrap: wrap;
+        gap: 6px 12px;
+        font-size: 11.5px;
+      }
+      .wsp-nav-links {
+        gap: 12px;
+      }
     }
     .giscus-wrap {
       margin-top: 14px;
@@ -242,11 +271,15 @@
 </head>
 <body>
 
-<div class="blog-back-bar base-grid">
-  <div class="blog-back-inner">
-    <a class="blog-back-link" href="/">← Amit Kumar Singh Yadav</a>
+<nav class="wsp-site-nav" aria-label="Primary navigation">
+  <a class="wsp-nav-home" href="/">00 INDEX</a>
+  <div class="wsp-nav-links">
+    <a href="/about/"><span>01</span>ABOUT</a>
+    <a href="/experience/"><span>02</span>EXPERIENCE</a>
+    <a class="wsp-nav-active" href="/blog/"><span>03</span>BLOG</a>
+    <a href="/publications/"><span>04</span>PUBLICATIONS</a>
   </div>
-</div>
+</nav>
 
 <d-title>
   <h1>
