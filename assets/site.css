@@ -246,9 +246,9 @@ button {
 }
 
 .home-hero-copy {
-  width: min(100%, 58rem);
+  width: min(100%, 74rem);
   margin: 0 auto;
-  padding: clamp(2rem, 4vw, 3.4rem) clamp(1.5rem, 3.5vw, 2.5rem);
+  padding: clamp(2rem, 4vw, 3.4rem) clamp(1.5rem, 4vw, 3rem);
 }
 
 .home-hero-top {
@@ -276,7 +276,6 @@ button {
 }
 
 .home-hero-intro > p {
-  max-width: 62ch;
   margin-top: 0.85rem;
   font-size: clamp(1.02rem, 1.08vw, 1.1rem);
   font-weight: 400;
@@ -408,9 +407,9 @@ button {
 }
 
 .page-wrap {
-  width: min(100%, 58rem);
+  width: min(100%, 74rem);
   margin: 0 auto;
-  padding: clamp(2.2rem, 4vw, 3.4rem) clamp(1.5rem, 3.5vw, 2.5rem) clamp(3rem, 5vw, 4.5rem);
+  padding: clamp(2.2rem, 4vw, 3.4rem) clamp(1.5rem, 4vw, 3rem) clamp(3rem, 5vw, 4.5rem);
 }
 
 .page-header {
@@ -427,7 +426,6 @@ button {
 }
 
 .page-header > p {
-  max-width: 64ch;
   margin-top: 0.9rem;
   font-size: clamp(1.04rem, 1.1vw, 1.12rem);
   font-weight: 400;
@@ -483,7 +481,6 @@ button {
 
 .bio-dropdown p {
   margin-top: 0.75rem;
-  max-width: 65ch;
   font-size: 1.02rem;
   line-height: 1.64;
   color: var(--muted);
@@ -566,7 +563,6 @@ button {
   font-size: 1rem;
   line-height: 1.58;
   color: var(--muted);
-  max-width: 66ch;
 }
 
 .row-links {
